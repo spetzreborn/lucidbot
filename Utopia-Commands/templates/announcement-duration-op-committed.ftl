@@ -1,0 +1,1 @@
+${DARK_GREEN+op.type.name+RED} added for ${BLUE+op.province.name} ${op.province.kingdom.location+RED}, expires in ${OLIVE+op.timeLeft}

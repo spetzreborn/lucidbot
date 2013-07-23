@@ -1,0 +1,1 @@
+${RED}Army added for ${BLUE+army.province.provinceOwner.mainNick+RED}, returns in ${OLIVE+timeUtil.compareDateToCurrent(army.returningDate)}

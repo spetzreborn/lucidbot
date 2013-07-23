@@ -1,0 +1,1 @@
+${RED}A new build "${DARK_GREEN+build.type+RED}" was added for ${BLUE+build.race.name}<#if build.personality??>/${build.personality.name}</#if>

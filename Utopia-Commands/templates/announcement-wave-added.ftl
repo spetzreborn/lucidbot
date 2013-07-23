@@ -1,0 +1,1 @@
+${RED}A new wave was just scheduled!

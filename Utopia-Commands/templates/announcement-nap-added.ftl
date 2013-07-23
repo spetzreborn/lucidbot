@@ -1,0 +1,1 @@
+${RED}A NAP with ${BLUE+kingdom.location+RED} was just added!

@@ -1,0 +1,13 @@
+!ops (##:##) - lists ops of every province in kd
+<charmey>!ops (18:29)
+<bot> Province Name............|Tag|Stm|Drt|Vrm|Grd|PF |Xpl|MS |Rts
+<bot> Slim (18:29).............|70i|___| 8 |___|___|Exp|___|___|___
+<bot> The Hole Truth (18:29)...|70n|___|___| 4 |___|Exp|___|___|___
+
+Toggle tick announcement
+When bot announces tick, it also spits out what spells expire that hour. Add also whose armies are returning that hour:
+[03:57:46] <bot>  :: February 5th, YR6 ::
+[03:57:49] <bot>  Spells expiring:  Dan_Dead  (cs)
+[03:57:49] <bot>  Our armies returning:  beiker 14mins, yf 15mins
+[03:57:49] <bot>  Ops expiring:  Beautiful Quack (34:34)  (greed)
+[03:57:49] <bot>  The following people are not here: Dan_Dead

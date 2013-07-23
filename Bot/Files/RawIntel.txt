@@ -1,0 +1,208 @@
+The Province of Aikido Army Ant (4:7) as of June 16 of YR2 (next tick: 16 minutes)
+Race	Dwarf	Soldiers	650
+Ruler	The Wealthy Lord Yellow Belt	Warriors	0
+Land	1,481	Axemen	7,087
+Peasants	12,889	Berserkers	11,484
+Building Eff.	97%	Thieves	 Unknown
+Money	407,469	Wizards	 Unknown
+Food	14,176	War Horses	0
+Runes	20,509	Prisoners	91
+Trade Balance	-221,807	Off. Points	109,533
+Networth	164,708 gold coins	Def. Points	70,017
+
+----------------------------------------------------------------------------------------------------------------------
+
+Our thieves listen in on a report from the Military Elders of Sarah Michelle Gellar (8:23)...
+Military Affairs of Sarah Michelle Gellar
+
+Offensive Military Effectiveness	155.9%
+Defensive Military Effectiveness	103.2%
+Net Offensive Points at Home	4,398
+Net Defensive Points at Home	29,867
+
+Army Availability	Standing Army	 Army #1
+ (5.29 days left) 	 Army #2
+ (12.93 days left) 	 Undeployed Army 	 Undeployed Army 	 Undeployed Army
+Generals	3	1	1
+Soldiers	117	0	0
+Skeletons	906	1,826	904
+Zombies	4,962	-	-
+Ghouls	0	4,131	0
+War Horses	0	3,960	0
+Captured Land	-	125	0
+
+Military Training Estimates
+
+Lady Buffy Summers the Blessed, the table below shows our training estimates for the next 24 days.	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24
+Skeletons	7	6	10	9	8	5	6	10	8	1	2			1
+Zombies	19	19	13	18	20	19	22	20	19	10	9	9	8	10	12	9	10	9	7
+Ghouls
+Thieves	23	22	17	25	17	17	15	18	20	16	15	15	13	10	11	5	2	3	1
+
+----------------------------------------------------------------------------------------------------------------------
+
+Our thieves visit the research centers of Aikido Army Ant (4:7). They find this recent report...
+Current Effects of Research in the Science & ArtsKnowledge	Books	Per Acre	Effect
+Alchemy	69,978	56.479	 +12.7% Income
+Tools	2,144	1.73	 +1.1% Building Effectiveness
+Housing	32,893	26.548	 +3.7% Population Limits
+Food	31,324	25.282	 +41.9% Food Production
+Military	6,004	4.846	 +2.7% Gains in Combat
+Crime	20,681	16.692	 +21.1% Thievery Effectiveness
+Channeling	11,715	9.455	 +15.0% Magic Effectiveness & Rune Production
+
+----------------------------------------------------------------------------------------------------------------------
+
+Our thieves scour the lands of Aikido Army Ant (4:7) and learn...
+StatisticsAvailable Workers	11,569
+Available Jobs	30,225
+Building Efficiency	97.5%
+Workers Needed for Max. Efficiency	20,250
+
+Building Effects
+
+You will find that as we build more of certain building types, many new structures will be less effective. The Next 1% in parentheses below refers to the benefits of dedicating 1% more of your land to a particular building type.Building type	Quantity	% of Total	Current Effects (effect of next 1%)
+Barren Land	0	0.0%
+Homes	0	0.0%	 Increase max population by 0
+ Increase birth rates by 0.0%
+Farms	138	11.1%	 Produce 10,870 bushels per day
+Mills	0	0.0%	 Lower building costs by 0.0%
+ Reduce exploration costs by 0.0%
+Banks	255	20.6%	 Produce 13,267 gold coins per day
+ 31.89% higher income
+Training Grounds	297	24.0%	 29.1% higher offensive efficiency
+Armouries	0	0.0%	 0.0% lower military training costs
+ 0.0% lower military wages & draft costs
+Military Barracks	0	0.0%	 0.0% lower attack times
+Forts	0	0.0%	 0.0% higher defensive efficiency
+Guard Stations	0	0.0%	 0.0% lower resource losses when attacked
+Hospitals	0	0.0%	 0.0% chance to cure the plague each day
+ 0.0% lower military losses
+Guilds	302	24.4%	 6.7 wizards trained per day
+Towers	181	14.6%	 Produce 2,263 runes per day
+Thieves' Dens	0	0.0%	 0.0% higher thievery effectiveness
+ 0.0% lower losses in thievery operations
+Watch Towers	0	0.0%	 0.0% chance of preventing enemy thief missions
+ 0.0% rate of repelling individual enemy thieves from our borders
+Libraries	0	0.0%	 0.0% increase in science effects
+Schools	0	0.0%	 0.0% decrease in science costs
+ Protect 0.0% of science from enemies
+Stables	0	0.0%	 Hold 0 horses
+ Produce 0 horses per day
+Dungeons	36	2.9%	 House 829 prisoners
+
+----------------------------------------------------------------------------------------------------------------------
+
+The Province of Nuff nuff (7:35) as of June 16 of YR2 (next tick: 10 minutes)
+Race	Orc	Soldiers	0
+Ruler	Lord schnorc the Blessed	Goblins	0
+Land	1,444	Trolls	7,438
+Peasants	14,408	Ogres	13,260
+Building Eff.	88%	Thieves	 2,963 (74%)
+Money	441,607	Wizards	 1,446 (87%)
+Food	188,771	War Horses	0
+Runes	83,939	Prisoners	140
+Trade Balance	-85,830	Off. Points	150,532
+Networth	241,029 gold coins	Def. Points	71,838
+
+----------------------------------------------------------------------------------------------------------------------
+
+Military Affairs of Nuff nuff
+
+Lord schnorc the Blessed, we have 6 generals available to lead our armies. One must always stay here to lead our forces in defense, but you may send the others out to combat at any time.
+Our Generals' current activities and our military strength is detailed below.
+Wage Rate
+
+Our military effectiveness is determined by the wage rates of our armed forces. Higher wages can drive up productivity. Any changes to pay will take time to change our efficiency.
+
+At this time, approximately 63.6% of our maximum population is allocated to non-peasant roles. Our wage rate is 200.0% of normal levels, and our military is functioning at 107.4% efficiency.
+Military Strength
+
+In addition, our military strength is affected by a number of other factors including buildings, honor, spells, and more. Our net military effectiveness is as follows:Offensive Military Effectiveness	126.1%
+Defensive Military Effectiveness	112.8%
+Net Offensive Points at Home	150,532
+Net Defensive Points at Home	71,838
+
+Army Availability	Standing Army	 Undeployed Army 	 Undeployed Army 	 Undeployed Army 	 Undeployed Army 	 Undeployed Army
+Generals	6
+Soldiers	0
+Goblins	0
+Trolls	7,438
+Ogres	13,260
+War Horses	0
+Captured Land	-
+
+Military Training Estimates
+
+Lord schnorc the Blessed, the table below shows our training estimates for the next 24 days.	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24
+Goblins
+Trolls	8	6	10	5	8	5	8	5	6	5	6	5	6	5	6	5	6	5	6
+Ogres
+Thieves
+
+----------------------------------------------------------------------------------------------------------------------
+
+The Arts & Sciences: Allocating Books
+Knowledge	You Know	Effect	In Progress	Learn
+Alchemy	44,027	+7.7% Income	1,583
+Tools	32,979	+4.8% Building Effectiveness	1,871
+Housing	91,390	+5.2% Population Limits	19,051
+Food	14,341	+25.2% Food Production	348
+Military	14,054	+4.4% Gains in Combat	1,727
+Crime	22,715	+23.8% Thievery Effectiveness	833
+Channeling	22,390	+23.6% Magic Effectiveness & Rune Production	833
+
+----------------------------------------------------------------------------------------------------------------------
+
+Building Effects
+
+Barren Land	0	0.0%
+Homes	158	10.9%	 Increase max population by 1,264
+ Increase birth rates by 34.39% (2.72%)
+Farms	130	9.0%	 Produce 8,028 bushels per day
+Mills	0	0.0%	 Lower building costs by 0.0% (3.49%)
+ Reduce exploration costs by 0.0% (2.62%)
+Banks	288	19.9%	 Produce 6,352 gold coins per day
+ 17.61% higher income (0.65%)
+Training Grounds	230	15.9%	 17.72% higher offensive efficiency (0.89%)
+Armouries	0	0.0%	 0.0% lower military training costs (1.31%)
+ 0.0% lower military wages & draft costs (1.75%)
+Military Barracks	173	12.0%	 13.96% lower attack times (0.99%)
+Forts	0	0.0%	 0.0% higher defensive efficiency (1.31%)
+Guard Stations	0	0.0%	 0.0% lower resource losses when attacked (1.75%)
+Hospitals	0	0.0%	 0.0% chance to cure the plague each day (1.75%)
+ 0.0% lower military losses (2.62%)
+Guilds	288	19.9%	 5.1 wizards trained per day
+Towers	144	10.0%	 Produce 1,524 runes per day
+Thieves' Dens	0	0.0%	 0.0% higher thievery effectiveness (2.62%)
+ 0.0% lower losses in thievery operations (3.49%)
+Watch Towers	0	0.0%	 0.0% chance of preventing enemy thief missions (1.75%)
+ 0.0% rate of repelling individual enemy thieves from our borders (2.62%)
+Libraries	0	0.0%	 0.0% increase in science effects (1.98%)
+Schools	0	0.0%	 0.0% decrease in science costs (1.31%)
+ Protect 0.0% of science from enemies (3.06%)
+Stables	0	0.0%	 Hold 0 horses
+ Produce 0 horses per day
+Dungeons	28	1.9%	 House 560 prisoners
+
+Exploration/Construction SchedulesBuilding type	Schedule (number of days)
+1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24
+Barren Land
+Homes																1
+Farms
+Mills
+Banks																1
+Training Grounds																1
+Armouries
+Military Barracks
+Forts
+Guard Stations
+Hospitals
+Guilds																1
+Towers
+Thieves' Dens
+Watch Towers
+Libraries
+Schools
+Stables
+Dungeons																1

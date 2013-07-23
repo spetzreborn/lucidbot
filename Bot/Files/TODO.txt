@@ -1,0 +1,53 @@
+INTEL:
+* Get the overpopulation rioting pattern correct in the SoTParser
+* Save slots from unformatted kd page
+
+DOCS:
+* What's new in 3.0?
+* Scripting
+* Plugins
+* Templates
+* WADL + xsd + docs for web API
+* Complete command list + what is command definitions?
+* Package the bot with default aliases
+
+CLEANUP:
+Replace strings that are used in many places with constants
+make classes final
+add the JSR-305 annotations where appropriate, and also maybe some package level javadoc
+
+LIB UPDATES:
+Update to Jersey 2.x
+Update to Log4J 2.x
+Update Vaadin to 7.x or replace UI with GWT or something else
+
+GOOD TO HAVE:
+enable/disable different managers, like stopping the aidmanager from listening to aid sent events etc.
+Unfortunately, because your enemy expected defeat, they torched x acres and made them uninhabitable.
+Don't allow all access levels to be overwritten since they could cause some commands to stop working
+Barren Land and Unknown building types should be impossible to remove
+A better scheme for Private Messages, so that they don't get removed for the sender just because the recipient deletes etc.
+
+FUTURE:
+Params parsing support for scripts
+Early indications show that our operation was a success and we have 75% confidence in the information retrieved.
+Allow a bonus that affects building bonuses
+connect an order to a forum thread so that it can be explained in detail
+add a target and have the bot fill in hitters automatically
+allow scripts to listen for callbacks to timers they created themselves
+add actions to the tray icon to open the properties file for editing
+integrate with GTalk to allow people to send messages to IRC
+Request system (request intel, spells, ops etc.)
+!meter command that checks summary to find out hostility
+!endwar or something similar that removes all army and spells/op  timers as the war ends
+Save stuff like "largest hit", "most peasants killed with fireball" etc. and announce them when ppl paste stuff
+Add a command for showing aliases
+Template more stuff, like event listeners (infil etc.)
+Overpop info calculator (7% of peasants leave, 20% of the overpop > 115% max pop leaves from army home. Solds may cover for other groups)
+Pick up target for an op if it's posted in the channel after the op message
+Specify in the !find command which fields to print (allow more than one)
+Consider an editbuild command or something
+Notifications for spells running out
+Android app
+Ditch the command type approach and go with tags instead
+Consider bindings on order categories

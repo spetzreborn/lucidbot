@@ -1,0 +1,3 @@
+<@ircmessage type="reply_notice">
+Checking with NickServ if you're identified...
+</@ircmessage>
