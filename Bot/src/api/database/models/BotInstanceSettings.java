@@ -29,6 +29,7 @@ package api.database.models;
 
 import api.common.HasNumericId;
 import api.database.BotInstanceSettingsChannel;
+import lombok.AccessLevel;
 import lombok.*;
 
 import javax.persistence.*;

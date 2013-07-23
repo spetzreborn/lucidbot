@@ -29,6 +29,7 @@ package api.database.models;
 
 import api.common.HasName;
 import api.common.HasNumericId;
+import lombok.AccessLevel;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
