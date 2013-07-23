@@ -130,7 +130,7 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
                 List<String> slices = slice(output.getRawMessage(), maxLength - 1);
                 for (String slice : slices) {
                     conformed.add(new IRCMessage(output.getType(), output.getTarget(), output.getPriority(), slice,
-                                                 output.isHandlingReceiverUsed()));
+                            output.isHandlingReceiverUsed()));
                 }
             }
         }
@@ -150,7 +150,7 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
         if (!(obj instanceof IRCOutput)) return false;
         IRCOutput other = (IRCOutput) obj;
         return Objects.equal(this.handler, other.handler) &&
-               ListUtil.listContentsAreEqual(outputs, other.outputs) && compareTo(other) == 0;
+                ListUtil.listContentsAreEqual(outputs, other.outputs) && compareTo(other) == 0;
     }
 
     @Override

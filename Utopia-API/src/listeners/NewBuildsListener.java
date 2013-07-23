@@ -81,8 +81,8 @@ class NewBuildsListener implements EventListener {
                             for (Notification notification : notificationDAOProvider.get().getNotifications(NotificationType.BUILD_ADDED)) {
                                 if (bindingsManager.matchesBindings(build.getBindings(), notification.getUser())) {
                                     notification.getMethod()
-                                                .deliver(notificationDeliverer, notification.getUser(), "New build notification",
-                                                         "A new build for your race/pers was just added by " + build.getAddedBy());
+                                            .deliver(notificationDeliverer, notification.getUser(), "New build notification",
+                                                    "A new build for your race/pers was just added by " + build.getAddedBy());
                                 }
                             }
                         } catch (HibernateException e) {

@@ -61,7 +61,7 @@ public class SpellAddedAnnouncer extends AbstractAnnouncer implements EventListe
 
             if (durationSpell != null) {
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("spell", durationSpell),
-                                                        "announcement-duration-spell-cast");
+                        "announcement-duration-spell-cast");
                 announce(ChannelType.PRIVATE, output);
             } else log.warn("Duration spell was not found in database when it was going to be announced");
         } catch (HibernateException e) {

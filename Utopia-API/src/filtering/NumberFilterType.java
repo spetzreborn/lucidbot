@@ -41,7 +41,7 @@ public enum NumberFilterType {
     LESS_THAN_WITH_K("[<]\\s*(" + ValidationType.DOUBLE_WITH_K.getPattern() + ")\\s*"),
     RANGE('(' + ValidationType.DOUBLE.getPattern() + ")\\s*-\\s*(" + ValidationType.DOUBLE.getPattern() + ")\\s*"),
     RANGE_WITH_K('(' + ValidationType.DOUBLE_WITH_K.getPattern() + ")\\s*-\\s*(" +
-                 ValidationType.DOUBLE_WITH_K.getPattern() + ")\\s*");
+            ValidationType.DOUBLE_WITH_K.getPattern() + ")\\s*");
 
     private static final ConcurrentMap<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
 

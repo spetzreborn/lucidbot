@@ -81,12 +81,12 @@ class NewTargetsListener implements EventListener {
                             Province province = target.getProvince();
                             NotificationDeliverer notificationDeliverer = delivererProvider.get();
                             for (Notification notification : notificationDAOProvider.get()
-                                                                                    .getNotifications(NotificationType.TARGET_ADDED)) {
+                                    .getNotifications(NotificationType.TARGET_ADDED)) {
                                 if (bindingsManager.matchesBindings(target.getBindings(), notification.getUser())) {
                                     String message = province.getName() + ' ' + province.getKingdom().getLocation() +
-                                                     " was just added as a target";
+                                            " was just added as a target";
                                     notification.getMethod()
-                                                .deliver(notificationDeliverer, notification.getUser(), "New target notification", message);
+                                            .deliver(notificationDeliverer, notification.getUser(), "New target notification", message);
                                 }
                             }
                         } catch (HibernateException e) {

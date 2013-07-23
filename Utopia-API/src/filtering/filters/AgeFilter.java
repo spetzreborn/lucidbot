@@ -64,7 +64,7 @@ public class AgeFilter extends AbstractDateBasedFilter {
 
         strings = NumberFilterType.RANGE.parse(filterEnd, text);
         if (strings != null) return createRangeFilter(getDateHoursAgo(NumberUtil.parseDouble(strings[0])),
-                                                      getDateHoursAgo(NumberUtil.parseDouble(strings[1])));
+                getDateHoursAgo(NumberUtil.parseDouble(strings[1])));
         return null;
     }
 

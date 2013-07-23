@@ -41,6 +41,6 @@ public class H2UpdateV1ToV2 extends AbstractH2DatabaseUpdater {
     @Override
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
         return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE alias ALTER COLUMN transform CLOB NOT NULL"),
-                                  new SimpleUpdateAction("ALTER TABLE bot_user ADD gtalk VARCHAR(200)"));
+                new SimpleUpdateAction("ALTER TABLE bot_user ADD gtalk VARCHAR(200)"));
     }
 }

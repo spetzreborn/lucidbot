@@ -71,7 +71,7 @@ public class ReturningArmiesAnnouncer extends AbstractAnnouncer implements Event
 
             if (isEnabled()) {
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("armies", armies),
-                                                        "announcement-returning-armies");
+                        "announcement-returning-armies");
                 announce(ChannelType.PRIVATE, output);
             }
         } catch (HibernateException e) {

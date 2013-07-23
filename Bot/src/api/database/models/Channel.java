@@ -28,7 +28,6 @@
 package api.database.models;
 
 import api.common.HasNumericId;
-import lombok.AccessLevel;
 import lombok.*;
 
 import javax.persistence.*;

@@ -33,23 +33,14 @@ import api.tools.text.RegexUtil;
 import api.tools.text.StringUtil;
 import com.google.common.collect.Lists;
 import database.CommonEntitiesAccess;
-import database.models.AttackType;
-import database.models.Building;
-import database.models.BuildingFormula;
-import database.models.OpType;
-import database.models.ScienceType;
-import database.models.SpellType;
+import database.models.*;
 import lombok.extern.log4j.Log4j;
 
 import javax.inject.Inject;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
@@ -102,7 +93,7 @@ public class GameMechanicCalculator {
         List<String> out = new ArrayList<>();
         for (BuildingFormula buildingFormula : building.getFormulas()) {
             Double result = performBuildingEffectCalculation(buildingFormula, params.get("percent"), params.get("amount"),
-                                                             params.get("be"));
+                    params.get("be"));
             if (result != null) {
                 String formatted = formatBuildingEffectsResult(result, buildingFormula);
                 out.add(formatted);

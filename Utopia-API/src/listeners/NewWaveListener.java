@@ -81,8 +81,8 @@ class NewWaveListener implements EventListener {
                             for (Notification notification : notificationDAOProvider.get().getNotifications(NotificationType.WAVE_ADDED)) {
                                 if (bindingsManager.matchesBindings(wave.getBindings(), notification.getUser())) {
                                     notification.getMethod().deliver(notificationDeliverer, notification.getUser(), "New wave notification",
-                                                                     "A new wave has been scheduled for " +
-                                                                     notification.getUser().getDateInUsersLocalTime(wave.getEventTime()));
+                                            "A new wave has been scheduled for " +
+                                                    notification.getUser().getDateInUsersLocalTime(wave.getEventTime()));
                                 }
                             }
                         } catch (HibernateException e) {

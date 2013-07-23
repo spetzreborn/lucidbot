@@ -41,8 +41,8 @@ public class H2UpdateV3ToV4 extends AbstractH2DatabaseUpdater {
     @Override
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
         return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE som ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE sos ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE sot ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE survey ADD COLUMN accuracy INT NOT NULL DEFAULT 100"));
+                new SimpleUpdateAction("ALTER TABLE sos ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
+                new SimpleUpdateAction("ALTER TABLE sot ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
+                new SimpleUpdateAction("ALTER TABLE survey ADD COLUMN accuracy INT NOT NULL DEFAULT 100"));
     }
 }

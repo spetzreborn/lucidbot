@@ -75,11 +75,11 @@ class UserCheckInsListener implements EventListener {
                         UserCheckIn checkIn = userCheckinDAOProvider.get().getUserCheckIn(event.getCheckInId());
                         try {
                             List<Notification> notifications = notificationDAOProvider.get()
-                                                                                      .getNotifications(NotificationType.USER_CHECKIN);
+                                    .getNotifications(NotificationType.USER_CHECKIN);
                             delivererProvider.get().deliverNotifications(notifications, "User check in notification",
-                                                                         checkIn.getUser().getMainNick() +
-                                                                         " just checked in the following: " +
-                                                                         checkIn.getCheckedIn());
+                                    checkIn.getUser().getMainNick() +
+                                            " just checked in the following: " +
+                                            checkIn.getCheckedIn());
                         } catch (HibernateException e) {
                             log.error("", e);
                         }

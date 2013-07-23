@@ -252,7 +252,7 @@ public final class IRCAccess {
 
     public void csInvite(final BotIRCInstance instance, final String channel) {
         IRCMessage ircMessage = new IRCMessage(1, ChanServCommands.InviteCommand.format(channel, properties.get(IRC_CS_INVITE_REQUEST)),
-                                               true);
+                true);
         enqueue(new IRCOutput(instance, ircMessage));
     }
 

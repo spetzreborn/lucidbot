@@ -81,10 +81,10 @@ class NewEventsListener implements EventListener {
                             for (Notification notification : notificationDAOProvider.get().getNotifications(NotificationType.EVENT_ADDED)) {
                                 if (bindingsManager.matchesBindings(kdEvent.getBindings(), notification.getUser())) {
                                     String message = "A new event has been scheduled for " +
-                                                     notification.getUser().getDateInUsersLocalTime(kdEvent.getEventTime()) +
-                                                     " described as: " + kdEvent.getDescription();
+                                            notification.getUser().getDateInUsersLocalTime(kdEvent.getEventTime()) +
+                                            " described as: " + kdEvent.getDescription();
                                     notification.getMethod()
-                                                .deliver(notificationDeliverer, notification.getUser(), "New event notification", message);
+                                            .deliver(notificationDeliverer, notification.getUser(), "New event notification", message);
                                 }
                             }
                         } catch (HibernateException e) {

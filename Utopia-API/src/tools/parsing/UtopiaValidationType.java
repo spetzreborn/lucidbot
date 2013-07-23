@@ -40,7 +40,7 @@ public enum UtopiaValidationType {
     UTODATE("(?i)(?:" + UtopiaMonth.getMonthPattern() + ") (?:(?:[0-1]\\d)|(?:[2][0-4])|(?:[1-9]))" +
             "(?:th, YR|rd, YR|st, YR|nd, YR| of YR|, YR)(?:\\d{1,2})"),
     UTODATE_WITH_GROUPS("(?i)(?<month>" + UtopiaMonth.getMonthPattern() + ") (?<day>(?:[0-1]\\d)|(?:[2][0-4])|(?:[1-9]))" +
-                        "(?:th, YR|rd, YR|st, YR|nd, YR| of YR|, YR)(?<year>\\d{1,2})"),
+            "(?:th, YR|rd, YR|st, YR|nd, YR| of YR|, YR)(?<year>\\d{1,2})"),
     GENERAL("\\d"),
     TIMEZONE("[+-]?(?:[0]\\d|[1][0-3]|\\d)");
 

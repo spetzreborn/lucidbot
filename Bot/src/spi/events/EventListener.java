@@ -33,4 +33,5 @@ package spi.events;
  * interface. If you're not, register all the classes so the ServiceLoader can find them. They will be automatically
  * registered with the EventBus, so no need to worry about that, just make sure the @Subscribe annotations are there.
  */
-public interface EventListener {}
+public interface EventListener {
+}

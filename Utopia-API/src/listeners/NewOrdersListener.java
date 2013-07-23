@@ -81,9 +81,9 @@ class NewOrdersListener implements EventListener {
                             for (Notification notification : notificationDAOProvider.get().getNotifications(NotificationType.ORDER_ADDED)) {
                                 if (bindingsManager.matchesBindings(order.getBindings(), notification.getUser())) {
                                     notification.getMethod()
-                                                .deliver(notificationDeliverer, notification.getUser(), "New order notification",
-                                                         "The following order was just added by " + order.getAddedBy() + ": " +
-                                                         order.getOrder());
+                                            .deliver(notificationDeliverer, notification.getUser(), "New order notification",
+                                                    "The following order was just added by " + order.getAddedBy() + ": " +
+                                                            order.getOrder());
                                 }
                             }
                         } catch (Exception e) {

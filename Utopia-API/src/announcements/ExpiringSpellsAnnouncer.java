@@ -69,7 +69,7 @@ public class ExpiringSpellsAnnouncer extends AbstractAnnouncer implements EventL
 
             if (isEnabled()) {
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("spells", spells),
-                                                        "announcement-expiring-spells");
+                        "announcement-expiring-spells");
                 announce(ChannelType.PRIVATE, output);
             }
         } catch (HibernateException e) {

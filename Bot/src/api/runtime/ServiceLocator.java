@@ -41,7 +41,8 @@ public class ServiceLocator {
     @Inject
     private static Injector injector;
 
-    private ServiceLocator() {}
+    private ServiceLocator() {
+    }
 
     /**
      * Looks up the specified class and returns an instance of it

@@ -37,16 +37,8 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Provider;
 import database.daos.IntelDAO;
 import database.daos.KingdomDAO;
-import database.models.Kingdom;
-import database.models.SoM;
-import database.models.SoS;
-import database.models.SoT;
-import database.models.Survey;
-import events.KingdomSavedEvent;
-import events.SoMSavedEvent;
-import events.SoSSavedEvent;
-import events.SoTSavedEvent;
-import events.SurveySavedEvent;
+import database.models.*;
+import events.*;
 import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import spi.events.EventListener;
@@ -76,7 +68,7 @@ public class IntelSavedAnnouncer extends AbstractAnnouncer implements EventListe
             Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getId());
             if (kingdom != null && isEnabled()) {
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom),
-                                                        "announcement-kingdom-saved");
+                        "announcement-kingdom-saved");
                 announce(ChannelType.PRIVATE, output);
             }
         } catch (HibernateException e) {

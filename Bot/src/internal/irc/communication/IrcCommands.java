@@ -40,7 +40,8 @@ public interface IrcCommands {
     class AdminCommand {
         private static final String ADMIN = "ADMIN";
 
-        private AdminCommand() {}
+        private AdminCommand() {
+        }
 
         public static String format() {
             return ADMIN;
@@ -50,7 +51,8 @@ public interface IrcCommands {
     class InviteCommand {
         private static final String INVITE = "INVITE ";
 
-        private InviteCommand() {}
+        private InviteCommand() {
+        }
 
         public static String format(final String nick, final String channel) {
             return INVITE + nick + ' ' + channel;
@@ -60,7 +62,8 @@ public interface IrcCommands {
     class IsOnCommand {
         private static final String ISON = "ISON ";
 
-        private IsOnCommand() {}
+        private IsOnCommand() {
+        }
 
         public static String format(final String nick) {
             return ISON + nick;
@@ -70,7 +73,8 @@ public interface IrcCommands {
     class JoinCommand {
         private static final String JOIN = "JOIN ";
 
-        private JoinCommand() {}
+        private JoinCommand() {
+        }
 
         public static String format(final String channel, @Nullable final String password) {
             return JOIN + channel + (StringUtil.isNullOrEmpty(password) ? "" : ' ' + password);
@@ -80,7 +84,8 @@ public interface IrcCommands {
     class KickCommand {
         private static final String KICK = "KICK ";
 
-        private KickCommand() {}
+        private KickCommand() {
+        }
 
         public static String format(final String channel, final String nick, @Nullable final String reason) {
             return KICK + channel + ' ' + nick + (StringUtil.isNullOrEmpty(reason) ? "" : ' ' + reason);
@@ -90,7 +95,8 @@ public interface IrcCommands {
     class KnockCommand {
         private static final String KNOCK = "KNOCK ";
 
-        private KnockCommand() {}
+        private KnockCommand() {
+        }
 
         public static String format(final String channel, @Nullable final String message) {
             return KNOCK + channel + (StringUtil.isNullOrEmpty(message) ? "" : ' ' + message);
@@ -100,7 +106,8 @@ public interface IrcCommands {
     class ListCommand {
         private static final String LIST = "LIST";
 
-        private ListCommand() {}
+        private ListCommand() {
+        }
 
         public static String format(@Nullable final String filter) {
             return LIST + (StringUtil.isNullOrEmpty(filter) ? "" : ' ' + filter);
@@ -110,7 +117,8 @@ public interface IrcCommands {
     class LUsersCommand {
         private static final String LUSERS = "LUSERS";
 
-        private LUsersCommand() {}
+        private LUsersCommand() {
+        }
 
         public static String format() {
             return LUSERS;
@@ -120,7 +128,8 @@ public interface IrcCommands {
     class ModeCommand {
         private static final String MODE = "MODE ";
 
-        private ModeCommand() {}
+        private ModeCommand() {
+        }
 
         public static String format(final String channel, final String modes, @Nullable final String users) {
             return MODE + channel + ' ' + modes + (StringUtil.isNullOrEmpty(users) ? "" : ' ' + users);
@@ -130,7 +139,8 @@ public interface IrcCommands {
     class MotdCommand {
         private static final String MOTD = "MOTD";
 
-        private MotdCommand() {}
+        private MotdCommand() {
+        }
 
         public static String format() {
             return MOTD;
@@ -140,7 +150,8 @@ public interface IrcCommands {
     class NamesCommand {
         private static final String NAMES = "NAMES ";
 
-        private NamesCommand() {}
+        private NamesCommand() {
+        }
 
         public static String format(final String channel) {
             return NAMES + channel;
@@ -150,7 +161,8 @@ public interface IrcCommands {
     class NickCommand {
         private static final String NICK = "NICK ";
 
-        private NickCommand() {}
+        private NickCommand() {
+        }
 
         public static String format(final String nick) {
             return NICK + nick;
@@ -160,7 +172,8 @@ public interface IrcCommands {
     class NoticeCommand {
         private static final String NOTICE = "NOTICE ";
 
-        private NoticeCommand() {}
+        private NoticeCommand() {
+        }
 
         public static String format(final String channel, final String message) {
             return NOTICE + channel + " :" + message;
@@ -170,7 +183,8 @@ public interface IrcCommands {
     class PartCommand {
         private static final String PART = "PART ";
 
-        private PartCommand() {}
+        private PartCommand() {
+        }
 
         public static String format(final String channel, @Nullable final String message) {
             return PART + channel + (StringUtil.isNullOrEmpty(message) ? "" : ' ' + message);
@@ -180,7 +194,8 @@ public interface IrcCommands {
     class PassCommand {
         private static final String PASS = "PASS ";
 
-        private PassCommand() {}
+        private PassCommand() {
+        }
 
         public static String format(final String password) {
             return PASS + password;
@@ -190,7 +205,8 @@ public interface IrcCommands {
     class PingCommand {
         private static final String PING = "PING :";
 
-        private PingCommand() {}
+        private PingCommand() {
+        }
 
         public static String format(final String message) {
             return PING + message;
@@ -200,7 +216,8 @@ public interface IrcCommands {
     class PongCommand {
         private static final String PONG = "PONG :";
 
-        private PongCommand() {}
+        private PongCommand() {
+        }
 
         public static String format(final String message) {
             return PONG + message;
@@ -210,7 +227,8 @@ public interface IrcCommands {
     class PrivMsgCommand {
         private static final String PRIVMSG = "PRIVMSG ";
 
-        private PrivMsgCommand() {}
+        private PrivMsgCommand() {
+        }
 
         public static String format(final String target, final String message) {
             return PRIVMSG + target + " :" + message;
@@ -220,7 +238,8 @@ public interface IrcCommands {
     class QuitCommand {
         private static final String QUIT = "QUIT";
 
-        private QuitCommand() {}
+        private QuitCommand() {
+        }
 
         public static String format(@Nullable final String message) {
             return QUIT + (StringUtil.isNullOrEmpty(message) ? "" : ' ' + message);
@@ -230,7 +249,8 @@ public interface IrcCommands {
     class RulesCommand {
         private static final String RULES = "RULES";
 
-        private RulesCommand() {}
+        private RulesCommand() {
+        }
 
         public static String format() {
             return RULES;
@@ -240,7 +260,8 @@ public interface IrcCommands {
     class SilenceCommand {
         private static final String SILENCE = "SILENCE ";
 
-        private SilenceCommand() {}
+        private SilenceCommand() {
+        }
 
         public static String format(final String details) {
             return SILENCE + details;
@@ -248,7 +269,8 @@ public interface IrcCommands {
     }
 
     class TimeToUserCommand {
-        private TimeToUserCommand() {}
+        private TimeToUserCommand() {
+        }
 
         public static String format(final String target, final String date) {
             return NoticeCommand.format(target, "\u0001TIME " + date + '\u0001');
@@ -258,7 +280,8 @@ public interface IrcCommands {
     class TimeToServerCommand {
         private static final String TIME = "TIME";
 
-        private TimeToServerCommand() {}
+        private TimeToServerCommand() {
+        }
 
         public static String format() {
             return TIME;
@@ -268,7 +291,8 @@ public interface IrcCommands {
     class TopicCommand {
         private static final String TOPIC = "TOPIC ";
 
-        private TopicCommand() {}
+        private TopicCommand() {
+        }
 
         public static String format(final String channel, @Nullable final String topic) {
             return TOPIC + channel + (StringUtil.isNullOrEmpty(topic) ? "" : ' ' + topic);
@@ -278,7 +302,8 @@ public interface IrcCommands {
     class UserCommand {
         private static final String USER = "USER ";
 
-        private UserCommand() {}
+        private UserCommand() {
+        }
 
         public static String format(final String details) {
             return USER + details;
@@ -288,7 +313,8 @@ public interface IrcCommands {
     class UserHostCommand {
         private static final String USERHOST = "USERHOST ";
 
-        private UserHostCommand() {}
+        private UserHostCommand() {
+        }
 
         public static String format(final String nick) {
             return USERHOST + nick;
@@ -296,7 +322,8 @@ public interface IrcCommands {
     }
 
     class VersionToUserCommand {
-        private VersionToUserCommand() {}
+        private VersionToUserCommand() {
+        }
 
         public static String format(final String target, final String version) {
             return NoticeCommand.format(target, "\u0001VERSION " + version + '\u0001');
@@ -306,7 +333,8 @@ public interface IrcCommands {
     class VersionToServerCommand {
         private static final String VERSION = "VERSION";
 
-        private VersionToServerCommand() {}
+        private VersionToServerCommand() {
+        }
 
         public static String format() {
             return VERSION;
@@ -316,7 +344,8 @@ public interface IrcCommands {
     class WatchCommand {
         private static final String WATCH = "WATCH ";
 
-        private WatchCommand() {}
+        private WatchCommand() {
+        }
 
         public static String format(final String details) {
             return WATCH + details;
@@ -326,7 +355,8 @@ public interface IrcCommands {
     class WhoIsCommand {
         private static final String WHOIS = "WHOIS ";
 
-        private WhoIsCommand() {}
+        private WhoIsCommand() {
+        }
 
         public static String format(final String nick) {
             return WHOIS + nick;
@@ -336,7 +366,8 @@ public interface IrcCommands {
     class WhoWasCommand {
         private static final String WHOWAS = "WHOWAS ";
 
-        private WhoWasCommand() {}
+        private WhoWasCommand() {
+        }
 
         public static String format(final String nick) {
             return WHOWAS + nick;

@@ -38,7 +38,8 @@ public class Transactions {
     @Inject
     private static Provider<DelayedEventPoster> delayedEventPosterProvider;
 
-    private Transactions() {}
+    private Transactions() {
+    }
 
     /**
      * Runs the specified task inside a database transaction

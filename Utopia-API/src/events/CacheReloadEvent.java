@@ -27,4 +27,5 @@
 
 package events;
 
-public class CacheReloadEvent {}
+public class CacheReloadEvent {
+}

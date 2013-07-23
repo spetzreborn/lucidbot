@@ -64,7 +64,7 @@ public class ExpiringFilter extends AbstractDateBasedFilter {
 
         strings = NumberFilterType.RANGE.parse(filterEnd, text);
         if (strings != null) return createRangeFilter(getDateHoursFromNow(NumberUtil.parseDouble(strings[0])),
-                                                      getDateHoursFromNow(NumberUtil.parseDouble(strings[1])));
+                getDateHoursFromNow(NumberUtil.parseDouble(strings[1])));
         return null;
     }
 

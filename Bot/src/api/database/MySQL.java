@@ -36,4 +36,5 @@ import java.lang.annotation.Target;
 @Qualifier
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MySQL {}
+public @interface MySQL {
+}

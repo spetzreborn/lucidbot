@@ -42,9 +42,9 @@ public class H2UpdateV1ToV2 extends AbstractH2DatabaseUpdater {
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
         return Lists
                 .newArrayList(new SimpleUpdateAction("ALTER TABLE race ALTER COLUMN accurate_intel VARCHAR(100) DEFAULT 'NEVER' NOT NULL"),
-                              new SimpleUpdateAction("ALTER TABLE race ALTER COLUMN accurate_intel RENAME TO intel_accuracy"),
-                              new SimpleUpdateAction("UPDATE race SET intel_accuracy = 'NEVER'"),
-                              new SimpleUpdateAction("ALTER TABLE personality ADD intel_accuracy VARCHAR(100) DEFAULT 'NEVER' NOT NULL"),
-                              new SimpleUpdateAction("DROP TABLE notification"));
+                        new SimpleUpdateAction("ALTER TABLE race ALTER COLUMN accurate_intel RENAME TO intel_accuracy"),
+                        new SimpleUpdateAction("UPDATE race SET intel_accuracy = 'NEVER'"),
+                        new SimpleUpdateAction("ALTER TABLE personality ADD intel_accuracy VARCHAR(100) DEFAULT 'NEVER' NOT NULL"),
+                        new SimpleUpdateAction("DROP TABLE notification"));
     }
 }

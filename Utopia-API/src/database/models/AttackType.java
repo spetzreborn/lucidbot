@@ -38,13 +38,13 @@ import static tools.parsing.NewsParser.*;
 
 public enum AttackType implements HasName {
     AMBUSH("Ambush", "AMB", GainsSpecification.GAINS_LAND, null,
-           //Incoming news regex
-           DATE + "\\s*(?<source>[^(]+" + KD + ") ambushed armies from (?<target>[^(]+" + KD + ") " + "and took (?<value>" + INT +
-           ") acres of land\\.",
-           //Outgoing news regex
-           DATE + "\\s*(?<source>[^(]+" + KD + ") recaptured (?<value>" + INT + ") " + "acres of land from (?<target>[^(]+" + KD + ")\\.",
-           //Result message regex
-           "Your army has recaptured ([0-9,]{1,})") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") ambushed armies from (?<target>[^(]+" + KD + ") " + "and took (?<value>" + INT +
+                    ") acres of land\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") recaptured (?<value>" + INT + ") " + "acres of land from (?<target>[^(]+" + KD + ")\\.",
+            //Result message regex
+            "Your army has recaptured ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return new GainVsDamage(gain, gain);
@@ -52,14 +52,14 @@ public enum AttackType implements HasName {
     },
 
     BOUNCE("Bounce", "BO", GainsSpecification.NON_LAND, null,
-           //Incoming news regex
-           DATE + "\\s*(?<source>[^(]+" + KD + ") attempted to invade (?<target>[^(]+" + KD + ")\\.",
-           //Outgoing news regex
-           DATE + "\\s*(?<source>[^(]+" + KD + ") attempted an invasion of (?<target>[^(]+" + KD + "), " + "but was repelled\\.",
-           //Result message regex
-           "(Alas, .+? it appears our army was much too weak to break their defenses!|" +
-           "Our army appears to have failed, .+?\\.  I am truly sorry\\.|" +
-           "Your troops march onto the battlefield and are quickly driven back, unable to break through!)") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") attempted to invade (?<target>[^(]+" + KD + ")\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") attempted an invasion of (?<target>[^(]+" + KD + "), " + "but was repelled\\.",
+            //Result message regex
+            "(Alas, .+? it appears our army was much too weak to break their defenses!|" +
+                    "Our army appears to have failed, .+?\\.  I am truly sorry\\.|" +
+                    "Your troops march onto the battlefield and are quickly driven back, unable to break through!)") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return GainVsDamage.ZERO;
@@ -67,17 +67,17 @@ public enum AttackType implements HasName {
     },
 
     CONQUEST("Conquest", "CQ", GainsSpecification.GAINS_LAND, 0.068,
-             //Incoming news regex
-             null,
-             //Outgoing news regex
-             DATE + "\\s*(?<source>[^(]+" + KD + "), captured (?<value>" + INT + ')' + " acres of land from (?<target>[^(]+" + KD + ")\\.",
-             //Result message regex
-             "(?:Our troops were able to get a small foothold into enemy territory\\.|" +
-             "Our army broke our enemy's initial defenses but was held from going further\\.|" +
-             "Our troops had a moderate amount of success getting behind enemy defenses\\.|" +
-             "Our army has broken their primary lines of defense!|" +
-             "We crushed opposing defenses and conquered all of the lands we targeted\\.)" +
-             ".*?Your army has taken ([0-9,]{1,})") {
+            //Incoming news regex
+            null,
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + "), captured (?<value>" + INT + ')' + " acres of land from (?<target>[^(]+" + KD + ")\\.",
+            //Result message regex
+            "(?:Our troops were able to get a small foothold into enemy territory\\.|" +
+                    "Our army broke our enemy's initial defenses but was held from going further\\.|" +
+                    "Our troops had a moderate amount of success getting behind enemy defenses\\.|" +
+                    "Our army has broken their primary lines of defense!|" +
+                    "We crushed opposing defenses and conquered all of the lands we targeted\\.)" +
+                    ".*?Your army has taken ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             if (isIncomingHit) return new GainVsDamage(isWar ? gain + gain / 10 : gain, gain);
@@ -86,13 +86,13 @@ public enum AttackType implements HasName {
     },
 
     INTRA_RAZE("Intra Raze", "IRA", GainsSpecification.DESTROYS_LAND, null,
-               //Incoming news regex
-               null,
-               //Outgoing news regex
-               DATE + "\\s*In local kingdom strife (?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " +
-               "and razed (?<value>" + INT + ") acres of land\\.",
-               //Result message regex
-               null) {
+            //Incoming news regex
+            null,
+            //Outgoing news regex
+            DATE + "\\s*In local kingdom strife (?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " +
+                    "and razed (?<value>" + INT + ") acres of land\\.",
+            //Result message regex
+            null) {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return new GainVsDamage(0, gain);
@@ -100,13 +100,13 @@ public enum AttackType implements HasName {
     },
 
     INTRA_TM("Intra Traditional March", "ITM", GainsSpecification.GAINS_LAND, null,
-             //Incoming news regex
-             null,
-             //Outgoing news regex
-             DATE + "\\s*In local kingdom strife, (?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " +
-             "and captured (?<value>" + INT + ") acres of land\\.",
-             //Result message regex
-             null) {
+            //Incoming news regex
+            null,
+            //Outgoing news regex
+            DATE + "\\s*In local kingdom strife, (?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " +
+                    "and captured (?<value>" + INT + ") acres of land\\.",
+            //Result message regex
+            null) {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return new GainVsDamage(gain / 20, gain);
@@ -114,12 +114,12 @@ public enum AttackType implements HasName {
     },
 
     LEARN("Learn", "LEA", GainsSpecification.NON_LAND, 0.09375,
-          //Incoming news regex
-          DATE + "\\s*(?<source>[^(]+" + KD + ") attacked and stole from (?<target>.+? " + KD + ")\\.",
-          //Outgoing news regex
-          DATE + "\\s*(?<source>[^(]+" + KD + ") invaded and stole from (?<target>[^(]+" + KD + ")\\.",
-          //Result message regex
-          "Your army stole ([0-9,]{1,})") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") attacked and stole from (?<target>.+? " + KD + ")\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") invaded and stole from (?<target>[^(]+" + KD + ")\\.",
+            //Result message regex
+            "Your army stole ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return GainVsDamage.ZERO;
@@ -127,12 +127,12 @@ public enum AttackType implements HasName {
     },
 
     MASSACRE("Massacre", "MASS", GainsSpecification.NON_LAND, null,
-             //Incoming news regex
-             DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and killed (?<value>" + INT + ") people\\.",
-             //Outgoing news regex
-             DATE + "\\s*(?<source>[^(]+" + KD + ") killed (?<value>" + INT + ") " + "people within (?<target>[^(]+" + KD + ")\\.",
-             //Result message regex
-             "Your army massacred ([0-9,]{1,})") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and killed (?<value>" + INT + ") people\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") killed (?<value>" + INT + ") " + "people within (?<target>[^(]+" + KD + ")\\.",
+            //Result message regex
+            "Your army massacred ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return new GainVsDamage(gain);
@@ -153,12 +153,12 @@ public enum AttackType implements HasName {
     },
 
     RAZE("Raze", "RA", GainsSpecification.DESTROYS_LAND_OOW, null,
-         //Incoming news regex
-         DATE + "\\s*(?<source>[^(]+" + KD + ") razed (?<value>" + INT + ") " + "acres of (?<target>[^(]+" + KD + ")\\.",
-         //Outgoing news regex
-         DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and razed (?<value>" + INT + ") acres of land\\.",
-         //Result message regex
-         "Your army burned and (?:razed|destroyed) ([0-9,]{1,})") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") razed (?<value>" + INT + ") " + "acres of (?<target>[^(]+" + KD + ")\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and razed (?<value>" + INT + ") acres of land\\.",
+            //Result message regex
+            "Your army burned and (?:razed|destroyed) ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             return new GainVsDamage(0, isWar ? 0 : gain);
@@ -167,12 +167,12 @@ public enum AttackType implements HasName {
 
     //NOTE: this should always be after Conquest, since they can't be distinguished from the gains part alone
     TM("Traditional March", "TM", GainsSpecification.GAINS_LAND, 0.12,
-       //Incoming news regex
-       DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and captured (?<value>" + INT + ") acres of land\\.",
-       //Outgoing news regex
-       DATE + "\\s*(?<source>[^(]+" + KD + ") captured (?<value>" + INT + ") " + "acres of land from (?<target>[^(]+" + KD + ")\\.",
-       //Result message regex
-       "Your army has taken ([0-9,]{1,})") {
+            //Incoming news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") invaded (?<target>[^(]+" + KD + ") " + "and captured (?<value>" + INT + ") acres of land\\.",
+            //Outgoing news regex
+            DATE + "\\s*(?<source>[^(]+" + KD + ") captured (?<value>" + INT + ") " + "acres of land from (?<target>[^(]+" + KD + ")\\.",
+            //Result message regex
+            "Your army has taken ([0-9,]{1,})") {
         @Override
         public GainVsDamage calcGain(int gain, boolean isWar, boolean isIncomingHit) {
             if (isIncomingHit) return new GainVsDamage(gain, gain);

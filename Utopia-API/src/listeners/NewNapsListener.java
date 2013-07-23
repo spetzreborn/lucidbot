@@ -69,7 +69,7 @@ class NewNapsListener implements EventListener {
                     Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getKingdomId());
                     List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.NAP_ADDED);
                     delivererProvider.get().deliverNotifications(notifications, "New nap notification",
-                                                                 "A new NAP with " + kingdom.getLocation() + " was just added!");
+                            "A new NAP with " + kingdom.getLocation() + " was just added!");
                 } catch (HibernateException e) {
                     log.error("", e);
                 }

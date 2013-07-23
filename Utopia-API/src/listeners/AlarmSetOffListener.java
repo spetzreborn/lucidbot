@@ -72,12 +72,12 @@ class AlarmSetOffListener implements EventListener {
                         try {
                             Alarm alarm = event.getAlarm();
                             Collection<Notification> notifications = notificationDAOProvider.get().getNotifications(alarm.getUser(),
-                                                                                                                    NotificationType.ALARM);
+                                    NotificationType.ALARM);
                             NotificationDeliverer notificationDeliverer = delivererProvider.get();
                             for (Notification notification : notifications) {
                                 notification.getMethod().deliver(notificationDeliverer, alarm.getUser(), "Alarm!",
-                                                                 alarm.getUser().getMainNick() + ": Your alarm just went off: " +
-                                                                 alarm.getMessage());
+                                        alarm.getUser().getMainNick() + ": Your alarm just went off: " +
+                                                alarm.getMessage());
                             }
                         } catch (HibernateException e) {
                             AlarmSetOffListener.log.error("", e);

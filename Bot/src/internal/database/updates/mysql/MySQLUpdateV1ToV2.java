@@ -41,6 +41,6 @@ public class MySQLUpdateV1ToV2 extends AbstractMySQLDatabaseUpdater {
     @Override
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
         return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE alias CHANGE transform transform TEXT NOT NULL"),
-                                  new SimpleUpdateAction("ALTER TABLE bot_user ADD gtalk VARCHAR(200)"));
+                new SimpleUpdateAction("ALTER TABLE bot_user ADD gtalk VARCHAR(200)"));
     }
 }

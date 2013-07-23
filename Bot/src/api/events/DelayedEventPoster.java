@@ -38,7 +38,9 @@ public class DelayedEventPoster {
     private final List<Object> waitList = new ArrayList<>();
 
     @Inject
-    public DelayedEventPoster(final EventBus eventBus) {this.eventBus = eventBus;}
+    public DelayedEventPoster(final EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
     /**
      * Enqueues an event to be posted when the currently running transaction is over

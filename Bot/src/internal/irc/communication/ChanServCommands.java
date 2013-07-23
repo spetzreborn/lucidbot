@@ -36,7 +36,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface ChanServCommands {
     class AccessCommand {
-        private AccessCommand() {}
+        private AccessCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);
@@ -51,7 +52,8 @@ public interface ChanServCommands {
     }
 
     class AKickCommand {
-        private AKickCommand() {}
+        private AKickCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);
@@ -66,7 +68,8 @@ public interface ChanServCommands {
     }
 
     class AopCommand {
-        private AopCommand() {}
+        private AopCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);
@@ -81,7 +84,8 @@ public interface ChanServCommands {
     }
 
     class ClearCommand {
-        private ClearCommand() {}
+        private ClearCommand() {
+        }
 
         public static String format(final String subCommand) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "CLEAR " + subCommand);
@@ -89,7 +93,8 @@ public interface ChanServCommands {
     }
 
     class DehalfopCommand {
-        private DehalfopCommand() {}
+        private DehalfopCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "DEHALFOP " + channel + ' ' + nick);
@@ -97,7 +102,8 @@ public interface ChanServCommands {
     }
 
     class DeopCommand {
-        private DeopCommand() {}
+        private DeopCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "DEOP " + channel + ' ' + nick);
@@ -105,7 +111,8 @@ public interface ChanServCommands {
     }
 
     class DeprotectCommand {
-        private DeprotectCommand() {}
+        private DeprotectCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "DEPROTECT " + channel + ' ' + nick);
@@ -113,7 +120,8 @@ public interface ChanServCommands {
     }
 
     class DevoiceCommand {
-        private DevoiceCommand() {}
+        private DevoiceCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "DEVOICE " + channel + ' ' + nick);
@@ -121,7 +129,8 @@ public interface ChanServCommands {
     }
 
     class HalfopCommand {
-        private HalfopCommand() {}
+        private HalfopCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "HALFOP " + channel + ' ' + nick);
@@ -129,7 +138,8 @@ public interface ChanServCommands {
     }
 
     class HopCommand {
-        private HopCommand() {}
+        private HopCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);
@@ -144,7 +154,8 @@ public interface ChanServCommands {
     }
 
     class IdentifyCommand {
-        private IdentifyCommand() {}
+        private IdentifyCommand() {
+        }
 
         public static String format(final String channel, final String password) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "IDENTIFY " + channel + ' ' + password);
@@ -152,7 +163,8 @@ public interface ChanServCommands {
     }
 
     class InviteCommand {
-        private InviteCommand() {}
+        private InviteCommand() {
+        }
 
         public static String format(final String channel, final String commandDef) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", commandDef.replace("$CHANNEL$", channel));
@@ -160,7 +172,8 @@ public interface ChanServCommands {
     }
 
     class KickCommand {
-        private KickCommand() {}
+        private KickCommand() {
+        }
 
         public static String format(final String channel, final String nick, final String reason) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "KICK " + channel + ' ' + nick + ' ' + reason);
@@ -168,7 +181,8 @@ public interface ChanServCommands {
     }
 
     class OpCommand {
-        private OpCommand() {}
+        private OpCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "OP " + channel + ' ' + nick);
@@ -176,7 +190,8 @@ public interface ChanServCommands {
     }
 
     class ProtectCommand {
-        private ProtectCommand() {}
+        private ProtectCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "PROTECT " + channel + ' ' + nick);
@@ -184,7 +199,8 @@ public interface ChanServCommands {
     }
 
     class SopCommand {
-        private SopCommand() {}
+        private SopCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);
@@ -199,7 +215,8 @@ public interface ChanServCommands {
     }
 
     class StatusCommand {
-        private StatusCommand() {}
+        private StatusCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "STATUS " + channel + ' ' + nick);
@@ -207,7 +224,8 @@ public interface ChanServCommands {
     }
 
     class TopicCommand {
-        private TopicCommand() {}
+        private TopicCommand() {
+        }
 
         public static String format(final String channel, final String topic) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "TOPIC " + channel + ' ' + topic);
@@ -215,7 +233,8 @@ public interface ChanServCommands {
     }
 
     class UnbanCommand {
-        private UnbanCommand() {}
+        private UnbanCommand() {
+        }
 
         public static String format(final String channel) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "UNBAN " + channel);
@@ -223,7 +242,8 @@ public interface ChanServCommands {
     }
 
     class VoiceCommand {
-        private VoiceCommand() {}
+        private VoiceCommand() {
+        }
 
         public static String format(final String channel, final String nick) {
             return IrcCommands.PrivMsgCommand.format("ChanServ", "VOICE " + channel + ' ' + nick);
@@ -231,7 +251,8 @@ public interface ChanServCommands {
     }
 
     class VopCommand {
-        private VopCommand() {}
+        private VopCommand() {
+        }
 
         public static String format(final String channel, final String subCommand, @Nullable final String... params) {
             StringBuilder message = new StringBuilder(100);

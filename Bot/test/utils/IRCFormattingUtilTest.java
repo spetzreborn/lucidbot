@@ -37,13 +37,13 @@ public class IRCFormattingUtilTest {
     public void testRemoval() {
         Assert.assertEquals(IRCFormattingUtil.removeColors(IRCFormatting.BLACK + IRCFormatting.BLUE), "");
         Assert.assertEquals(IRCFormattingUtil.removeColors("Begin " + IRCFormatting.BLACK + "Some text" + IRCFormatting.BLUE + " And more"),
-                            "Begin Some text And more");
+                "Begin Some text And more");
         Assert.assertEquals(IRCFormattingUtil.removeColors("No colors here"), "No colors here");
         Assert.assertEquals(IRCFormattingUtil.removeColors(IRCFormatting.BOLD), IRCFormatting.BOLD);
 
         Assert.assertEquals(IRCFormattingUtil.removeFormatting(IRCFormatting.BOLD), "");
         Assert.assertEquals(IRCFormattingUtil.removeFormatting(IRCFormatting.BLACK + IRCFormatting.BLUE),
-                            IRCFormatting.BLACK + IRCFormatting.BLUE);
+                IRCFormatting.BLACK + IRCFormatting.BLUE);
         Assert.assertEquals(
                 IRCFormattingUtil.removeFormatting("Begin " + IRCFormatting.BOLD + "Some text" + IRCFormatting.BOLD + " And more"),
                 "Begin Some text And more");

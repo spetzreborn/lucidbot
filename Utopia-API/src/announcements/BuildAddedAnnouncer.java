@@ -72,7 +72,7 @@ public class BuildAddedAnnouncer extends AbstractAnnouncer implements EventListe
 
                     if (build != null && isEnabled()) {
                         String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("build", build),
-                                                                "announcement-build-added");
+                                "announcement-build-added");
                         announce(ChannelType.PRIVATE, output);
                     }
                 } catch (HibernateException e) {

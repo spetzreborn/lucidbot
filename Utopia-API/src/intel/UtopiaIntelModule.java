@@ -34,7 +34,8 @@ import com.google.inject.multibindings.Multibinder;
 public class UtopiaIntelModule extends AbstractModule {
     @Override
     protected void configure() {
-        Multibinder<IntelParser<?>> parsers = Multibinder.newSetBinder(binder(), new TypeLiteral<IntelParser<?>>() {});
+        Multibinder<IntelParser<?>> parsers = Multibinder.newSetBinder(binder(), new TypeLiteral<IntelParser<?>>() {
+        });
         parsers.addBinding().to(AngelKingdomParser.class);
         parsers.addBinding().to(AngelSoMParser.class);
         parsers.addBinding().to(AngelSoSParser.class);

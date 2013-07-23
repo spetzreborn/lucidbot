@@ -75,7 +75,7 @@ public class TickManager implements TimerRunOutHandler, EventListener {
         lastTickEvent = utopiaTime.getTime();
 
         timerManager.schedule(new Timer(TickEvent.class, lastTickId++, this), nextTick.getTime() - System.currentTimeMillis(),
-                              TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS);
         return utopiaTime;
     }
 

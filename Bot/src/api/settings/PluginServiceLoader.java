@@ -34,24 +34,14 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -116,7 +106,7 @@ public final class PluginServiceLoader<S> {
                         Class<? extends S> provider = (Class<? extends S>) aClass;
                         out.add(provider);
                     } else log.warn("This class is registered as a service (" + service.getName() + ") but is not " +
-                                    "assignable from that service: " + aClass.getName());
+                            "assignable from that service: " + aClass.getName());
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

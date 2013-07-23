@@ -61,7 +61,7 @@ public class OpAddedAnnouncer extends AbstractAnnouncer implements EventListener
 
             if (durationOp != null) {
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("op", durationOp),
-                                                        "announcement-duration-op-committed");
+                        "announcement-duration-op-committed");
                 announce(ChannelType.PRIVATE, output);
             } else OpAddedAnnouncer.log.warn("Duration op was not found in database when it was going to be announced");
         } catch (HibernateException e) {

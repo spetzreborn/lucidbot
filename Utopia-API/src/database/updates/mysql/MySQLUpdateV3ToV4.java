@@ -41,8 +41,8 @@ public class MySQLUpdateV3ToV4 extends AbstractMySQLDatabaseUpdater {
     @Override
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
         return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE som ADD accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE sos ADD accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE sot ADD accuracy INT NOT NULL DEFAULT 100"),
-                                  new SimpleUpdateAction("ALTER TABLE survey ADD accuracy INT NOT NULL DEFAULT 100"));
+                new SimpleUpdateAction("ALTER TABLE sos ADD accuracy INT NOT NULL DEFAULT 100"),
+                new SimpleUpdateAction("ALTER TABLE sot ADD accuracy INT NOT NULL DEFAULT 100"),
+                new SimpleUpdateAction("ALTER TABLE survey ADD accuracy INT NOT NULL DEFAULT 100"));
     }
 }

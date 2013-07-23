@@ -33,12 +33,7 @@ import api.tools.text.StringUtil;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -101,7 +96,7 @@ public class CalculatorUtil {
             if (isOperator(token)) {
                 while (!stack.isEmpty() && isOperator(stack.peek())) {
                     if (isLeftAssociative(token) && comparePrecedence(token, stack.peek()) <= 0 ||
-                        !isLeftAssociative(token) && comparePrecedence(token, stack.peek()) < 0) {
+                            !isLeftAssociative(token) && comparePrecedence(token, stack.peek()) < 0) {
                         out.add(stack.pop());
                         continue;
                     }

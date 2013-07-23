@@ -75,9 +75,9 @@ class NewAidRequestListener implements EventListener {
                 try {
                     List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.AID_ADDED);
                     delivererProvider.get().deliverNotifications(notifications, "New aid request notification",
-                                                                 "An " + importance + " aid request for " + details +
-                                                                 " was just added for " +
-                                                                 province);
+                            "An " + importance + " aid request for " + details +
+                                    " was just added for " +
+                                    province);
                 } catch (HibernateException e) {
                     NewAidRequestListener.log.error("", e);
                 }

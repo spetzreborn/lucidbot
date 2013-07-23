@@ -30,4 +30,5 @@ package api.events.bot;
 /**
  * An event sent when the bot's starting up
  */
-public class StartupEvent {}
+public class StartupEvent {
+}

@@ -31,7 +31,8 @@ import api.settings.PropertiesCollection;
 
 import javax.inject.Inject;
 
-import static tools.UtopiaPropertiesConfig.*;
+import static tools.UtopiaPropertiesConfig.AGE_START;
+import static tools.UtopiaPropertiesConfig.TICK_LENGTH;
 
 /**
  * A factory for creating UtopiaTime objects

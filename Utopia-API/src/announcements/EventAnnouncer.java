@@ -95,7 +95,7 @@ public class EventAnnouncer extends AbstractAnnouncer implements EventListener {
                 }
 
                 delivererProvider.get().deliverNotifications(notifications, "Event time!",
-                                                             "An event was scheduled for this tick: " + expiringEvent.getDescription());
+                        "An event was scheduled for this tick: " + expiringEvent.getDescription());
             }
         } catch (HibernateException e) {
             EventAnnouncer.log.error("", e);

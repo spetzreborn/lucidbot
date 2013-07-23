@@ -29,11 +29,7 @@ package internal.templates;
 
 import api.irc.IRCFormatting;
 import freemarker.core.Environment;
-import freemarker.template.TemplateDirectiveBody;
-import freemarker.template.TemplateDirectiveModel;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateScalarModel;
+import freemarker.template.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +38,8 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import static api.settings.PropertiesConfig.IRC_MAX_LENGTH;
-import static api.tools.text.StringUtil.*;
+import static api.tools.text.StringUtil.limitedTrim;
+import static api.tools.text.StringUtil.splitOnEndOfLine;
 
 final class CompactListDirective implements TemplateDirectiveModel {
     @Inject
@@ -51,8 +48,8 @@ final class CompactListDirective implements TemplateDirectiveModel {
 
     @Override
     public void execute(final Environment env, final Map params, final TemplateModel[] loopVars, final TemplateDirectiveBody body) throws
-                                                                                                                                   TemplateException,
-                                                                                                                                   IOException {
+            TemplateException,
+            IOException {
         if (body == null) throw new TemplateException("No body", env);
 
         String intro = "";

@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class AidParser implements EventListener {
     private static final Pattern AID = Pattern.compile("We have sent (?<aid>.+?) to (?<target>[^(]+" +
-                                                       UtopiaValidationType.KDLOC.getPatternString() + ')');
+            UtopiaValidationType.KDLOC.getPatternString() + ')');
     private static final Pattern INDIVIDUAL_PACKAGES = Pattern
             .compile("(?<amount>" + ValidationType.INT.getPattern() + ") (?<resource>" + AidType.getAidMessageGroup() + ')');
 

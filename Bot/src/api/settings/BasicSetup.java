@@ -27,11 +27,7 @@
 
 package api.settings;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Marks that a module is part of the basic setup, meaning other modules depends on this module, but it has no dependencies on it's own
@@ -39,4 +35,5 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface BasicSetup {}
+public @interface BasicSetup {
+}

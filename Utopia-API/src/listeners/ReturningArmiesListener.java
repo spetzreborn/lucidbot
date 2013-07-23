@@ -78,8 +78,8 @@ class ReturningArmiesListener implements EventListener {
                                         .getNotifications(provinceOwner, NotificationType.ARMY_HOME);
                                 for (Notification notification : notifications) {
                                     notification.getMethod().deliver(notificationDeliverer, provinceOwner, "Army home",
-                                                                     "Army #" + event.getArmy().getArmyNumber() +
-                                                                     " just returned!");
+                                            "Army #" + event.getArmy().getArmyNumber() +
+                                                    " just returned!");
                                 }
                             }
                         } catch (HibernateException e) {

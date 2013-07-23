@@ -54,7 +54,7 @@ public class ReflectionUtil {
     public static <E> boolean setMethodOrFieldValue(final Object obj, final String valueName, final Class<E> valueType, final E value) {
         try {
             boolean set = setMethodValue(obj, valueName.startsWith("set") ? valueName : "set" + capitalizeFirstLetters(valueName, false),
-                                         valueType, value);
+                    valueType, value);
             return set || setFieldValue(obj, valueName, value);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new IllegalArgumentException("Could not set value for that object-valueName-value combination", e);
@@ -71,8 +71,8 @@ public class ReflectionUtil {
      * @param <E>       .
      */
     public static <E> boolean setMethodValue(final Object obj, final String valueName, final Class<E> valueType, final E value) throws
-                                                                                                                                InvocationTargetException,
-                                                                                                                                IllegalAccessException {
+            InvocationTargetException,
+            IllegalAccessException {
         try {
             Method method = obj.getClass().getDeclaredMethod(valueName, valueType);
             method.setAccessible(true);

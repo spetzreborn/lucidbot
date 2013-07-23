@@ -63,7 +63,7 @@ public class NapAddedAnnouncer extends AbstractAnnouncer implements EventListene
                 String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom), "announcement-nap-added");
                 announce(ChannelType.PRIVATE, output);
             } else NapAddedAnnouncer.log.warn("Kingdom with id: " + event.getKingdomId() +
-                                              " was not in the database, so the NAP could not be announced");
+                    " was not in the database, so the NAP could not be announced");
         } catch (HibernateException e) {
             NapAddedAnnouncer.log.error("", e);
         }

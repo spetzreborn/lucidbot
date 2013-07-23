@@ -43,9 +43,9 @@ public abstract class AbstractNumberBasedFilter<E extends Number & Comparable<E>
     public boolean passesFilter(final E value) {
         //If it's a range (both lower and upper bound available), check with possible equals
         if (lowerBound != null && upperBound != null) return value != null && value.compareTo(upperBound) <= 0 &&
-                                                             value.compareTo(lowerBound) >= 0;
+                value.compareTo(lowerBound) >= 0;
         //Not a range, so don't use equals
         return value != null && (lowerBound == null || value.compareTo(lowerBound) > 0) &&
-               (upperBound == null || value.compareTo(upperBound) < 0);
+                (upperBound == null || value.compareTo(upperBound) < 0);
     }
 }

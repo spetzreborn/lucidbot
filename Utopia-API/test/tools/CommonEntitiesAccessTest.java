@@ -30,13 +30,7 @@ package tools;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Provider;
 import database.CommonEntitiesAccess;
-import database.daos.BuildingDAO;
-import database.daos.HonorTitleDAO;
-import database.daos.OpDAO;
-import database.daos.PersonalityDAO;
-import database.daos.RaceDAO;
-import database.daos.ScienceTypeDAO;
-import database.daos.SpellDAO;
+import database.daos.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

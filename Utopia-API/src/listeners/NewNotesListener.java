@@ -81,8 +81,8 @@ class NewNotesListener implements EventListener {
                             for (Notification notification : notificationDAOProvider.get().getNotifications(NotificationType.NOTE_ADDED)) {
                                 if (bindingsManager.matchesBindings(note.getBindings(), notification.getUser())) {
                                     notification.getMethod().deliver(notificationDeliverer, notification.getUser(), "New note notification",
-                                                                     "The following note was just added by " + note.getAddedBy() + ": " +
-                                                                     note.getMessage());
+                                            "The following note was just added by " + note.getAddedBy() + ": " +
+                                                    note.getMessage());
                                 }
                             }
                         } catch (Exception e) {

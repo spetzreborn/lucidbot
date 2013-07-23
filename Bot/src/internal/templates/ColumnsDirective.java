@@ -30,15 +30,7 @@ package internal.templates;
 import api.irc.IRCFormatting;
 import api.tools.text.StringUtil;
 import freemarker.core.Environment;
-import freemarker.template.TemplateBooleanModel;
-import freemarker.template.TemplateDirectiveBody;
-import freemarker.template.TemplateDirectiveModel;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import freemarker.template.TemplateNumberModel;
-import freemarker.template.TemplateScalarModel;
-import freemarker.template.TemplateSequenceModel;
+import freemarker.template.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -50,8 +42,8 @@ final class ColumnsDirective implements TemplateDirectiveModel {
 
     @Override
     public void execute(final Environment env, final Map params, final TemplateModel[] loopVars, final TemplateDirectiveBody body) throws
-                                                                                                                                   TemplateException,
-                                                                                                                                   IOException {
+            TemplateException,
+            IOException {
         if (body == null) throw new TemplateException("No body", env);
 
         String separator = " I ";

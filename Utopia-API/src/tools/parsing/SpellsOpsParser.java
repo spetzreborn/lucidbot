@@ -100,11 +100,11 @@ public class SpellsOpsParser implements EventListener {
             if (matcher.find()) {
                 SpellType type = entry.getValue();
                 Province target = type.getSpellCharacter()
-                                      .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
-                                                 matcher);
+                        .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
+                                matcher);
                 if (target != null) {
                     eventBus.post(new SpellPastedEvent(target.getId(), type.getId(), NumberUtil.parseInt(matcher.group("result")),
-                                                       event.getContext()));
+                            event.getContext()));
                 }
                 return;
             }
@@ -114,11 +114,11 @@ public class SpellsOpsParser implements EventListener {
             if (matcher.find()) {
                 OpType type = entry.getValue();
                 Province target = type.getOpCharacter()
-                                      .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
-                                                 matcher);
+                        .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
+                                matcher);
                 if (target != null) {
                     eventBus.post(new OpPastedEvent(target.getId(), type.getId(), NumberUtil.parseInt(matcher.group("result")),
-                                                    event.getContext()));
+                            event.getContext()));
                 }
                 return;
             }

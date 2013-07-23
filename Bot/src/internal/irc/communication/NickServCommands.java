@@ -37,7 +37,8 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public interface NickServCommands {
     class GhostCommand {
-        private GhostCommand() {}
+        private GhostCommand() {
+        }
 
         public static String format(final String nick, final String password) {
             return IrcCommands.PrivMsgCommand.format("NickServ", "GHOST " + nick + ' ' + password);
@@ -45,7 +46,8 @@ public interface NickServCommands {
     }
 
     class IdentifyCommand {
-        private IdentifyCommand() {}
+        private IdentifyCommand() {
+        }
 
         public static String format(final String password) {
             return IrcCommands.PrivMsgCommand.format("NickServ", "IDENTIFY " + password);
@@ -53,7 +55,8 @@ public interface NickServCommands {
     }
 
     class InfoCommand {
-        private InfoCommand() {}
+        private InfoCommand() {
+        }
 
         public static String format(final String nick) {
             return IrcCommands.PrivMsgCommand.format("NickServ", "INFO " + nick);
@@ -61,7 +64,8 @@ public interface NickServCommands {
     }
 
     class StatusCommand {
-        private StatusCommand() {}
+        private StatusCommand() {
+        }
 
         public static String format(final String nick) {
             return IrcCommands.PrivMsgCommand.format("NickServ", "STATUS " + nick);
@@ -69,7 +73,8 @@ public interface NickServCommands {
     }
 
     class BulkStatusCommand {
-        private BulkStatusCommand() {}
+        private BulkStatusCommand() {
+        }
 
         public static List<String> format(final List<String> nicks, int maxUserPerLine, int maxLineLength) {
             List<String> out = new ArrayList<>();
