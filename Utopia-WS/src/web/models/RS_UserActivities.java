@@ -66,7 +66,6 @@ public class RS_UserActivities implements HasNumericId {
     /**
      * The user whose activites this is. For display purposes only, need not be specified in requests.
      */
-    @XmlJavaTypeAdapter(ISODateTimeAdapter.class)
     @XmlElement(name = "User")
     private RS_User user;
 

@@ -27,6 +27,7 @@
 
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="Utopia-UI" default="build">
     <property name="src.dir" location="../Utopia-UI/src"/>
+    <property name="doc.dir" location="../Utopia-UI/docs"/>
     <property name="build.dir" location="out/build"/>
     <property name="classes.dir" location="${build.dir}/Utopia-UI/classes"/>
     <property name="dist.dir" location="${build.dir}/dist"/>
@@ -76,6 +77,12 @@
             <include name="*.jar"/>
         </fileset>
     </path>
+
+    <target name="docs">
+        <delete dir="${doc.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+    </target>
 
     <target name="compile" depends="retrieve">
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath" debug="true"/>

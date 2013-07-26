@@ -37,6 +37,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import spi.events.EventListener;
 import spi.web.ServerContextHandler;
+import web.documentation.DocumentationResource;
 import web.resources.*;
 import web.tools.*;
 
@@ -66,6 +67,8 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         bind(ExceptionHandler.class).in(Singleton.class);
 
         bind(WebContextInjectable.class).in(Singleton.class);
+
+        bind(DocumentationResource.class);
 
         //Resources
         bind(AidResource.class);

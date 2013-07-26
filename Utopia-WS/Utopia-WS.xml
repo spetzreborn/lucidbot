@@ -27,6 +27,7 @@
 
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="Utopia-WS" default="build">
     <property name="src.dir" location="../Utopia-WS/src"/>
+    <property name="doc.dir" location="../Utopia-WS/docs"/>
     <property name="build.dir" location="out/build"/>
     <property name="classes.dir" location="${build.dir}/Utopia-WS/classes"/>
     <property name="dist.dir" location="${build.dir}/dist"/>
@@ -81,13 +82,28 @@
         <fileset dir="${runtime-lib.dir}">
             <include name="*.jar"/>
         </fileset>
+        <fileset dir="${doc.dir}"/>
     </path>
+
+    <target name="docs">
+        <delete dir="${doc.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+
+        <delete dir="tempdocs"/>
+        <mkdir dir="tempdocs"/>
+        <javadoc sourcepath="${src.dir}" destdir="tempdocs" private="true" packagenames="web.models"/>
+        <copy todir="${doc.dir}/web/models">
+            <fileset dir="tempdocs/web/models"/>
+        </copy>
+        <delete dir="tempdocs"/>
+    </target>
 
     <target name="compile" depends="retrieve, copy">
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath" debug="true"/>
     </target>
 
-    <target name="build" depends="compile">
+    <target name="build" depends="compile, docs">
         <copy todir="${lib.dir}" flatten="true">
             <fileset dir="${runtime-lib.dir}">
                 <include name="*.jar"/>
@@ -103,6 +119,7 @@
         </pathconvert>
         <jar destfile="${jar.path}" basedir="${classes.dir}" flattenattributes="true">
             <zipfileset dir="../Utopia-WS/META-INF" prefix="META-INF"/>
+            <zipfileset dir="../Utopia-WS/docs" prefix="docs"/>
             <manifest>
                 <attribute name="Class-Path" value="${manifest.classpath}"/>
             </manifest>

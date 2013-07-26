@@ -27,6 +27,7 @@
 
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="Bot" default="build">
     <property name="src.dir" location="src"/>
+    <property name="doc.dir" location="docs"/>
     <property name="build.dir" location="out/build"/>
     <property name="classes.dir" location="${build.dir}/Bot/classes"/>
     <property name="dist.dir" location="${build.dir}/dist"/>
@@ -94,7 +95,14 @@
         </fileset>
     </path>
 
+    <target name="docs">
+        <delete dir="${doc.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+    </target>
+
     <target name="compile" depends="retrieve, copy">
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" access="protected"/>
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath" debug="true"/>
     </target>
 

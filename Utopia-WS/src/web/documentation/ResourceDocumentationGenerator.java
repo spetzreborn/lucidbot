@@ -20,7 +20,7 @@ import static web.documentation.ParameterDocumentation.ParameterDocumentationBui
 @Log4j
 public class ResourceDocumentationGenerator {
 
-    public static void main(String[] args) throws IOException {
+    public static String generateResourceDocumentation() throws IOException {
         List<Class<?>> resourceClasses = new ArrayList<>();
         ImmutableSet<ClassPath.ClassInfo> classInfos = ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses("web.resources");
         for (ClassPath.ClassInfo classInfo : classInfos) {
@@ -30,7 +30,7 @@ public class ResourceDocumentationGenerator {
         }
 
         DocumentationContainer documentationForResources = createDocumentationForResources(resourceClasses);
-        System.out.println(documentationForResources.toHtml());
+        return documentationForResources.toHtml();
     }
 
     private static DocumentationContainer createDocumentationForResources(final List<Class<?>> resourceClasses) {
@@ -112,9 +112,6 @@ public class ResourceDocumentationGenerator {
             }
             if (builder.isComplete()) {
                 parameterDocumentations.add(builder.build());
-            } else {
-                System.err.println("Method '" + method.getName() + "' in class '" + method.getDeclaringClass().getSimpleName() +
-                        "' has incomplete documentation");
             }
             builder.clear();
         }

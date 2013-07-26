@@ -33,8 +33,7 @@ public class DocumentationContainer {
     public String toHtml() {
         Html html = new Html();
         Head head = new Head();
-        Title title = new Title();
-        title.appendText("LucidBot WebService reference");
+        Title title = new Title().appendText("LucidBot WebService reference");
         head.appendChild(title);
         Style style = new Style("text/css");
         style.appendText("h2 {margin: 1em 0 0.5em 0;font-weight: 600;font-family: 'Titillium Web', sans-serif;position: relative;text-shadow: 0 -1px 1px rgba(0,0,0,0.4);font-size: 22px;line-height: 40px;color: #355681;text-transform: uppercase;border-bottom: 1px solid rgba(53,86,129, 0.3);} .datagrid table { border-collapse: collapse; text-align: left; width: 100%; } .datagrid {font: normal 12px/150% Arial, Helvetica, sans-serif; background: #fff; overflow: hidden; border: 1px solid #006699; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }.datagrid table td, .datagrid table th { padding: 3px 10px; }.datagrid table thead th {background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #006699), color-stop(1, #00557F) );background:-moz-linear-gradient( center top, #006699 5%, #00557F 100% );filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#006699', endColorstr='#00557F');background-color:#006699; color:#ffffff; font-size: 15px; font-weight: bold; border-left: 1px solid #0070A8; } .datagrid table thead th:first-child { border: none; }.datagrid table tbody td { color: #00496B; border-left: 1px solid #E1EEF4;font-size: 12px;font-weight: normal; }.datagrid table tbody .alt td { background: #E1EEF4; color: #00496B; }.datagrid table tbody td:first-child { border-left: none; }.datagrid table tbody tr:last-child td { border-bottom: none; }.datagrid table tfoot td div { border-top: 1px solid #006699;background: #E1EEF4;} .datagrid table tfoot td { padding: 0; font-size: 12px } .datagrid table tfoot td div{ padding: 2px; }.datagrid table tfoot td ul { margin: 0; padding:0; list-style: none; text-align: right; }.datagrid table tfoot  li { display: inline; }.datagrid table tfoot li a { text-decoration: none; display: inline-block;  padding: 2px 8px; margin: 1px;color: #FFFFFF;border: 1px solid #006699;-webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #006699), color-stop(1, #00557F) );background:-moz-linear-gradient( center top, #006699 5%, #00557F 100% );filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#006699', endColorstr='#00557F');background-color:#006699; }.datagrid table tfoot ul.active, .datagrid table tfoot ul a:hover { text-decoration: none;border-color: #006699; color: #FFFFFF; background: none; background-color:#00557F;}");
@@ -43,33 +42,29 @@ public class DocumentationContainer {
 
         Body body = new Body();
 
+        H1 h1 = new H1().appendText("LucidBot Web Service Documentation");
+        body.appendChild(h1);
+
+        P wadlParagraph = new P();
+        wadlParagraph.appendText("WADL file describing the service is available ").appendChild(new A("application.wadl").appendText("here"));
+        body.appendChild(wadlParagraph);
+
         for (Map.Entry<Class<?>, Collection<MethodDocumentation>> entry : resourceDocumentations.asMap().entrySet()) {
-            H2 h2 = new H2();
-            h2.appendText(entry.getKey().getSimpleName());
+            H2 h2 = new H2().appendText(entry.getKey().getSimpleName().replaceAll("^(.+?)Resource$", "$1"));
 
-            Div div = new Div();
-            div.setCSSClass("datagrid");
+            Div div = new Div().setCSSClass("datagrid");
 
-            Table docTable = new Table();
-            docTable.setWidth("100%");
+            Table docTable = new Table().setWidth("100%");
 
             Thead headerRow = new Thead();
 
-            Th pathHeader = new Th();
-            pathHeader.appendText("Relative path");
-            pathHeader.setWidth("17%");
+            Th pathHeader = new Th().appendText("Relative path").setWidth("17%");
 
-            Th methodHeader = new Th();
-            methodHeader.appendText("HTTP method");
-            methodHeader.setWidth("9%");
+            Th methodHeader = new Th().appendText("HTTP method").setWidth("9%");
 
-            Th descriptionHeader = new Th();
-            descriptionHeader.appendText("Description");
-            descriptionHeader.setWidth("38%");
+            Th descriptionHeader = new Th().appendText("Description").setWidth("38%");
 
-            Th paramsHeader = new Th();
-            paramsHeader.appendText("Parameters/In-Data");
-            paramsHeader.setWidth("36%");
+            Th paramsHeader = new Th().appendText("Parameters/In-Data").setWidth("36%");
 
             headerRow.appendChild(pathHeader);
             headerRow.appendChild(methodHeader);
@@ -82,21 +77,25 @@ public class DocumentationContainer {
                 Tr row = new Tr();
                 if (counter % 2 == 1) row.setCSSClass("alt");
 
-                Td path = new Td();
-                path.appendText(methodDocumentation.getRelativePath());
+                Td path = new Td().appendText(methodDocumentation.getRelativePath());
 
-                Td method = new Td();
-                method.appendText(methodDocumentation.getHttpMethod());
+                Td method = new Td().appendText(methodDocumentation.getHttpMethod());
 
-                Td description = new Td();
-                description.appendText(methodDocumentation.getDescription());
+                Td description = new Td().appendText(methodDocumentation.getDescription());
 
                 Td params = new Td();
                 Ul paramList = new Ul();
                 for (ParameterDocumentation doc : methodDocumentation.getParameterDocumentations()) {
-                    Li item = new Li();
-                    item.appendText('[' + doc.getParameterType().prettyName() + "] " + doc.getParameterName() + " (" + doc.getParameterClass().getSimpleName() + ") - " +
-                            doc.getDescription()); //TODO do this better than just a String
+                    Class<?> parameterClass = doc.getParameterClass();
+                    Li item;//TODO do this better than just a String
+                    if (parameterClass.getSimpleName().startsWith("RS_")) {
+                        A modelLink = new A("docs/" + parameterClass.getName().replace(".", "/") + ".html").appendText(parameterClass.getSimpleName());
+                        item = new Li().appendText('[' + doc.getParameterType().prettyName() + "] " + doc.getParameterName() + " (" + modelLink.write() + ") - " +
+                                doc.getDescription());
+                    } else {
+                        item = new Li().appendText('[' + doc.getParameterType().prettyName() + "] " + doc.getParameterName() + " (" + parameterClass.getSimpleName() + ") - " +
+                                doc.getDescription());
+                    }
                     paramList.appendChild(item);
                 }
                 params.appendChild(paramList);

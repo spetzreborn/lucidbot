@@ -32,8 +32,8 @@
         <ant antfile="Bot.xml"/>
         <ant antfile="../Utopia-API/Utopia-API.xml"/>
         <ant antfile="../Utopia-Commands/Utopia-Commands.xml"/>
-        <ant antfile="../Utopia-WS/Utopia-WS.xml"/>
         <ant antfile="../Utopia-UI/Utopia-UI.xml"/>
+        <ant antfile="../Utopia-WS/Utopia-WS.xml"/>
     </target>
 
 </project>
