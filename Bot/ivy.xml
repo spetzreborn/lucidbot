@@ -95,7 +95,7 @@
         </dependency>
 
         <!-- Database stuff -->
-        <dependency org="org.hibernate" name="hibernate-c3p0" rev="4.2.3.Final">
+        <dependency org="org.hibernate" name="hibernate-c3p0" rev="4.2.3.Final" conf="compile->default;runtime->default">
             <artifact name="hibernate-c3p0" type="jar"/>
         </dependency>
         <dependency org="com.h2database" name="h2" rev="1.3.172" conf="compile->default;runtime->default">
