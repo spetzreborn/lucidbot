@@ -102,7 +102,6 @@
     </target>
 
     <target name="compile" depends="retrieve, copy">
-        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" access="protected"/>
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath" debug="true"/>
     </target>
 

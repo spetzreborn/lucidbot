@@ -45,7 +45,7 @@ public class OrderCategoryResource {
     @Transactional
     public RS_OrderCategory addCategory(@Documentation(value = "The new category to add", itemName = "newCategory")
                                         @Valid final RS_OrderCategory newCategory,
-                                        final WebContext webContext) {
+                                        @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         OrderCategory existing = orderCategoryDAO.getOrderCategory(newCategory.getName());
