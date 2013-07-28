@@ -1,0 +1,15 @@
+Build: LucidBot 3.0 RC1
+
+What's new:
+* The project is now moving from google code to Bitbucket (https://bitbucket.org/fredrik_yttergren/lucidbot). No updates will be done on the google code site anymore, and the documentation will be updated, extended and added to the wiki at Bitbucket instead (work in progress)
+* With the move to bitbucket, there will also be a changed in how the bot is distributed. On bitbucket, the downloads section will contain the latest release, but nothing else. Everything else will be on google drive (https://googledrive.com/host/0B8EGJXanSAboeWFRU1pRanJuZGc/)
+* Updated some important libraries (database and web server related) to new major versions, so be on the lookout for errors in connection with those things
+* The web service API is now final in it's initial release. See the documentation at http://yourhost/api/ when the bot's up and running. You use the forum agent credentials to access it for each user. I really need feedback on this stuff, and want to stress that the current service is in no way written in stone
+* The bot has been modularized, which is mostly an internal thing. What affects the users is that UtopiaPlugin.jar in the plugins folder has now been replaced by a bunch of more specialized jar files
+
+How to update:
+1. Remove the lib folder completely and replace with the new one
+2. Remove the plugin folder completely and replace with the new one
+3. Remove the "Core.WebServiceAPI.Enabled" property from utopia.properties
+4. Add ws.properties from the zip-file to the root folder next to the other properties files
+5. Replace LucidBot.jar with the new one from the zip-file
