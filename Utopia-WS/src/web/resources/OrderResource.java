@@ -96,7 +96,7 @@ public class OrderResource {
         return RS_Order.fromOrder(order);
     }
 
-    @Documentation("Returns all the order, or optionally just those specifically targetted at the specified user (including untargetted one as well)")
+    @Documentation("Returns all the orders, or optionally just those specifically targetted at the specified user (including untargetted one as well)")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
