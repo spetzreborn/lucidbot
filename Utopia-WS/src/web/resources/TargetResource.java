@@ -12,6 +12,7 @@ import database.models.Bindings;
 import database.models.Province;
 import database.models.Target;
 import tools.BindingsManager;
+import web.documentation.Documentation;
 import web.models.RS_Target;
 import web.models.RS_TargetHitter;
 import web.tools.BindingsParser;
@@ -59,18 +60,14 @@ public class TargetResource {
         this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds a target. Any hitters specified are added in the order they're received (i.e. the position element
-     * on the objects are ignored and later updated to fit the order of the incoming list).
-     *
-     * @param newTarget the target to add
-     * @return the added target
-     */
+    @Documentation("Adds a target and returns the saved object. Any hitters specified are added in the order they're received (i.e. the position element " +
+            "on the objects are ignored and later updated to fit the order of the incoming list). Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_Target addTarget(@Valid final RS_Target newTarget,
+    public RS_Target addTarget(@Documentation(value = "The target to add", itemName = "newTarget")
+                               @Valid final RS_Target newTarget,
                                @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
@@ -97,10 +94,7 @@ public class TargetResource {
         return RS_Target.fromTarget(target, true);
     }
 
-    /**
-     * @param id the id of the target
-     * @return the target with the specified id
-     */
+    @Documentation("Returns the target with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -113,16 +107,13 @@ public class TargetResource {
         return RS_Target.fromTarget(target, true);
     }
 
-    /**
-     * Returns targets for the specified user, or all available targets
-     *
-     * @param userId the id of the user you want to get the targets for
-     * @return a list of targets
-     */
+    @Documentation("Returns all targets, or optionally just the one for the specified user")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_Target>> getTargets(@QueryParam("userId") final Long userId) {
+    public JResponse<List<RS_Target>> getTargets(@Documentation("The user to get targets for")
+                                                 @QueryParam("userId")
+                                                 final Long userId) {
         List<RS_Target> targets = new ArrayList<>();
         if (userId == null) {
             for (Target target : targetDAO.getAllTargets()) {
@@ -142,18 +133,20 @@ public class TargetResource {
     }
 
     /**
-     * Updates a target (currently on the details)
+     * Updates a target (currently on the details and target type)
      *
      * @param id            the id of the target to update
      * @param updatedTarget the updates
      * @return the updated target
      */
+    @Documentation("Updates a target (currently on the details and target type) and returns the updated object. Admin only request")
     @Path("{id : \\d+}")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_Target updateTarget(@PathParam("id") final long id,
+                                  @Documentation(value = "The updated target", itemName = "updatedTarget")
                                   final RS_Target updatedTarget,
                                   @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -168,11 +161,7 @@ public class TargetResource {
         return RS_Target.fromTarget(target, true);
     }
 
-    /**
-     * Deletes a target
-     *
-     * @param id the id of the target
-     */
+    @Documentation("Deletes the specified target. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional
@@ -186,19 +175,14 @@ public class TargetResource {
         targetDAO.delete(target);
     }
 
-    /**
-     * Adds a hitter to a target
-     *
-     * @param id     the id of the target to update
-     * @param hitter the hitter to add
-     * @return the updated target
-     */
+    @Documentation("Adds a hitter to a target, provided that user isn't a hitter already, and returns the updated target object. Admin only request")
     @Path("{id : \\d+}/hitters")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_Target addHitter(@PathParam("id") final long id,
+                               @Documentation(value = "The hitter to add", itemName = "hitter")
                                @Valid final RS_TargetHitter hitter,
                                @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -218,13 +202,7 @@ public class TargetResource {
         return RS_Target.fromTarget(target, true);
     }
 
-    /**
-     * Moves a hitter to another position in the hit list
-     *
-     * @param id     the id of the target to update
-     * @param hitter the hitter
-     * @return the updated target
-     */
+    @Documentation("Moves an existing hitter to another position in the hit list of a target and returns the updated target object. Admin only request")
     @Path("{id : \\d+}/hitters")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -251,13 +229,7 @@ public class TargetResource {
         return RS_Target.fromTarget(target, true);
     }
 
-    /**
-     * Deletes a hitter
-     *
-     * @param id     the id of the target
-     * @param hitter the hitter to remove
-     * @return the updated target
-     */
+    @Documentation("Removes the specified hitter from the specified target and returns the updated target object. Admin only request")
     @Path("{id : \\d+}/hitters")
     @DELETE
     @Transactional

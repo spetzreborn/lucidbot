@@ -30,7 +30,9 @@ package web.models;
 import api.common.HasNumericId;
 import com.sun.jersey.server.linking.Ref;
 import database.models.Order;
+import database.models.OrderCategory;
 import org.hibernate.validator.constraints.NotEmpty;
+import tools.validation.ExistsInDB;
 import tools.validation.ValidBindings;
 import web.tools.ISODateTimeAdapter;
 import web.validation.Add;
@@ -97,6 +99,7 @@ public class RS_Order implements HasNumericId {
      * This value is updatable, so it will always be overwritten when you do update calls. I.e. it always has to be specified, regardless of it's an
      * update or add request.
      */
+    @ExistsInDB(entity = OrderCategory.class, optional = true, message = "No such order category", groups = {Add.class, Update.class})
     @XmlElement(name = "OrderCategory")
     private RS_OrderCategory category;
 

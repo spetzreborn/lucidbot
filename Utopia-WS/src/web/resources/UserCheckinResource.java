@@ -10,6 +10,7 @@ import database.daos.ProvinceDAO;
 import database.daos.UserCheckinDAO;
 import database.models.Province;
 import database.models.UserCheckIn;
+import web.documentation.Documentation;
 import web.models.RS_UserCheckin;
 import web.tools.WebContext;
 
@@ -42,17 +43,13 @@ public class UserCheckinResource {
         this.botUserDAOProvider = botUserDAOProvider;
     }
 
-    /**
-     * Adds/updates a user checkin
-     *
-     * @param newCheckin the checkin to add
-     * @return the added checkin
-     */
+    @Documentation("Adds or updates checkin and returns the saved object")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_UserCheckin addCheckin(@Valid final RS_UserCheckin newCheckin,
+    public RS_UserCheckin addCheckin(@Documentation(value = "The checkin info to set", itemName = "newCheckin")
+                                     @Valid final RS_UserCheckin newCheckin,
                                      @Context final WebContext webContext) {
         BotUser user;
         Province userProvince;
@@ -76,10 +73,7 @@ public class UserCheckinResource {
         return RS_UserCheckin.fromUserCheckin(checkinForUser);
     }
 
-    /**
-     * @param id the id of the checkin
-     * @return the checkin with the specified id
-     */
+    @Documentation("Returns the checkin info with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -92,16 +86,13 @@ public class UserCheckinResource {
         return RS_UserCheckin.fromUserCheckin(checkin);
     }
 
-    /**
-     * Returns all existing checkins, or just the ones for the specified users
-     *
-     * @param userIds the users to get the checkins for
-     * @return a list of checkins
-     */
+    @Documentation("Returns all checkins, or optionally just the ones for the specified users")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_UserCheckin>> getCheckins(@QueryParam("userIds") final List<Long> userIds) {
+    public JResponse<List<RS_UserCheckin>> getCheckins(@Documentation("The ids of the users to get checkin info for")
+                                                       @QueryParam("userIds")
+                                                       final List<Long> userIds) {
         List<RS_UserCheckin> checkins = new ArrayList<>();
         if (isEmpty(userIds)) {
             for (UserCheckIn checkIn : userCheckinDAO.getAllCheckins()) {
@@ -120,11 +111,7 @@ public class UserCheckinResource {
         return JResponse.ok(checkins).build();
     }
 
-    /**
-     * Deletes a checkin
-     *
-     * @param id the id of the checkin
-     */
+    @Documentation("Deletes the specified checkin info")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

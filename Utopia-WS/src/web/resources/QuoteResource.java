@@ -5,6 +5,7 @@ import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.QuoteDAO;
 import database.models.Quote;
+import web.documentation.Documentation;
 import web.models.RS_Quote;
 import web.tools.WebContext;
 
@@ -29,27 +30,20 @@ public class QuoteResource {
         this.quoteDAO = quoteDAO;
     }
 
-    /**
-     * Adds a quote
-     *
-     * @param newQuote the quote to add
-     * @return the added quote
-     */
+    @Documentation("Adds a new quote and returns the saved object")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_Quote addQuote(@Valid final RS_Quote newQuote,
+    public RS_Quote addQuote(@Documentation(value = "The new quote to add", itemName = "newQuote")
+                             @Valid final RS_Quote newQuote,
                              @Context final WebContext webContext) {
         Quote quote = new Quote(webContext.getName(), newQuote.getQuote());
         quote = quoteDAO.save(quote);
         return RS_Quote.fromQuote(quote);
     }
 
-    /**
-     * @param id the id of the quote
-     * @return the quote with the specified id
-     */
+    @Documentation("Returns the quote with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -62,11 +56,7 @@ public class QuoteResource {
         return RS_Quote.fromQuote(quote);
     }
 
-    /**
-     * Returns all existing quotes
-     *
-     * @return a list of quotes
-     */
+    @Documentation("Returns all quotes")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
@@ -80,11 +70,7 @@ public class QuoteResource {
         return JResponse.ok(orders).build();
     }
 
-    /**
-     * Deletes a quote
-     *
-     * @param id the id of the quote
-     */
+    @Documentation("Deletes the specified quote, provided the user is allowed to (either admin or the user that added the quote in the first place)")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

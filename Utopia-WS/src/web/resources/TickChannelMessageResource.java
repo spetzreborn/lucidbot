@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.TickChannelMessageDAO;
 import database.models.TickChannelMessage;
+import web.documentation.Documentation;
 import web.models.RS_TickChannelMessage;
 import web.tools.WebContext;
 import web.validation.Update;
@@ -42,17 +43,13 @@ public class TickChannelMessageResource {
         this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds a tick channel message
-     *
-     * @param newMessage the message to add
-     * @return the added message
-     */
+    @Documentation("Adds/sets a new tick message for a channel and returns the saved object. Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_TickChannelMessage addMessage(@Valid final RS_TickChannelMessage newMessage,
+    public RS_TickChannelMessage addMessage(@Documentation(value = "The message to set", itemName = "newMessage")
+                                            @Valid final RS_TickChannelMessage newMessage,
                                             @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
@@ -66,10 +63,7 @@ public class TickChannelMessageResource {
         return RS_TickChannelMessage.fromTickChannelMessage(channelMessage);
     }
 
-    /**
-     * @param id the id of the message
-     * @return the message with the specified id
-     */
+    @Documentation("Returns the tick message with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -82,16 +76,13 @@ public class TickChannelMessageResource {
         return RS_TickChannelMessage.fromTickChannelMessage(message);
     }
 
-    /**
-     * Returns all existing messages, or just the ones for the specified channel
-     *
-     * @param channelId the id of the channel to get the message for
-     * @return a list of messages
-     */
+    @Documentation("Returns all tick messages, or optionally just the one for the specified channel")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_TickChannelMessage>> getMessages(@QueryParam("channelId") final Long channelId) {
+    public JResponse<List<RS_TickChannelMessage>> getMessages(@Documentation("The id of the channel to get the message for")
+                                                              @QueryParam("channelId")
+                                                              final Long channelId) {
         List<RS_TickChannelMessage> messages = new ArrayList<>();
         if (channelId == null) {
             for (TickChannelMessage message : tickChannelMessageDAO.getAllTickChannelMessages()) {
@@ -107,19 +98,14 @@ public class TickChannelMessageResource {
         return JResponse.ok(messages).build();
     }
 
-    /**
-     * Updates a message
-     *
-     * @param id             the id of the message to update
-     * @param updatedMessage the updates
-     * @return the updated message
-     */
+    @Documentation("Updates the specified tick message and returns the updated object. Admin only request")
     @Path("{id : \\d+}")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_TickChannelMessage updateMessage(@PathParam("id") final long id,
+                                               @Documentation(value = "The updated message", itemName = "updatedMessage")
                                                final RS_TickChannelMessage updatedMessage,
                                                @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -133,11 +119,7 @@ public class TickChannelMessageResource {
         return RS_TickChannelMessage.fromTickChannelMessage(message);
     }
 
-    /**
-     * Deletes a message
-     *
-     * @param id the id of the message
-     */
+    @Documentation("Deletes the specified tick message. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

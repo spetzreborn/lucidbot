@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.PrivateMessageDAO;
 import database.models.PrivateMessage;
+import web.documentation.Documentation;
 import web.models.RS_PrivateMessage;
 import web.tools.WebContext;
 
@@ -33,17 +34,13 @@ public class PrivateMessageResource {
         this.userDAOProvider = userDAOProvider;
     }
 
-    /**
-     * Adds a private message
-     *
-     * @param newPM the pm to add
-     * @return the added pm
-     */
+    @Documentation("Adds (sends) the specified private message and returns the saved object")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_PrivateMessage addPM(@Valid final RS_PrivateMessage newPM,
+    public RS_PrivateMessage addPM(@Documentation(value = "The new pm", itemName = "newPM")
+                                   @Valid final RS_PrivateMessage newPM,
                                    @Context final WebContext webContext) {
         String sender = webContext.getName();
         BotUser recipient = userDAOProvider.get().getUser(newPM.getRecipient().getId());
@@ -53,10 +50,7 @@ public class PrivateMessageResource {
         return RS_PrivateMessage.fromPrivateMessage(privateMessage);
     }
 
-    /**
-     * @param id the id of the pm
-     * @return the pm with the specified id
-     */
+    @Documentation("Returns the pm with the specified id, provided the user is allowed to see it")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -73,11 +67,7 @@ public class PrivateMessageResource {
         return RS_PrivateMessage.fromPrivateMessage(pm);
     }
 
-    /**
-     * Returns all received pms for the current user
-     *
-     * @return a list of pms
-     */
+    @Documentation("Returns all the received message for the current user")
     @Path("received")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -94,11 +84,7 @@ public class PrivateMessageResource {
         return JResponse.ok(pms).build();
     }
 
-    /**
-     * Returns all sent pms for the current user
-     *
-     * @return a list of pms
-     */
+    @Documentation("Returns all the sent messages for the current user")
     @Path("sent")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -115,11 +101,7 @@ public class PrivateMessageResource {
         return JResponse.ok(pms).build();
     }
 
-    /**
-     * Deletes a pm
-     *
-     * @param id the id of the pm
-     */
+    @Documentation("Deletes the specified pm, provided the user has access to it (i.e. is the recipient)")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

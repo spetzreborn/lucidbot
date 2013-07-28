@@ -5,6 +5,7 @@ import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.RaceDAO;
 import database.models.Race;
+import web.documentation.Documentation;
 import web.models.RS_Race;
 
 import javax.inject.Inject;
@@ -25,10 +26,7 @@ public class RaceResource {
         this.raceDAO = raceDAO;
     }
 
-    /**
-     * @param id the id of the race
-     * @return the race with the specified id
-     */
+    @Documentation("Returns the race with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -41,11 +39,7 @@ public class RaceResource {
         return RS_Race.fromRace(race, true);
     }
 
-    /**
-     * Returns all races
-     *
-     * @return a list of races
-     */
+    @Documentation("Returns all races")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional

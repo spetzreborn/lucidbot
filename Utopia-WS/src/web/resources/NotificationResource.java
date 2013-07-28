@@ -23,7 +23,6 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static web.tools.SecurityHandler.ADMIN_ROLE;
 
 @ValidationEnabled
@@ -52,7 +51,7 @@ public class NotificationResource {
 
         BotUser user;
         if (newNotification.getUser() != null) {
-            checkArgument(webContext.isInRole(ADMIN_ROLE), "Only admins may add notifications for other users");
+            if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
             user = userDAOProvider.get().getUser(newNotification.getUser().getId());
         } else user = webContext.getBotUser();
 

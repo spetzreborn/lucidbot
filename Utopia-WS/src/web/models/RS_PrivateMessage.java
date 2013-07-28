@@ -34,6 +34,8 @@ import database.models.PrivateMessage;
 import org.hibernate.validator.constraints.NotEmpty;
 import tools.validation.ExistsInDB;
 import web.tools.ISODateTimeAdapter;
+import web.validation.Add;
+import web.validation.Update;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -76,8 +78,8 @@ public class RS_PrivateMessage implements HasNumericId {
     /**
      * The recipient of the message
      */
-    @NotNull(message = "The recipient user must not be null")
-    @ExistsInDB(entity = BotUser.class, message = "No such user")
+    @NotNull(message = "The recipient user must not be null", groups = {Add.class})
+    @ExistsInDB(entity = BotUser.class, message = "No such user", groups = {Add.class})
     @XmlElement(required = true, name = "Recipient")
     private RS_User recipient;
 
@@ -104,7 +106,7 @@ public class RS_PrivateMessage implements HasNumericId {
     /**
      * The content of the message.
      */
-    @NotEmpty(message = "The message must not be null or empty")
+    @NotEmpty(message = "The message must not be null or empty", groups = {Add.class, Update.class})
     @XmlElement(required = true, name = "Message")
     private String message;
 

@@ -28,16 +28,18 @@
 package web.models;
 
 import api.common.HasNumericId;
+import api.database.models.BotUser;
 import com.sun.jersey.server.linking.Ref;
-import database.models.BonusApplicability;
-import database.models.BonusType;
-import database.models.Kingdom;
-import database.models.Province;
+import database.models.*;
 import org.hibernate.validator.constraints.NotEmpty;
 import tools.validation.ExistsInDB;
 import web.tools.ISODateTimeAdapter;
+import web.validation.Add;
+import web.validation.Update;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -56,59 +58,72 @@ public class RS_Province implements HasNumericId {
     @XmlElement(name = "Link")
     private URI link;
 
-    @NotEmpty(message = "The name must not be null or empty")
+    @NotEmpty(message = "The name must not be null or empty", groups = {Add.class})
     @XmlElement(name = "Name")
     private String name;
 
-    @NotNull(message = "The kingdom must not be null")
-    @ExistsInDB(entity = Kingdom.class, message = "No such kingdom")
+    @NotNull(message = "The kingdom must not be null", groups = {Add.class, Update.class})
+    @ExistsInDB(entity = Kingdom.class, message = "No such kingdom", groups = {Add.class, Update.class})
     @XmlElement(name = "Kingdom")
     private RS_Kingdom kingdom;
 
+    @ExistsInDB(entity = Race.class, optional = true, message = "No such race", groups = {Add.class, Update.class})
     @XmlElement(name = "Race")
     private RS_Race race;
 
+    @ExistsInDB(entity = Personality.class, optional = true, message = "No such personality", groups = {Add.class, Update.class})
     @XmlElement(name = "Personality")
     private RS_Personality personality;
 
+    @ExistsInDB(entity = HonorTitle.class, optional = true, message = "No such honor title", groups = {Add.class, Update.class})
     @XmlElement(name = "HonorTitle")
     private RS_HonorTitle honorTitle;
 
+    @Min(value = 0, message = "Land cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Land")
     private Integer land;
 
+    @Min(value = 0, message = "Networth cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Networth")
     private Integer networth;
 
+    @Min(value = 0, message = "Wizards cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Wizards")
     private Integer wizards;
 
     @XmlElement(name = "WizardryModifiers")
     private Double wizardryModifiers;
 
+    @Past(message = "Last wizard update must be in the past", groups = {Add.class, Update.class})
     @XmlJavaTypeAdapter(ISODateTimeAdapter.class)
     @XmlElement(name = "WizardsLastUpdated")
     private Date wizardsLastUpdated;
 
+    @Min(value = 0, message = "Mana cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Mana")
     private Integer mana;
 
+    @Min(value = 0, message = "Thieves cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Thieves")
     private Integer thieves;
 
     @XmlElement(name = "ThieveryModifiers")
     private Double thieveryModifiers;
 
+    @Past(message = "Last thief update must be in the past", groups = {Add.class, Update.class})
     @XmlJavaTypeAdapter(ISODateTimeAdapter.class)
     @XmlElement(name = "ThievesLastUpdated")
     private Date thievesLastUpdated;
 
+    @Min(value = 0, message = "Stealth cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "Stealth")
     private Integer stealth;
 
+    @Min(value = 0, message = "Amount of generals cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "GeneralsTotal")
     private Integer generalsTotal;
 
+    @Min(value = 0, message = "Generals home cannot be negative", groups = {Add.class, Update.class})
     @XmlElement(name = "GeneralsHome")
     private Integer generalsHome;
 
@@ -118,6 +133,7 @@ public class RS_Province implements HasNumericId {
     @XmlElement(name = "EstimatedCurrentDefense")
     private Integer estimatedCurrentDefense;
 
+    @ExistsInDB(entity = BotUser.class, optional = true, message = "No such user", groups = {Add.class, Update.class})
     @XmlElement(name = "Owner")
     private RS_User owner;
 

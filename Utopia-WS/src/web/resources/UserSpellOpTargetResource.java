@@ -10,6 +10,7 @@ import database.daos.ProvinceDAO;
 import database.daos.UserSpellOpTargetDAO;
 import database.models.Province;
 import database.models.UserSpellOpTarget;
+import web.documentation.Documentation;
 import web.models.RS_UserSpellOpTarget;
 import web.tools.WebContext;
 
@@ -40,17 +41,13 @@ public class UserSpellOpTargetResource {
         this.botUserDAOProvider = botUserDAOProvider;
     }
 
-    /**
-     * Adds/updates a spell/op target
-     *
-     * @param newTarget the target to add
-     * @return the added target
-     */
+    @Documentation("Sets the provided target as the target for the current user and returns the saved target object")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_UserSpellOpTarget addTarget(@Valid final RS_UserSpellOpTarget newTarget,
+    public RS_UserSpellOpTarget addTarget(@Documentation(value = "The target to set", itemName = "newTarget")
+                                          @Valid final RS_UserSpellOpTarget newTarget,
                                           @Context final WebContext webContext) {
         Province province = provinceDAOProvider.get().getProvince(newTarget.getTarget().getId());
 
@@ -64,10 +61,7 @@ public class UserSpellOpTargetResource {
         return RS_UserSpellOpTarget.fromUserSpellOpTarget(spellOpTarget);
     }
 
-    /**
-     * @param id the id of the target
-     * @return the target with the specified id
-     */
+    @Documentation("Returns the target with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -80,16 +74,13 @@ public class UserSpellOpTargetResource {
         return RS_UserSpellOpTarget.fromUserSpellOpTarget(target);
     }
 
-    /**
-     * Returns all existing targets, or just the one for the specified user
-     *
-     * @param userId the user to get the target for
-     * @return a list of targets
-     */
+    @Documentation("Returns all targets, or optionally just the one for the specified user")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_UserSpellOpTarget>> getTargets(@QueryParam("userId") final Long userId) {
+    public JResponse<List<RS_UserSpellOpTarget>> getTargets(@Documentation("The id of the user to get the target for")
+                                                            @QueryParam("userId")
+                                                            final Long userId) {
         List<RS_UserSpellOpTarget> targets = new ArrayList<>();
         if (userId == null) {
             for (UserSpellOpTarget target : userSpellOpTargetDAO.getAllUserSpellOpTargets()) {
@@ -105,11 +96,7 @@ public class UserSpellOpTargetResource {
         return JResponse.ok(targets).build();
     }
 
-    /**
-     * Deletes a target
-     *
-     * @param id the id of the target
-     */
+    @Documentation("Deletes the specified target")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

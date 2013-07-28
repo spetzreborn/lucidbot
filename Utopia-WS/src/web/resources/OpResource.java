@@ -58,29 +58,22 @@ import java.util.List;
 import static api.tools.collections.CollectionUtil.isEmpty;
 import static api.tools.collections.CollectionUtil.isNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Collections2.transform;
 
 @ValidationEnabled
 @Path("ops")
 public class OpResource {
     private static final OpType[] EMPTY_OP_TYPE_ARRAY = new OpType[0];
-    private static final Function<Collection<DurationOp>, Collection<RS_DurationOp>> DURATION_OP_CONVERTER = new Function<Collection<DurationOp>, Collection<RS_DurationOp>>() {
+    private static final Function<DurationOp, RS_DurationOp> DURATION_OP_CONVERTER = new Function<DurationOp, RS_DurationOp>() {
         @Override
-        public Collection<RS_DurationOp> apply(@Nullable final Collection<DurationOp> input) {
-            Collection<RS_DurationOp> out = new ArrayList<>(input.size());
-            for (DurationOp durationOp : input) {
-                out.add(RS_DurationOp.fromDurationOp(durationOp));
-            }
-            return out;
+        public RS_DurationOp apply(@Nullable final DurationOp input) {
+            return RS_DurationOp.fromDurationOp(input);
         }
     };
-    private static final Function<Collection<InstantOp>, Collection<RS_InstantOp>> INSTANT_OP_CONVERTER = new Function<Collection<InstantOp>, Collection<RS_InstantOp>>() {
+    private static final Function<InstantOp, RS_InstantOp> INSTANT_OP_CONVERTER = new Function<InstantOp, RS_InstantOp>() {
         @Override
-        public Collection<RS_InstantOp> apply(@Nullable final Collection<InstantOp> input) {
-            Collection<RS_InstantOp> out = new ArrayList<>(input.size());
-            for (InstantOp instantOp : input) {
-                out.add(RS_InstantOp.fromInstantOp(instantOp));
-            }
-            return out;
+        public RS_InstantOp apply(@Nullable final InstantOp input) {
+            return RS_InstantOp.fromInstantOp(input);
         }
     };
 
@@ -165,14 +158,14 @@ public class OpResource {
             for (Long kingdomId : kingdomIds) {
                 Kingdom kingdom = kingdomDAO.getKingdom(kingdomId);
                 if (kingdom != null)
-                    ops.addAll(DURATION_OP_CONVERTER.apply(opDAO.getDurationOps(kingdom, opTypes)));
+                    ops.addAll(transform(opDAO.getDurationOps(kingdom, opTypes), DURATION_OP_CONVERTER));
             }
         } else if (isNotEmpty(provinceIds)) {
             ProvinceDAO provinceDAO = provinceDAOProvider.get();
 
             Long[] provinceIdsArray = provinceIds.toArray(new Long[provinceIds.size()]);
             for (Province province : provinceDAO.getProvinces(provinceIdsArray)) {
-                if (opTypes.length == 0) ops.addAll(DURATION_OP_CONVERTER.apply(province.getDurationOps()));
+                if (opTypes.length == 0) ops.addAll(transform(province.getDurationOps(), DURATION_OP_CONVERTER));
                 else {
                     for (OpType opType : opTypes) {
                         ops.add(RS_DurationOp.fromDurationOp(province.getDurationOp(opType)));
@@ -182,9 +175,9 @@ public class OpResource {
         } else if (userId != null) {
             BotUser user = botUserDAOProvider.get().getUser(userId);
             checkNotNull(user, "No such user");
-            ops.addAll(DURATION_OP_CONVERTER.apply(opDAO.getDurationOpsCommittedByUser(user, opTypes)));
+            ops.addAll(transform(opDAO.getDurationOpsCommittedByUser(user, opTypes), DURATION_OP_CONVERTER));
         } else {
-            ops.addAll(DURATION_OP_CONVERTER.apply(opDAO.getDurationOps(opTypes)));
+            ops.addAll(transform(opDAO.getDurationOps(opTypes), DURATION_OP_CONVERTER));
         }
 
         return JResponse.ok(ops).build();
@@ -200,7 +193,7 @@ public class OpResource {
         opDAO.delete(op);
     }
 
-    @Documentation("Bulk deletes duration ops of the specified op types, optionally for just a specific kingdom")
+    @Documentation("Bulk deletes duration ops of the specified op types (all if unspecified), optionally for just a specific kingdom")
     @Path("duration")
     @DELETE
     @Transactional
@@ -256,8 +249,7 @@ public class OpResource {
             "The kingdomIds, provinceIds and userId parameters are mutually exclusive, meaning if one is used, the others " +
             "will be ignored. The opTypeIds can be used in combination with all the others however. " +
             "<p/> " +
-            "NOTE: The userId param leads the listing of whatever duration ops are currently active that were committed by the specified user, " +
-            "not the ops he/she currently has on his/her province.")
+            "NOTE: The userId param leads the listing of whatever instant ops were committed by the specified user, not on.")
     @Path("instant")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -285,10 +277,10 @@ public class OpResource {
                 if (kingdom == null) continue;
 
                 for (Province province : kingdom.getProvinces()) {
-                    if (opTypes.length == 0) ops.addAll(INSTANT_OP_CONVERTER.apply(province.getInstantOps()));
+                    if (opTypes.length == 0) ops.addAll(transform(province.getInstantOps(), INSTANT_OP_CONVERTER));
                     else {
                         for (OpType opType : opTypes) {
-                            ops.addAll(INSTANT_OP_CONVERTER.apply(province.getInstantOps(opType)));
+                            ops.addAll(transform(province.getInstantOps(opType), INSTANT_OP_CONVERTER));
                         }
                     }
                 }
@@ -298,19 +290,19 @@ public class OpResource {
 
             Long[] provinceIdsArray = provinceIds.toArray(new Long[provinceIds.size()]);
             for (Province province : provinceDAO.getProvinces(provinceIdsArray)) {
-                if (opTypes.length == 0) ops.addAll(INSTANT_OP_CONVERTER.apply(province.getInstantOps()));
+                if (opTypes.length == 0) ops.addAll(transform(province.getInstantOps(), INSTANT_OP_CONVERTER));
                 else {
                     for (OpType opType : opTypes) {
-                        ops.addAll(INSTANT_OP_CONVERTER.apply(province.getInstantOps(opType)));
+                        ops.addAll(transform(province.getInstantOps(opType), INSTANT_OP_CONVERTER));
                     }
                 }
             }
         } else if (userId != null) {
             BotUser user = botUserDAOProvider.get().getUser(userId);
             checkNotNull(user, "No such user");
-            ops.addAll(INSTANT_OP_CONVERTER.apply(opDAO.getInstantOpsCommittedByUser(user, opTypes)));
+            ops.addAll(transform(opDAO.getInstantOpsCommittedByUser(user, opTypes), INSTANT_OP_CONVERTER));
         } else {
-            ops.addAll(INSTANT_OP_CONVERTER.apply(opDAO.getInstantOps(opTypes)));
+            ops.addAll(transform(opDAO.getInstantOps(opTypes), INSTANT_OP_CONVERTER));
         }
 
         return JResponse.ok(ops).build();
@@ -326,7 +318,7 @@ public class OpResource {
         opDAO.delete(op);
     }
 
-    @Documentation("Bulk deletes instant ops of the specified op types, optionally for just a specific kingdom")
+    @Documentation("Bulk deletes instant ops of the specified op types (all if unspecified), optionally for just a specific kingdom")
     @Path("instant")
     @DELETE
     @Transactional

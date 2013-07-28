@@ -152,11 +152,12 @@ public class ForumSectionResource {
                                          @Documentation(value = "The updated section", itemName = "updatedSection")
                                          final RS_ForumSection updatedSection,
                                          @Context final WebContext webContext) {
-        validate(updatedSection).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         ForumSection section = sectionDAO.getForumSection(id);
         if (section == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
+        validate(updatedSection).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
 
         RS_ForumSection.toForumSection(section, updatedSection);
 
@@ -169,9 +170,10 @@ public class ForumSectionResource {
     @Transactional
     public void deleteSection(@PathParam("id") final long id,
                               @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         ForumSection section = sectionDAO.getForumSection(id);
         if (section == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         sectionDAO.delete(section);
     }

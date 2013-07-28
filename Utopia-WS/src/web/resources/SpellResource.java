@@ -40,6 +40,7 @@ import database.daos.SpellDAO;
 import database.models.*;
 import events.DurationSpellRegisteredEvent;
 import events.InstantSpellRegisteredEvent;
+import web.documentation.Documentation;
 import web.models.RS_DurationSpell;
 import web.models.RS_InstantSpell;
 import web.tools.AfterCommitEventPoster;
@@ -57,29 +58,22 @@ import java.util.List;
 import static api.tools.collections.CollectionUtil.isEmpty;
 import static api.tools.collections.CollectionUtil.isNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Collections2.transform;
 
 @ValidationEnabled
 @Path("spells")
 public class SpellResource {
     private static final SpellType[] EMPTY_SPELL_TYPE_ARRAY = new SpellType[0];
-    private static final Function<Collection<DurationSpell>, Collection<RS_DurationSpell>> DURATION_SPELL_CONVERTER = new Function<Collection<DurationSpell>, Collection<RS_DurationSpell>>() {
+    private static final Function<DurationSpell, RS_DurationSpell> DURATION_SPELL_CONVERTER = new Function<DurationSpell, RS_DurationSpell>() {
         @Override
-        public Collection<RS_DurationSpell> apply(@Nullable final Collection<DurationSpell> input) {
-            Collection<RS_DurationSpell> out = new ArrayList<>(input.size());
-            for (DurationSpell spell : input) {
-                out.add(RS_DurationSpell.fromDurationSpell(spell));
-            }
-            return out;
+        public RS_DurationSpell apply(@Nullable final DurationSpell input) {
+            return RS_DurationSpell.fromDurationSpell(input);
         }
     };
-    private static final Function<Collection<InstantSpell>, Collection<RS_InstantSpell>> INSTANT_SPELL_CONVERTER = new Function<Collection<InstantSpell>, Collection<RS_InstantSpell>>() {
+    private static final Function<InstantSpell, RS_InstantSpell> INSTANT_SPELL_CONVERTER = new Function<InstantSpell, RS_InstantSpell>() {
         @Override
-        public Collection<RS_InstantSpell> apply(@Nullable final Collection<InstantSpell> input) {
-            Collection<RS_InstantSpell> out = new ArrayList<>(input.size());
-            for (InstantSpell spell : input) {
-                out.add(RS_InstantSpell.fromInstantSpell(spell));
-            }
-            return out;
+        public RS_InstantSpell apply(@Nullable final InstantSpell input) {
+            return RS_InstantSpell.fromInstantSpell(input);
         }
     };
 
@@ -102,18 +96,14 @@ public class SpellResource {
         this.afterCommitEventPosterProvider = afterCommitEventPosterProvider;
     }
 
-    /**
-     * Adds a duration spell
-     *
-     * @param spell the spell to add
-     * @return the added spell
-     */
+    @Documentation("Adds a new duration spell, fires off a DurationSpellRegisteredEvent and returns the saved object")
     @Path("duration")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_DurationSpell addDurationSpell(@Valid final RS_DurationSpell spell) {
+    public RS_DurationSpell addDurationSpell(@Documentation(value = "The spell to add", itemName = "spell")
+                                             @Valid final RS_DurationSpell spell) {
         BotUser user = botUserDAOProvider.get().getUser(spell.getCaster().getId());
         Province province = provinceDAOProvider.get().getProvince(spell.getProvince().getId());
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
@@ -137,28 +127,29 @@ public class SpellResource {
         return new DurationSpell(user, province, op.getExpires(), spellType);
     }
 
-    /**
-     * Lists duration spell according to the specified criteria.
-     * The kingdomIds, provinceIds and userId parameters are mutually exclusive, meaning if one is used, the others
-     * will be ignored. The spellTypeIds can be used in combination with all the others however.
-     * <p/>
-     * NOTE: The userId param leads the listing of whatever duration spell are currently active that were committed by the specified user,
-     * not the spell he/she currently has on his/her province.
-     *
-     * @param kingdomIds   the id's of kingdoms to get spell for
-     * @param provinceIds  the id's of province to get spell for
-     * @param spellTypeIds the type of spells to get
-     * @param userId       the id of the user to get committed spells for
-     * @return a list of spells
-     */
+    @Documentation("Lists duration spells according to the specified criteria. " +
+            "The kingdomIds, provinceIds and userId parameters are mutually exclusive, meaning if one is used, the others " +
+            "will be ignored. The opTypeIds can be used in combination with all the others however. " +
+            "<p/> " +
+            "NOTE: The userId param leads the listing of whatever duration spells are currently active that were cast by the specified user, " +
+            "not the ops he/she currently has on his/her province.")
     @Path("duration")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_DurationSpell>> getDurationSpells(@QueryParam("kingdomIds") final List<Long> kingdomIds,
-                                                               @QueryParam("provinceIds") final List<Long> provinceIds,
-                                                               @QueryParam("spellTypeIds") final List<Long> spellTypeIds,
-                                                               @QueryParam("userId") final Long userId) {
+    public JResponse<List<RS_DurationSpell>> getDurationSpells(@Documentation("Id's for the kingdoms to get spells for. Cannot be combined with other params")
+                                                               @QueryParam("kingdomIds")
+                                                               final List<Long> kingdomIds,
+                                                               @Documentation("Id's for the provinces to get spells for. Cannot be combined with other params")
+                                                               @QueryParam("provinceIds")
+                                                               final List<Long> provinceIds,
+                                                               @Documentation("Id's for the spells types to limit the response to " +
+                                                                       "(applies in all situations, regardless of which other params were used)")
+                                                               @QueryParam("spellTypeIds")
+                                                               final List<Long> spellTypeIds,
+                                                               @Documentation("Id for the user to get spells for (cast by). Cannot be combined with other params")
+                                                               @QueryParam("userId")
+                                                               final Long userId) {
         List<RS_DurationSpell> spells = new ArrayList<>();
 
         SpellType[] spellTypes = idsToTypes(spellTypeIds);
@@ -167,13 +158,14 @@ public class SpellResource {
             for (Long kingdomId : kingdomIds) {
                 Kingdom kingdom = kingdomDAO.getKingdom(kingdomId);
                 if (kingdom != null)
-                    spells.addAll(DURATION_SPELL_CONVERTER.apply(spellDAO.getDurationSpells(kingdom, spellTypes)));
+                    spells.addAll(transform(spellDAO.getDurationSpells(kingdom, spellTypes), DURATION_SPELL_CONVERTER));
             }
         } else if (isNotEmpty(provinceIds)) {
             ProvinceDAO provinceDAO = provinceDAOProvider.get();
 
-            for (Province province : provinceDAO.getProvinces(provinceIds.toArray(new Long[provinceIds.size()]))) {
-                if (spellTypes.length == 0) spells.addAll(DURATION_SPELL_CONVERTER.apply(province.getDurationSpells()));
+            Long[] provinceIdArray = provinceIds.toArray(new Long[provinceIds.size()]);
+            for (Province province : provinceDAO.getProvinces(provinceIdArray)) {
+                if (spellTypes.length == 0) spells.addAll(transform(province.getDurationSpells(), DURATION_SPELL_CONVERTER));
                 else {
                     for (SpellType spellType : spellTypes) {
                         spells.add(RS_DurationSpell.fromDurationSpell(province.getDurationSpell(spellType)));
@@ -183,19 +175,15 @@ public class SpellResource {
         } else if (userId != null) {
             BotUser user = botUserDAOProvider.get().getUser(userId);
             checkNotNull(user, "No such user");
-            spells.addAll(DURATION_SPELL_CONVERTER.apply(spellDAO.getDurationSpellsCommittedByUser(user, spellTypes)));
+            spells.addAll(transform(spellDAO.getDurationSpellsCommittedByUser(user, spellTypes), DURATION_SPELL_CONVERTER));
         } else {
-            spells.addAll(DURATION_SPELL_CONVERTER.apply(spellDAO.getDurationSpells(spellTypes)));
+            spells.addAll(transform(spellDAO.getDurationSpells(spellTypes), DURATION_SPELL_CONVERTER));
         }
 
         return JResponse.ok(spells).build();
     }
 
-    /**
-     * Deletes a duration spell
-     *
-     * @param id the id of the spell
-     */
+    @Documentation("Deletes the specified duration spell")
     @Path("duration/{id : \\d+}")
     @DELETE
     @Transactional
@@ -205,17 +193,16 @@ public class SpellResource {
         spellDAO.delete(spell);
     }
 
-    /**
-     * Deletes duration spells in bulk
-     *
-     * @param kingdomId    the kingdom to delete spells for
-     * @param spellTypeIds the types of spells to delete
-     */
+    @Documentation("Bulk deletes duration spells of the specified spell types (all if unspecified), optionally for just a specific kingdom")
     @Path("duration")
     @DELETE
     @Transactional
-    public void deleteDurationSpells(@QueryParam("kingdomId") final Long kingdomId,
-                                     @QueryParam("spellTypeIds") final List<Long> spellTypeIds) {
+    public void deleteDurationSpells(@Documentation("The id of the kingdom to delete spell for")
+                                     @QueryParam("kingdomId")
+                                     final Long kingdomId,
+                                     @Documentation("The spell types to delete. If not specified, all types will be removed")
+                                     @QueryParam("spellTypeIds")
+                                     final List<Long> spellTypeIds) {
         SpellType[] spellTypes = idsToTypes(spellTypeIds);
         if (kingdomId != null) {
             Kingdom kingdom = kingdomDAOProvider.get().getKingdom(kingdomId);
@@ -226,18 +213,14 @@ public class SpellResource {
         }
     }
 
-    /**
-     * Adds an instant spell
-     *
-     * @param spell the spell to add
-     * @return the added spell
-     */
+    @Documentation("Adds the specified spell, fires off an InstantSpellRegisteredEvent and returns the saved object")
     @Path("instant")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_InstantSpell addInstantSpell(@Valid final RS_InstantSpell spell) {
+    public RS_InstantSpell addInstantSpell(@Documentation(value = "The spell to add", itemName = "spell")
+                                           @Valid final RS_InstantSpell spell) {
         BotUser user = botUserDAOProvider.get().getUser(spell.getCaster().getId());
         Province province = provinceDAOProvider.get().getProvince(spell.getProvince().getId());
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
@@ -262,28 +245,28 @@ public class SpellResource {
         return new InstantSpell(user, province, spell.getDamage(), spell.getAmount(), spellType);
     }
 
-    /**
-     * Lists instant spells according to the specified criteria.
-     * The kingdomIds, provinceIds and userId parameters are mutually exclusive, meaning if one is used, the others
-     * will be ignored. The spellTypeIds can be used in combination with all the others however.
-     * <p/>
-     * NOTE: The userId param leads the listing of whatever instant spells were committed by the specified user,
-     * not the spells he/she received on his/her province.
-     *
-     * @param kingdomIds   the id's of kingdoms to get spells for
-     * @param provinceIds  the id's of province to get spells for
-     * @param spellTypeIds the type of spells to get
-     * @param userId       the id of the user to get committed spells for
-     * @return a list of spells
-     */
+    @Documentation("Lists instant spells according to the specified criteria. " +
+            "The kingdomIds, provinceIds and userId parameters are mutually exclusive, meaning if one is used, the others " +
+            "will be ignored. The spellTypeIds can be used in combination with all the others however. " +
+            "<p/> " +
+            "NOTE: The userId param leads the listing of whatever instant spells were cast by the specified user, not on.")
     @Path("instant")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_InstantSpell>> getInstantSpells(@QueryParam("kingdomIds") final List<Long> kingdomIds,
-                                                             @QueryParam("provinceIds") final List<Long> provinceIds,
-                                                             @QueryParam("spellTypeIds") final List<Long> spellTypeIds,
-                                                             @QueryParam("userId") final Long userId) {
+    public JResponse<List<RS_InstantSpell>> getInstantSpells(@Documentation("Id's for the kingdoms to get spells for. Cannot be combined with other params")
+                                                             @QueryParam("kingdomIds")
+                                                             final List<Long> kingdomIds,
+                                                             @Documentation("Id's for the provinces to get spells for. Cannot be combined with other params")
+                                                             @QueryParam("provinceIds")
+                                                             final List<Long> provinceIds,
+                                                             @Documentation("Id's for the spell types to limit the response to " +
+                                                                     "(applies in all situations, regardless of which other params were used)")
+                                                             @QueryParam("spellTypeIds")
+                                                             final List<Long> spellTypeIds,
+                                                             @Documentation("Id for the user to get spells for (committed by). Cannot be combined with other params")
+                                                             @QueryParam("userId")
+                                                             final Long userId) {
         List<RS_InstantSpell> spells = new ArrayList<>();
 
         SpellType[] spellTypes = idsToTypes(spellTypeIds);
@@ -295,10 +278,10 @@ public class SpellResource {
 
                 for (Province province : kingdom.getProvinces()) {
                     if (spellTypes.length == 0)
-                        spells.addAll(INSTANT_SPELL_CONVERTER.apply(province.getInstantSpells()));
+                        spells.addAll(transform(province.getInstantSpells(), INSTANT_SPELL_CONVERTER));
                     else {
                         for (SpellType spellType : spellTypes) {
-                            spells.addAll(INSTANT_SPELL_CONVERTER.apply(province.getInstantSpells(spellType)));
+                            spells.addAll(transform(province.getInstantSpells(spellType), INSTANT_SPELL_CONVERTER));
                         }
                     }
                 }
@@ -307,29 +290,25 @@ public class SpellResource {
             ProvinceDAO provinceDAO = provinceDAOProvider.get();
 
             for (Province province : provinceDAO.getProvinces(provinceIds.toArray(new Long[provinceIds.size()]))) {
-                if (spellTypes.length == 0) spells.addAll(INSTANT_SPELL_CONVERTER.apply(province.getInstantSpells()));
+                if (spellTypes.length == 0) spells.addAll(transform(province.getInstantSpells(), INSTANT_SPELL_CONVERTER));
                 else {
                     for (SpellType spellType : spellTypes) {
-                        spells.addAll(INSTANT_SPELL_CONVERTER.apply(province.getInstantSpells(spellType)));
+                        spells.addAll(transform(province.getInstantSpells(spellType), INSTANT_SPELL_CONVERTER));
                     }
                 }
             }
         } else if (userId != null) {
             BotUser user = botUserDAOProvider.get().getUser(userId);
             checkNotNull(user, "No such user");
-            spells.addAll(INSTANT_SPELL_CONVERTER.apply(spellDAO.getInstantSpellsCastByUser(user, spellTypes)));
+            spells.addAll(transform(spellDAO.getInstantSpellsCastByUser(user, spellTypes), INSTANT_SPELL_CONVERTER));
         } else {
-            spells.addAll(INSTANT_SPELL_CONVERTER.apply(spellDAO.getInstantSpells(spellTypes)));
+            spells.addAll(transform(spellDAO.getInstantSpells(spellTypes), INSTANT_SPELL_CONVERTER));
         }
 
         return JResponse.ok(spells).build();
     }
 
-    /**
-     * Deletes an instant spell
-     *
-     * @param id the id of the spell
-     */
+    @Documentation("Deletes the specified instant spell")
     @Path("instant/{id : \\d+}")
     @DELETE
     @Transactional
@@ -339,16 +318,16 @@ public class SpellResource {
         spellDAO.delete(spell);
     }
 
-    /**
-     * Deletes instant spells in bulk
-     *
-     * @param kingdomId    the kingdom to delete spells for
-     * @param spellTypeIds the types of spells to delete
-     */
+    @Documentation("Bulk deletes instant spells of the specified spell types (all if unspecified), optionally for just a specific kingdom")
     @Path("instant")
     @DELETE
     @Transactional
-    public void deleteInstantSpells(@QueryParam("kingdomId") final Long kingdomId, @QueryParam("spellTypeIds") final List<Long> spellTypeIds) {
+    public void deleteInstantSpells(@Documentation("The id of the kingdom to delete spells for")
+                                    @QueryParam("kingdomId")
+                                    final Long kingdomId,
+                                    @Documentation("The spell types to delete. If not specified, all types will be removed")
+                                    @QueryParam("spellTypeIds")
+                                    final List<Long> spellTypeIds) {
         SpellType[] spellTypes = idsToTypes(spellTypeIds);
         if (kingdomId != null) {
             Kingdom kingdom = kingdomDAOProvider.get().getKingdom(kingdomId);

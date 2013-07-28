@@ -13,6 +13,7 @@ import database.models.Order;
 import database.models.OrderCategory;
 import events.OrderAddedEvent;
 import tools.BindingsManager;
+import web.documentation.Documentation;
 import web.models.RS_Order;
 import web.tools.AfterCommitEventPoster;
 import web.tools.BindingsParser;
@@ -61,23 +62,19 @@ public class OrderResource {
         this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds an order
-     *
-     * @param newOrder the order to add
-     * @return the added order
-     */
+    @Documentation("Adds an order, fires off an OrderAddedEvent and returns the saved object. Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_Order addOrder(@Valid final RS_Order newOrder,
+    public RS_Order addOrder(@Documentation(value = "The new order to add", itemName = "newOrder")
+                             @Valid final RS_Order newOrder,
                              @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         Bindings bindings = bindingsParserProvider.get().parse(newOrder.getBindings());
         OrderCategory category = null;
-        if (newOrder.getCategory() != null && newOrder.getCategory().getId() != null)
+        if (newOrder.getCategory() != null)
             category = orderCategoryDAOProvider.get().getOrderCategory(newOrder.getCategory().getId());
 
         Order order = new Order(bindings, category, newOrder.getOrder(), webContext.getName());
@@ -86,10 +83,7 @@ public class OrderResource {
         return RS_Order.fromOrder(order);
     }
 
-    /**
-     * @param id the id of the order
-     * @return the order with the specified id
-     */
+    @Documentation("Returns the order with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -102,16 +96,13 @@ public class OrderResource {
         return RS_Order.fromOrder(order);
     }
 
-    /**
-     * Returns all existing orders, or just the ones for the specified user
-     *
-     * @param userId the id of a user you want to get the orders for
-     * @return a list of orders
-     */
+    @Documentation("Returns all the order, or optionally just those specifically targetted at the specified user (including untargetted one as well)")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_Order>> getOrders(@QueryParam("userId") final Long userId) {
+    public JResponse<List<RS_Order>> getOrders(@Documentation("The id of the user to get orders for")
+                                               @QueryParam("userId")
+                                               final Long userId) {
         List<RS_Order> orders = new ArrayList<>();
         if (userId == null) {
             for (Order order : orderDAO.getAllOrders()) {
@@ -127,19 +118,14 @@ public class OrderResource {
         return JResponse.ok(orders).build();
     }
 
-    /**
-     * Updates an order
-     *
-     * @param id           the id of the order to update
-     * @param updatedOrder the updates
-     * @return the updated order
-     */
+    @Documentation("Updates the specified order and returns the updated object. Admin only request")
     @Path("{id : \\d+}")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_Order updateOrder(@PathParam("id") final long id,
+                                @Documentation(value = "The updated order", itemName = "updatedOrder")
                                 final RS_Order updatedOrder,
                                 @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -150,7 +136,7 @@ public class OrderResource {
         validate(updatedOrder).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
 
         OrderCategory category = null;
-        if (updatedOrder.getCategory() != null && updatedOrder.getCategory().getId() != null)
+        if (updatedOrder.getCategory() != null)
             category = orderCategoryDAOProvider.get().getOrderCategory(updatedOrder.getCategory().getId());
 
         order.setOrder(updatedOrder.getOrder());
@@ -158,11 +144,7 @@ public class OrderResource {
         return RS_Order.fromOrder(order);
     }
 
-    /**
-     * Deletes an order
-     *
-     * @param id the id of the order
-     */
+    @Documentation("Deletes the specified order. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

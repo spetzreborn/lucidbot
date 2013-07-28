@@ -93,6 +93,11 @@ public class ProvinceDAO extends AbstractDAO<Province> {
     }
 
     @Transactional
+    public List<Province> getAllProvinces() {
+        return find();
+    }
+
+    @Transactional
     public Province getProvince(final String name) {
         return get(Restrictions.ilike("name", name));
     }

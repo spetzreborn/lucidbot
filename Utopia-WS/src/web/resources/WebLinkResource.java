@@ -5,11 +5,15 @@ import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.WebLinkDAO;
 import database.models.WebLink;
+import web.documentation.Documentation;
 import web.models.RS_WebLink;
 import web.tools.WebContext;
+import web.validation.Update;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +21,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static api.tools.validation.ValidationUtil.validate;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static web.tools.SecurityHandler.ADMIN_ROLE;
 
@@ -24,23 +29,21 @@ import static web.tools.SecurityHandler.ADMIN_ROLE;
 @Path("weblinks")
 public class WebLinkResource {
     private final WebLinkDAO webLinkDAO;
+    private final Provider<Validator> validatorProvider;
 
     @Inject
-    public WebLinkResource(final WebLinkDAO webLinkDAO) {
+    public WebLinkResource(final WebLinkDAO webLinkDAO, final Provider<Validator> validatorProvider) {
         this.webLinkDAO = webLinkDAO;
+        this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds a web link
-     *
-     * @param newWebLink the link to add
-     * @return the added link
-     */
+    @Documentation("Adds a web link and returns the saved object. Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_WebLink addWebLink(@Valid final RS_WebLink newWebLink,
+    public RS_WebLink addWebLink(@Documentation(value = "The link to add", itemName = "newWebLink")
+                                 @Valid final RS_WebLink newWebLink,
                                  @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
@@ -49,26 +52,20 @@ public class WebLinkResource {
         return RS_WebLink.fromWebLink(webLink);
     }
 
-    /**
-     * @param id the id of the web link
-     * @return the link with the specified id
-     */
+    @Documentation("Returns the web link with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_WebLink getWebLink(@PathParam("id") final long id) {
         WebLink webLink = webLinkDAO.getWebLink(id);
+
         if (webLink == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
         return RS_WebLink.fromWebLink(webLink);
     }
 
-    /**
-     * Returns all existing web links
-     *
-     * @return a list of links
-     */
+    @Documentation("Returns all web links")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
@@ -82,39 +79,29 @@ public class WebLinkResource {
         return JResponse.ok(webLinks).build();
     }
 
-    /**
-     * Updates a web link
-     *
-     * @param id             the id of the link to update
-     * @param updatedWebLink the updates
-     * @return the updated link
-     */
+    @Documentation("Updates the specified web link and returns the updated object. Admin only request")
     @Path("{id : \\d+}")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_WebLink updateWebLink(@PathParam("id") final long id,
+                                    @Documentation(value = "The updated link", itemName = "updatedWebLink")
                                     final RS_WebLink updatedWebLink,
                                     @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
-        checkNotNull(updatedWebLink.getName(), "You must specify a name");
-        checkNotNull(updatedWebLink.getUrl(), "You must specify a url");
-
         WebLink webLink = webLinkDAO.getWebLink(id);
         checkNotNull("No such web link");
+
+        validate(updatedWebLink).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
 
         webLink.setName(updatedWebLink.getName());
         webLink.setLink(updatedWebLink.getUrl());
         return RS_WebLink.fromWebLink(webLink);
     }
 
-    /**
-     * Deletes a web link
-     *
-     * @param id the id of the link
-     */
+    @Documentation("Deletes the specified web link. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

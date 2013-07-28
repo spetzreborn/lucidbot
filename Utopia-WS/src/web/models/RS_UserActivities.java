@@ -194,8 +194,7 @@ public class RS_UserActivities implements HasNumericId {
         if (updatedActivities.lastNotesCheck != null) activities.setLastNotesCheck(updatedActivities.lastNotesCheck);
         if (updatedActivities.lastOrdersCheck != null) activities.setLastOrdersCheck(updatedActivities.lastOrdersCheck);
         if (updatedActivities.lastSeen != null) activities.setLastSeen(updatedActivities.lastSeen);
-        if (updatedActivities.lastTargetsCheck != null)
-            activities.setLastTargetsCheck(updatedActivities.lastTargetsCheck);
+        if (updatedActivities.lastTargetsCheck != null) activities.setLastTargetsCheck(updatedActivities.lastTargetsCheck);
         if (updatedActivities.lastWaveCheck != null) activities.setLastWaveCheck(updatedActivities.lastWaveCheck);
     }
 

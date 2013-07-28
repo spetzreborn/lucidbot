@@ -15,6 +15,7 @@ import database.models.Personality;
 import database.models.Province;
 import database.models.Race;
 import tools.validation.ExistsInDB;
+import web.documentation.Documentation;
 import web.models.RS_Province;
 import web.models.RS_User;
 import web.tools.WebContext;
@@ -28,7 +29,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-import static api.tools.collections.CollectionUtil.isEmpty;
+import static api.tools.collections.CollectionUtil.isNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static web.tools.SecurityHandler.ADMIN_ROLE;
 
@@ -54,30 +55,27 @@ public class ProvinceResource {
         this.botUserDAOProvider = botUserDAOProvider;
     }
 
-    /**
-     * Adds a province
-     *
-     * @param newProvince the province to add
-     * @return the added province
-     */
+    @Documentation("Adds a new province and returns the saved object. Currently only supports specifying basic data (name, kingdom, race, " +
+            "personality and owner. The rest will be ignored)")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_Province addProvince(@Valid final RS_Province newProvince) {
+    public RS_Province addProvince(@Documentation(value = "The province to add", itemName = "newProvince")
+                                   @Valid final RS_Province newProvince) {
         Province existing = provinceDAO.getProvince(newProvince.getName());
         if (existing != null) throw new IllegalArgumentException("A province with that name already exists");
 
         Kingdom kingdom = kingdomDAOProvider.get().getKingdom(newProvince.getKingdom().getId());
 
         Race race = null;
-        if (newProvince.getRace() != null && newProvince.getRace().getId() != null)
+        if (newProvince.getRace() != null)
             race = raceDAOProvider.get().getRace(newProvince.getRace().getId());
         Personality personality = null;
-        if (newProvince.getPersonality() != null && newProvince.getPersonality().getId() != null)
+        if (newProvince.getPersonality() != null)
             personality = personalityDAOProvider.get().getPersonality(newProvince.getPersonality().getId());
         BotUser owner = null;
-        if (newProvince.getOwner() != null && newProvince.getOwner().getId() != null)
+        if (newProvince.getOwner() != null)
             owner = botUserDAOProvider.get().getUser(newProvince.getOwner().getId());
 
         Province province = new Province(newProvince.getName(), kingdom, race, personality, owner);
@@ -85,10 +83,7 @@ public class ProvinceResource {
         return RS_Province.fromProvince(province, true);
     }
 
-    /**
-     * @param id the id of the province
-     * @return the province with the specified id
-     */
+    @Documentation("Returns the province with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -101,29 +96,25 @@ public class ProvinceResource {
         return RS_Province.fromProvince(province, true);
     }
 
-    /**
-     * Returns provinces for the specified users, or for the specified kd
-     *
-     * @param userIds   the ids of the users you want to get the provinces for
-     * @param kingdomId the id of the kingdom you want to get the provinces for
-     * @return a list of provinces
-     */
+    @Documentation("Returns all provinces, or optionally for either a kingdom or a group of users. If none of the filtering " +
+            "parameters are used and all provinces are to be returned, they will have minimum content to keep the data size down")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_Province>> getProvinces(@QueryParam("userIds") final List<Long> userIds,
-                                                     @QueryParam("kingdomId") final Long kingdomId) {
+    public JResponse<List<RS_Province>> getProvinces(@Documentation("The id's of the users to get provinces for")
+                                                     @QueryParam("userIds")
+                                                     final List<Long> userIds,
+                                                     @Documentation("The id of the kingdom to get provinces for")
+                                                     @QueryParam("kingdomId")
+                                                     final Long kingdomId) {
         List<RS_Province> provinces = new ArrayList<>();
-        if (isEmpty(userIds)) {
-            if (kingdomId != null) {
-                Kingdom kingdom = kingdomDAOProvider.get().getKingdom(kingdomId);
-                checkNotNull(kingdom, "No such kingdom");
-                for (Province province : kingdom.getProvinces()) {
-                    provinces.add(RS_Province.fromProvince(province, true));
-                }
-            } else
-                throw new IllegalArgumentException("You must specify either a kingdom or some users to get the provinces for");
-        } else {
+        if (kingdomId != null) {
+            Kingdom kingdom = kingdomDAOProvider.get().getKingdom(kingdomId);
+            checkNotNull(kingdom, "No such kingdom");
+            for (Province province : kingdom.getProvinces()) {
+                provinces.add(RS_Province.fromProvince(province, true));
+            }
+        } else if (isNotEmpty(userIds)) {
             BotUserDAO botUserDAO = botUserDAOProvider.get();
             for (Long userId : userIds) {
                 BotUser user = botUserDAO.getUser(userId);
@@ -131,31 +122,29 @@ public class ProvinceResource {
                 Province provinceForUser = provinceDAO.getProvinceForUser(user);
                 if (provinceForUser != null) provinces.add(RS_Province.fromProvince(provinceForUser, true));
             }
+        } else {
+            for (Province province : provinceDAO.getAllProvinces()) {
+                provinces.add(RS_Province.fromProvince(province, false));
+            }
         }
         return JResponse.ok(provinces).build();
     }
 
-    /**
-     * Sets the owner for a province
-     *
-     * @param id            the id of the province to update
-     * @param provinceOwner the owner
-     * @return the updated province
-     */
+    @Documentation("Sets the owner for the specified province and returns the updated object. Admin only request")
     @Path("{id : \\d+}/owner")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_Province setProvinceOwner(@PathParam("id") final long id,
+                                        @Documentation(value = "The user to set as owner")
                                         @ExistsInDB(entity = BotUser.class, message = "No such user")
                                         final RS_User provinceOwner,
                                         @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         Province province = provinceDAO.getProvince(id);
         if (province == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-
-        if (!webContext.isInRole(ADMIN_ROLE))
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         BotUser owner = botUserDAOProvider.get().getUser(provinceOwner.getId());
 
@@ -166,20 +155,32 @@ public class ProvinceResource {
         return RS_Province.fromProvince(province, true);
     }
 
-    /**
-     * Deletes a province
-     *
-     * @param id the id of the province
-     */
+    @Documentation("Removes the owner from the specified province and returns the updated object. Admin only request")
+    @Path("{id : \\d+}/owner")
+    @DELETE
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional
+    public RS_Province deleteProvinceOwner(@PathParam("id") final long id,
+                                           @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
+        Province province = provinceDAO.getProvince(id);
+        if (province == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+
+        province.setProvinceOwner(null);
+        return RS_Province.fromProvince(province, true);
+    }
+
+
+    @Documentation("Deletes the specified province and all it's intel and such. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional
     public void deleteProvince(@PathParam("id") final long id, @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         Province province = provinceDAO.getProvince(id);
         if (province == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-
-        if (!webContext.isInRole(ADMIN_ROLE))
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         provinceDAO.delete(province);
     }

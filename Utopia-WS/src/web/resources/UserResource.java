@@ -39,6 +39,7 @@ import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.UserActivitiesDAO;
 import database.models.UserActivities;
+import web.documentation.Documentation;
 import web.models.RS_Nickname;
 import web.models.RS_User;
 import web.models.RS_UserStatistic;
@@ -83,17 +84,13 @@ public class UserResource {
         this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds a new user, provided the nick isn't already taken
-     *
-     * @param user the user to add
-     * @return the added user
-     */
+    @Documentation("Adds a new user and returns the saved object. Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_User addUser(@Valid final RS_User user,
+    public RS_User addUser(@Documentation(value = "The user to add", itemName = "user")
+                           @Valid final RS_User user,
                            @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
@@ -113,16 +110,13 @@ public class UserResource {
         return RS_User.fromBotUser(newUser, true);
     }
 
-    /**
-     * Lists all users, or just the one who owns the specified nick
-     *
-     * @param nick the nick of the user to limit the response to
-     * @return a list of users
-     */
+    @Documentation("Returns all users, or optionally the user with the specified nick")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public JResponse<List<RS_User>> getUsers(@QueryParam("nick") final String nick) {
+    public JResponse<List<RS_User>> getUsers(@Documentation("The nick to get the user for")
+                                             @QueryParam("nick")
+                                             final String nick) {
         if (isNullOrEmpty(nick)) {
             Collection<BotUser> allUsers = userDAO.getAllUsers();
             List<RS_User> users = new ArrayList<>(allUsers.size());
@@ -137,9 +131,7 @@ public class UserResource {
         }
     }
 
-    /**
-     * @return a list of admin users
-     */
+    @Documentation("Returns all admin users")
     @Path("admins")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -153,10 +145,7 @@ public class UserResource {
         return JResponse.ok(admins).build();
     }
 
-    /**
-     * @param id the id of the user
-     * @return the user associated with the specified id
-     */
+    @Documentation("Returns the user with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -169,10 +158,7 @@ public class UserResource {
         return RS_User.fromBotUser(user, true);
     }
 
-    /**
-     * @param userId the userId of the user
-     * @return a list of statistics for the specified user
-     */
+    @Documentation("Returns statistics for the specified user")
     @Path("{userId : \\d+}/statistics")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -189,18 +175,14 @@ public class UserResource {
         return JResponse.ok(statistics).build();
     }
 
-    /**
-     * Updates the specified user
-     *
-     * @param id          the id of the user
-     * @param updatedUser the updates
-     * @return the updated user
-     */
+    @Documentation("Updates the specified user, if the current user is allowed to (is admin or trying to change his/her own info), and returns the updated " +
+            "object")
     @Path("{id : \\d+}")
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_User updateUser(@PathParam("id") final long id,
+                              @Documentation(value = "The updated user", itemName = "updatedUser")
                               final RS_User updatedUser,
                               @Context final WebContext webContext) {
         BotUser user = userDAO.getUser(id);
@@ -221,11 +203,7 @@ public class UserResource {
         return RS_User.fromBotUser(user, true);
     }
 
-    /**
-     * Deletes the specified user, provided the user in question isn't the bot owner
-     *
-     * @param id the id of the user to delete
-     */
+    @Documentation("Deletes the specified user, provided it isn't an owner, and fires off a UserRemovedEvent. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

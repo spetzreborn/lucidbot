@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.OrderCategoryDAO;
 import database.models.OrderCategory;
+import web.documentation.Documentation;
 import web.models.RS_OrderCategory;
 import web.tools.WebContext;
 import web.validation.Update;
@@ -37,17 +38,16 @@ public class OrderCategoryResource {
         this.validatorProvider = validatorProvider;
     }
 
-    /**
-     * Adds an order category
-     *
-     * @param newCategory the order category to add
-     * @return the added order category
-     */
+    @Documentation("Adds a new order category and returns the saved object. Admin only request")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_OrderCategory addCategory(@Valid final RS_OrderCategory newCategory) {
+    public RS_OrderCategory addCategory(@Documentation(value = "The new category to add", itemName = "newCategory")
+                                        @Valid final RS_OrderCategory newCategory,
+                                        final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         OrderCategory existing = orderCategoryDAO.getOrderCategory(newCategory.getName());
         checkArgument(existing == null, "A category with that name already exists");
 
@@ -56,10 +56,7 @@ public class OrderCategoryResource {
         return RS_OrderCategory.fromOrderCategory(category);
     }
 
-    /**
-     * @param id the id of the order category
-     * @return the order category with the specified id
-     */
+    @Documentation("Returns the category with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -72,11 +69,7 @@ public class OrderCategoryResource {
         return RS_OrderCategory.fromOrderCategory(category);
     }
 
-    /**
-     * Returns all existing order categories
-     *
-     * @return a list of order categories
-     */
+    @Documentation("Returns all existing categories")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
@@ -90,48 +83,37 @@ public class OrderCategoryResource {
         return JResponse.ok(categories).build();
     }
 
-    /**
-     * Updates an order category
-     *
-     * @param id              the id of the order category to update
-     * @param updatedCategory the updates
-     * @return the updated order category
-     */
+    @Documentation("Updates a category and returns the updated object. Admin only request")
     @Path("{id : \\d+}")
     @PUT
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public RS_OrderCategory updateCategory(@PathParam("id") final long id,
+                                           @Documentation(value = "The updated category", itemName = "updatedCategory")
                                            final RS_OrderCategory updatedCategory,
                                            @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         OrderCategory category = orderCategoryDAO.getOrderCategory(id);
         if (category == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
         validate(updatedCategory).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
 
-        if (!webContext.isInRole(ADMIN_ROLE))
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-
         category.setName(updatedCategory.getName());
         return RS_OrderCategory.fromOrderCategory(category);
     }
 
-    /**
-     * Deletes an order category (and sets the category of existing commands in this category to null)
-     *
-     * @param id the id of the order category
-     */
+    @Documentation("Deletes the specified category. The orders that were in that category will no longer be in any category. Admin only request")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional
     public void deleteOrder(@PathParam("id") final long id,
                             @Context final WebContext webContext) {
+        if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
+
         OrderCategory category = orderCategoryDAO.getOrderCategory(id);
         if (category == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-
-        if (!webContext.isInRole(ADMIN_ROLE))
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         orderCategoryDAO.delete(category);
     }

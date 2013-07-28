@@ -5,6 +5,7 @@ import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.PersonalityDAO;
 import database.models.Personality;
+import web.documentation.Documentation;
 import web.models.RS_Personality;
 
 import javax.inject.Inject;
@@ -25,10 +26,7 @@ public class PersonalityResource {
         this.personalityDAO = personalityDAO;
     }
 
-    /**
-     * @param id the id of the personality
-     * @return the personality with the specified id
-     */
+    @Documentation("Returns the personality with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -41,11 +39,7 @@ public class PersonalityResource {
         return RS_Personality.fromPersonality(personality, true);
     }
 
-    /**
-     * Returns all personalities
-     *
-     * @return a list of personalities
-     */
+    @Documentation("Returns all personalities")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional

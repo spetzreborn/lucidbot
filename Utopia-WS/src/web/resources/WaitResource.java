@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.WaitDAO;
 import database.models.Wait;
+import web.documentation.Documentation;
 import web.models.RS_Wait;
 import web.tools.WebContext;
 
@@ -33,17 +34,13 @@ public class WaitResource {
         this.botUserDAOProvider = botUserDAOProvider;
     }
 
-    /**
-     * Adds a wait
-     *
-     * @param newWait the wait to add
-     * @return the added wait
-     */
+    @Documentation("Adds a wait, meaning the current user will get notified when the wait-target logs in, and returns the saved object")
     @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public RS_Wait addWait(@Valid final RS_Wait newWait,
+    public RS_Wait addWait(@Documentation(value = "The wait to add", itemName = "newWait")
+                           @Valid final RS_Wait newWait,
                            @Context final WebContext webContext) {
         BotUser waitingFor = botUserDAOProvider.get().getUser(newWait.getWaitingFor().getId());
 
@@ -57,10 +54,7 @@ public class WaitResource {
         return RS_Wait.fromWait(wait);
     }
 
-    /**
-     * @param id the id of the wait
-     * @return the wait with the specified id
-     */
+    @Documentation("Returns the wait with the specified id, provided the user has access to it (is the user waiting)")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -76,11 +70,7 @@ public class WaitResource {
         return RS_Wait.fromWait(wait);
     }
 
-    /**
-     * Returns all existing waits for the current user
-     *
-     * @return a list of waits
-     */
+    @Documentation("Returns all waits for the current user")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
@@ -95,11 +85,7 @@ public class WaitResource {
         return JResponse.ok(waits).build();
     }
 
-    /**
-     * Deletes a wait
-     *
-     * @param id the id of the wait
-     */
+    @Documentation("Deletes the specified wait, provided the current user is the one waiting")
     @Path("{id : \\d+}")
     @DELETE
     @Transactional

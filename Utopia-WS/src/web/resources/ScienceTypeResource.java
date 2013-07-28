@@ -5,6 +5,7 @@ import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.ScienceTypeDAO;
 import database.models.ScienceType;
+import web.documentation.Documentation;
 import web.models.RS_ScienceType;
 
 import javax.inject.Inject;
@@ -25,10 +26,7 @@ public class ScienceTypeResource {
         this.scienceTypeDAO = scienceTypeDAO;
     }
 
-    /**
-     * @param id the id of the science type
-     * @return the science type with the specified id
-     */
+    @Documentation("Returns the science type with the specified id")
     @Path("{id : \\d+}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -41,11 +39,7 @@ public class ScienceTypeResource {
         return RS_ScienceType.fromScienceType(scienceType, true);
     }
 
-    /**
-     * Returns all science types
-     *
-     * @return a list of science types
-     */
+    @Documentation("Returns all science types")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
