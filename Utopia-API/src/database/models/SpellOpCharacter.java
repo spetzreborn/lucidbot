@@ -28,90 +28,49 @@
 package database.models;
 
 import api.common.HasName;
-import api.database.models.BotUser;
 import api.tools.text.StringUtil;
-import database.daos.ProvinceDAO;
-import database.daos.UserSpellOpTargetDAO;
 import lombok.extern.log4j.Log4j;
-import org.hibernate.HibernateException;
-
-import java.util.regex.Matcher;
+import tools.target_locator.SelfTargetLocator;
+import tools.target_locator.TargetInTextLocator;
+import tools.target_locator.TargetLocator;
+import tools.target_locator.UserSpecifiedTargetLocator;
 
 @Log4j
 public enum SpellOpCharacter implements HasName {
     FADING_SPELLOP_WITH_PROVINCE(false) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            String target = matchedRegex.group("target");
-            String province = target.substring(0, target.indexOf('(')).trim();
-            String kingdom = target.substring(target.indexOf('('));
-            if (province == null)
-                throw new IllegalStateException("Could not find a province in the spell/op message even" + "though one was expected");
-            return getProvince(provinceDAO, province, kingdom);
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return TargetInTextLocator.class;
         }
     }, FADING_SPELLOP_WITHOUT_PROVINCE(false) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            UserSpellOpTarget userSpellOpTarget = null;
-            try {
-                userSpellOpTarget = userSpellOpTargetDAO.getUserSpellOpTarget(user);
-            } catch (HibernateException e) {
-                log.error("", e);
-            }
-            return userSpellOpTarget == null ? null : userSpellOpTarget.getTarget();
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return UserSpecifiedTargetLocator.class;
         }
     }, INSTANT_SPELLOP_WITH_PROVINCE(true) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            String target = matchedRegex.group("target");
-            String province = target.substring(0, target.indexOf('(')).trim();
-            String kingdom = target.substring(target.indexOf('('));
-            if (province == null)
-                throw new IllegalStateException("Could not find a province in the spell/op message even though one was expected");
-            return getProvince(provinceDAO, province, kingdom);
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return TargetInTextLocator.class;
         }
     }, INSTANT_SPELLOP_WITHOUT_PROVINCE(true) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            UserSpellOpTarget userSpellOpTarget = null;
-            try {
-                userSpellOpTarget = userSpellOpTargetDAO.getUserSpellOpTarget(user);
-            } catch (HibernateException e) {
-                log.error("", e);
-            }
-            return userSpellOpTarget == null ? null : userSpellOpTarget.getTarget();
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return UserSpecifiedTargetLocator.class;
         }
     }, SELF_SPELLOP(false) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            try {
-                return provinceDAO.getProvinceForUser(user);
-            } catch (HibernateException e) {
-                log.error("", e);
-            }
-            return null;
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return SelfTargetLocator.class;
         }
     }, INSTANT_SELF_SPELLOP(true) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            try {
-                return provinceDAO.getProvinceForUser(user);
-            } catch (HibernateException e) {
-                log.error("", e);
-            }
-            return null;
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            return SelfTargetLocator.class;
         }
     }, OTHER(false) {
         @Override
-        public Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                  final Matcher matchedRegex) {
-            throw new UnsupportedOperationException("This method should never be used on this type");
+        public Class<? extends TargetLocator> getTargetLocatorType() {
+            throw new UnsupportedOperationException("No target locator supported");
         }
     };
     private final boolean isInstant;
@@ -140,15 +99,5 @@ public enum SpellOpCharacter implements HasName {
         throw new IllegalArgumentException("No such SpellOpCharacter exists");
     }
 
-    private static Province getProvince(final ProvinceDAO provinceDAO, final String name, final String kingdom) {
-        try {
-            return provinceDAO.getOrCreateProvince(name, kingdom);
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
-        return null;
-    }
-
-    public abstract Province getTarget(final ProvinceDAO provinceDAO, final UserSpellOpTargetDAO userSpellOpTargetDAO, final BotUser user,
-                                       final Matcher matchedRegex);
+    public abstract Class<? extends TargetLocator> getTargetLocatorType();
 }

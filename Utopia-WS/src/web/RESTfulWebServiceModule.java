@@ -100,6 +100,7 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         bind(RaceResource.class);
         bind(ScienceTypeResource.class);
         bind(SpellResource.class);
+        bind(SpellsOpsResource.class);
         bind(TargetResource.class);
         bind(TickChannelMessageResource.class);
         bind(UserActivityResource.class);

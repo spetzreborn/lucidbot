@@ -28,24 +28,26 @@
 package tools.parsing;
 
 import api.database.models.AccessLevel;
+import api.database.models.BotUser;
 import api.events.bot.NonCommandEvent;
 import api.runtime.IRCContext;
 import api.runtime.ThreadingManager;
 import api.tools.numbers.NumberUtil;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Provider;
 import database.CommonEntitiesAccess;
-import database.daos.ProvinceDAO;
-import database.daos.UserSpellOpTargetDAO;
 import database.models.OpType;
 import database.models.Province;
 import database.models.SpellType;
 import events.OpPastedEvent;
 import events.SpellPastedEvent;
 import spi.events.EventListener;
+import tools.target_locator.CharacterDrivenTargetLocatorFactory;
+import tools.target_locator.TargetLocator;
+import tools.target_locator.TargetLocatorFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -53,22 +55,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpellsOpsParser implements EventListener {
+    private final Provider<CharacterDrivenTargetLocatorFactory> defaultTargetLocatorFactory;
     private final ThreadingManager threadingManager;
     private final EventBus eventBus;
-    private final Provider<ProvinceDAO> provinceDAOProvider;
-    private final Provider<UserSpellOpTargetDAO> spellOpTargetDAOProvider;
 
     private final ConcurrentMap<Pattern, SpellType> spellPatternsMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<Pattern, OpType> opPatternsMap = new ConcurrentHashMap<>();
 
     @Inject
-    public SpellsOpsParser(final ThreadingManager threadingManager, final CommonEntitiesAccess commonEntitiesAccess,
-                           final EventBus eventBus, final Provider<ProvinceDAO> provinceDAOProvider,
-                           final Provider<UserSpellOpTargetDAO> spellOpTargetDAOProvider) {
+    public SpellsOpsParser(final ThreadingManager threadingManager,
+                           final CommonEntitiesAccess commonEntitiesAccess,
+                           final Provider<CharacterDrivenTargetLocatorFactory> defaultTargetLocatorFactory,
+                           final EventBus eventBus) {
         this.threadingManager = threadingManager;
+        this.defaultTargetLocatorFactory = defaultTargetLocatorFactory;
         this.eventBus = eventBus;
-        this.provinceDAOProvider = provinceDAOProvider;
-        this.spellOpTargetDAOProvider = spellOpTargetDAOProvider;
 
         for (SpellType spellType : commonEntitiesAccess.getAllSpellTypes()) {
             if (spellType.getCastRegex() != null) spellPatternsMap.put(Pattern.compile(spellType.getCastRegex()), spellType);
@@ -81,47 +82,75 @@ public class SpellsOpsParser implements EventListener {
 
     @Subscribe
     public void onNonCommandEvent(final NonCommandEvent event) {
+        IRCContext context = event.getContext();
+        if (!AccessLevel.USER.allows(context.getUser(), context.getChannel())) return;
+
         threadingManager.execute(new Runnable() {
             @Override
             public void run() {
-                parse(event);
+                parse(event.getContext().getBotUser(), event.getContext().getInput(), true, event.getContext(), defaultTargetLocatorFactory.get());
             }
         });
     }
 
-    private void parse(final NonCommandEvent event) {
-        IRCContext context = event.getContext();
-        if (!AccessLevel.USER.allows(context.getUser(), context.getChannel())) return;
+    /**
+     * Parses the specified text for spells and ops and returns as soon as it finds a match.
+     *
+     * @param botUser the user that pasted the spell/op
+     * @param text    the text to parse
+     * @return 0 if no spells or ops were parsed, 1 otherwise
+     */
+    public int parseSingle(final BotUser botUser, final String text, final TargetLocatorFactory targetLocatorFactory) {
+        return parse(botUser, text, true, null, targetLocatorFactory);
+    }
 
-        String text = event.getContext().getInput();
+    /**
+     * Parses the specified text for spells and ops. Keeps going to find as many matches as possible and returns how many were found.
+     *
+     * @param botUser the user that pasted the spell/op
+     * @param text    the text to parse
+     * @return the amount of matches found
+     */
+    public int parseMultiple(final BotUser botUser, final String text, final TargetLocatorFactory targetLocatorFactory) {
+        return parse(botUser, text, false, null, targetLocatorFactory);
+    }
+
+    private int parse(final BotUser botUser,
+                      final String text,
+                      final boolean quitAfterFirstMatch,
+                      final IRCContext context,
+                      final TargetLocatorFactory targetLocatorFactory) {
+        int matchCounter = 0;
+
         Matcher matcher;
         for (Map.Entry<Pattern, SpellType> entry : spellPatternsMap.entrySet()) {
             matcher = entry.getKey().matcher(text);
             if (matcher.find()) {
                 SpellType type = entry.getValue();
-                Province target = type.getSpellCharacter()
-                        .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
-                                matcher);
+                TargetLocator targetLocator = targetLocatorFactory.createLocator(type.getSpellCharacter());
+                Province target = targetLocator.locateTarget(botUser, matcher);
                 if (target != null) {
                     eventBus.post(new SpellPastedEvent(target.getId(), type.getId(), NumberUtil.parseInt(matcher.group("result")),
-                            event.getContext()));
+                            botUser, context));
                 }
-                return;
+                if (quitAfterFirstMatch) return 1;
+                ++matchCounter;
             }
         }
         for (Map.Entry<Pattern, OpType> entry : opPatternsMap.entrySet()) {
             matcher = entry.getKey().matcher(text);
             if (matcher.find()) {
                 OpType type = entry.getValue();
-                Province target = type.getOpCharacter()
-                        .getTarget(provinceDAOProvider.get(), spellOpTargetDAOProvider.get(), event.getContext().getBotUser(),
-                                matcher);
+                TargetLocator targetLocator = targetLocatorFactory.createLocator(type.getOpCharacter());
+                Province target = targetLocator.locateTarget(botUser, matcher);
                 if (target != null) {
                     eventBus.post(new OpPastedEvent(target.getId(), type.getId(), NumberUtil.parseInt(matcher.group("result")),
-                            event.getContext()));
+                            botUser, context));
                 }
-                return;
+                if (quitAfterFirstMatch) return 1;
+                ++matchCounter;
             }
         }
+        return matchCounter;
     }
 }

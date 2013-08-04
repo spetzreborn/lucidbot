@@ -27,9 +27,12 @@
 
 package events;
 
+import api.database.models.BotUser;
 import api.runtime.IRCContext;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import javax.annotation.Nullable;
 
 /**
  * Some Op was pasted on IRC
@@ -40,5 +43,7 @@ public class OpPastedEvent {
     private final long provinceId;
     private final long opTypeId;
     private final int result;
+    private final BotUser user;
+    @Nullable
     private final IRCContext context;
 }

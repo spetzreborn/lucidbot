@@ -64,9 +64,14 @@ class NewSpellsOpsListener implements EventListener {
     private final IRCAccess ircAccess;
 
     @Inject
-    NewSpellsOpsListener(final Provider<BotUserDAO> botUserDAOProvider, final Provider<ProvinceDAO> provinceDAOProvider,
-                         final Provider<SpellDAO> spellDAOProvider, final Provider<OpDAO> opDAOProvider, final EventBus eventBus,
-                         final UtopiaTimeFactory utopiaTimeFactory, final ThreadingManager threadingManager, final IRCAccess ircAccess) {
+    NewSpellsOpsListener(final Provider<BotUserDAO> botUserDAOProvider,
+                         final Provider<ProvinceDAO> provinceDAOProvider,
+                         final Provider<SpellDAO> spellDAOProvider,
+                         final Provider<OpDAO> opDAOProvider,
+                         final EventBus eventBus,
+                         final UtopiaTimeFactory utopiaTimeFactory,
+                         final ThreadingManager threadingManager,
+                         final IRCAccess ircAccess) {
         this.botUserDAOProvider = botUserDAOProvider;
         this.provinceDAOProvider = provinceDAOProvider;
         this.spellDAOProvider = spellDAOProvider;
@@ -83,7 +88,8 @@ class NewSpellsOpsListener implements EventListener {
             @Override
             public void run() {
                 String reply = saveOp(event);
-                ircAccess.sendNoticeOrPM(event.getContext(), reply);
+                if (event.getContext() != null)
+                    ircAccess.sendNoticeOrPM(event.getContext(), reply);
             }
         });
     }
@@ -93,7 +99,7 @@ class NewSpellsOpsListener implements EventListener {
             Pair<InstantOp, DurationOp> savedOpPair = inTransaction(new CallableTransactionTask<Pair<InstantOp, DurationOp>>() {
                 @Override
                 public Pair<InstantOp, DurationOp> call(final DelayedEventPoster delayedEventPoster) {
-                    BotUser user = botUserDAOProvider.get().getUser(event.getContext().getBotUser().getId());
+                    BotUser user = botUserDAOProvider.get().getUser(event.getUser().getId());
                     ProvinceDAO provinceDAO = provinceDAOProvider.get();
                     Province target = provinceDAO.getProvince(event.getProvinceId());
                     if (target == null) throw new IllegalStateException("Could not find the province");
@@ -131,7 +137,8 @@ class NewSpellsOpsListener implements EventListener {
             @Override
             public void run() {
                 String reply = saveSpell(event);
-                ircAccess.sendNoticeOrPM(event.getContext(), reply);
+                if (event.getContext() != null)
+                    ircAccess.sendNoticeOrPM(event.getContext(), reply);
             }
         });
     }
@@ -142,7 +149,7 @@ class NewSpellsOpsListener implements EventListener {
                     new CallableTransactionTask<Pair<InstantSpell, DurationSpell>>() {
                         @Override
                         public Pair<InstantSpell, DurationSpell> call(final DelayedEventPoster delayedEventPoster) {
-                            BotUser user = botUserDAOProvider.get().getUser(event.getContext().getBotUser().getId());
+                            BotUser user = botUserDAOProvider.get().getUser(event.getUser().getId());
                             ProvinceDAO provinceDAO = provinceDAOProvider.get();
                             Province target = provinceDAO.getProvince(event.getProvinceId());
                             if (target == null) throw new IllegalStateException("Could not find the province");
