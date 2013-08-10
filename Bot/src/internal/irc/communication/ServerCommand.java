@@ -38,8 +38,7 @@ import java.util.regex.Pattern;
 
 import static api.irc.ValidationType.CHANNEL;
 import static api.irc.ValidationType.NICKNAME;
-import static api.tools.text.StringUtil.isNullOrEmpty;
-import static api.tools.text.StringUtil.splitOnSpace;
+import static api.tools.text.StringUtil.*;
 
 /**
  * Server commands
@@ -180,7 +179,7 @@ public enum ServerCommand {
                 String channel = matcher.group("target");
                 String sender = matcher.group("sender");
                 String message = matcher.group("message");
-                Logger.getLogger(channel.substring(1)).info('<' + sender + "> " + message);
+                Logger.getLogger(lowerCase(channel.substring(1))).info('<' + sender + "> " + message);
                 if (!instance.getNick().equals(matcher.group("sender")))
                     eventBus.post(new MessageEvent(instance, sender, channel, message));
             }

@@ -119,7 +119,7 @@ public final class BotIRCInstance implements RequiresShutdown {
     public void setSettings(final BotInstanceSettings settings) {
         this.settings = settings;
         this.nick = settings.getNick();
-        this.logger = Logger.getLogger(nick);
+        this.logger = Logger.getLogger(lowerCase(nick));
     }
 
     public Logger getInstanceLogger() {

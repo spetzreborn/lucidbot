@@ -29,7 +29,6 @@ package internal.irc.communication;
 
 import api.irc.BotIRCInstance;
 import com.google.common.eventbus.EventBus;
-import org.apache.log4j.Logger;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
@@ -41,8 +40,6 @@ import java.util.regex.Pattern;
  */
 @ParametersAreNonnullByDefault
 public final class ServerCodedCommunication {
-    private static final Logger LOGGER = Logger.getLogger("serverCommunication");
-
     private final Pattern pattern = Pattern.compile(":[^ ]+ (\\d{3}) (.+)");
     private final EventBus eventBus;
 
