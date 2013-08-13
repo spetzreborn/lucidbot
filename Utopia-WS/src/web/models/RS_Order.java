@@ -131,7 +131,7 @@ public class RS_Order implements HasNumericId {
 
     public static RS_Order fromOrder(final Order order) {
         return new RS_Order(order.getId(), order.getOrder(), order.getAdded(), order.getAddedBy(),
-                RS_OrderCategory.fromOrderCategory(order.getCategory()), RS_Bindings.fromBindings(order.getBindings()));
+                order.getCategory() == null ? null : RS_OrderCategory.fromOrderCategory(order.getCategory()), RS_Bindings.fromBindings(order.getBindings()));
     }
 
     public Long getId() {
