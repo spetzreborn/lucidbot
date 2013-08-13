@@ -86,6 +86,7 @@ public final class BotIRCInstance implements RequiresShutdown {
     private final ServerErrorCommunication serverErrorCommunication;
     private final DelayHandler delayHandler;
     private final ReconnectScheduler reconnectScheduler;
+
     private boolean doNotAttemptReconnect;
 
     private InputThread inputThread;
@@ -171,6 +172,7 @@ public final class BotIRCInstance implements RequiresShutdown {
      * @throws IOException .
      */
     public synchronized void connect() throws IOException {
+        doNotAttemptReconnect = false;
         dispose();
 
         String hostname = properties.get(IRC_SERVER);
@@ -430,12 +432,15 @@ public final class BotIRCInstance implements RequiresShutdown {
             reconnectScheduler.scheduleReconnectAttempt(new ReconnectTask(this));
     }
 
+    public void setDoNotAttemptReconnect(final boolean doNotAttemptReconnect) {
+        this.doNotAttemptReconnect = doNotAttemptReconnect;
+    }
+
     @Override
     public Runnable getShutdownRunner() {
         return new Runnable() {
             @Override
             public void run() {
-                doNotAttemptReconnect = true;
                 sendQuit();
                 dispose();
             }

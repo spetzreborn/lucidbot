@@ -168,6 +168,7 @@ public class StatusPanel extends VerticalLayout {
             item.getItemProperty("disconnect").setValue(new Button("Disconnect", new Button.ClickListener() {
                 @Override
                 public void buttonClick(final Button.ClickEvent event) {
+                    bot.setDoNotAttemptReconnect(true);
                     bot.getShutdownRunner().run();
                 }
             }));

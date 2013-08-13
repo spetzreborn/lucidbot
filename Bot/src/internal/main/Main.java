@@ -244,6 +244,7 @@ public final class Main {
     public void disconnectBots() {
         if (isNotEmpty(botIRCInstances)) {
             for (BotIRCInstance instance : botIRCInstances) {
+                instance.setDoNotAttemptReconnect(true);
                 instance.getShutdownRunner().run();
             }
             OutputQueue outputQueue = injector.getInstance(OutputQueue.class);
