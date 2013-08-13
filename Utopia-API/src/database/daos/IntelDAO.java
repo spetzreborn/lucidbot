@@ -202,7 +202,7 @@ public class IntelDAO {
         delayedEventPoster.enqueue(intel.newSavedEvent());
         if (!intel.getKingdomLocation().equals(kingdomDAO.getSelfKD().getLocation())) {
             BotUser user = botUserDAO.getUser(userId);
-            user.incrementStat(intel.getIntelType(), 1);
+            user.incrementStat(intel.getIntelTypeName(), 1);
         }
         return true;
     }

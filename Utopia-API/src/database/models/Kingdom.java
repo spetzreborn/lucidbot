@@ -237,12 +237,17 @@ public class Kingdom implements Intel, Comparable<Kingdom>, HasNumericId {
 
     @Override
     public String getDescription() {
-        return getIntelType() + " page of " + getLocation();
+        return getIntelTypeName() + " page of " + getLocation();
     }
 
     @Override
-    public String getIntelType() {
+    public String getIntelTypeName() {
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public Class<? extends Intel> getIntelType() {
+        return getClass();
     }
 
     @Override

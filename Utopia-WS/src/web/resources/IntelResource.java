@@ -21,20 +21,35 @@ import java.util.List;
 @ValidationEnabled
 @Path("intel")
 public class IntelResource {
+    private final Provider<AllInOneIntelSubResource> allInOneIntelSubResource;
     private final Provider<SoMSubResource> soMSubResourceProvider;
     private final Provider<SoSSubResource> soSSubResourceProvider;
     private final Provider<SoTSubResource> soTSubResourceProvider;
     private final Provider<SurveySubResource> surveySubResourceProvider;
 
     @Inject
-    public IntelResource(final Provider<SoMSubResource> soMSubResourceProvider,
+    public IntelResource(final Provider<AllInOneIntelSubResource> allInOneIntelSubResource,
+                         final Provider<SoMSubResource> soMSubResourceProvider,
                          final Provider<SoSSubResource> soSSubResourceProvider,
                          final Provider<SoTSubResource> soTSubResourceProvider,
                          final Provider<SurveySubResource> surveySubResourceProvider) {
+        this.allInOneIntelSubResource = allInOneIntelSubResource;
         this.soMSubResourceProvider = soMSubResourceProvider;
         this.soSSubResourceProvider = soSSubResourceProvider;
         this.soTSubResourceProvider = soTSubResourceProvider;
         this.surveySubResourceProvider = surveySubResourceProvider;
+    }
+
+    @Documentation("Parses the incoming text and returns whatever intel was parsed and saved from it (of any type)")
+    @POST
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.TEXT_PLAIN})
+    @Transactional
+    public JResponse<List<Object>> addIntel(@Documentation(value = "The formatted or unformatted intel (multiple items allowed)", itemName = "newIntel")
+                                            @NotEmpty(message = "The intel may not be null or empty")
+                                            final String newIntel,
+                                            @Context final WebContext webContext) throws Exception {
+        return JResponse.ok(allInOneIntelSubResource.get().addIntel(newIntel, webContext)).build();
     }
 
     @Documentation("Parses the incoming text and returns the saved SoM")

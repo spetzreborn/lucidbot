@@ -33,6 +33,7 @@ import events.SoMSavedEvent;
 import filtering.filters.AgeFilter;
 import filtering.filters.PersonalityFilter;
 import filtering.filters.RaceFilter;
+import intel.Intel;
 import intel.ProvinceIntel;
 import intel.ProvinceResourceProvider;
 import intel.ProvinceResourceType;
@@ -173,7 +174,7 @@ public class SoM implements ProvinceIntel, Comparable<SoM>, HasNumericId {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(200);
-        sb.append(getIntelType());
+        sb.append(getIntelTypeName());
         sb.append("{province=").append(getProvince().getName());
         sb.append(", netDefense=").append(getNetDefense());
         sb.append(", netOffense=").append(getNetOffense());
@@ -185,12 +186,17 @@ public class SoM implements ProvinceIntel, Comparable<SoM>, HasNumericId {
 
     @Override
     public String getDescription() {
-        return getIntelType() + " of " + getProvince().getName();
+        return getIntelTypeName() + " of " + getProvince().getName();
     }
 
     @Override
-    public String getIntelType() {
+    public String getIntelTypeName() {
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public Class<? extends Intel> getIntelType() {
+        return getClass();
     }
 
     @Override

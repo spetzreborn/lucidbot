@@ -47,7 +47,9 @@ public interface Intel {
 
     String getDescription();
 
-    String getIntelType();
+    String getIntelTypeName();
+
+    Class<? extends Intel> getIntelType();
 
     String getKingdomLocation();
 
