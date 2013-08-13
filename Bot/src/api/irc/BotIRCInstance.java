@@ -86,6 +86,7 @@ public final class BotIRCInstance implements RequiresShutdown {
     private final ServerErrorCommunication serverErrorCommunication;
     private final DelayHandler delayHandler;
     private final ReconnectScheduler reconnectScheduler;
+    private boolean doNotAttemptReconnect;
 
     private InputThread inputThread;
     private OutputThread outputThread;
@@ -415,7 +416,7 @@ public final class BotIRCInstance implements RequiresShutdown {
     public void onDisconnect(final DisconnectEvent event) {
         if (event.getInstance() == this) {
             connected.set(false);
-            if (properties.getBoolean(AUTO_CONNECT_DISCONNECT)) {
+            if (properties.getBoolean(AUTO_CONNECT_DISCONNECT) && !doNotAttemptReconnect) {
                 attemptReconnect();
             } else {
                 dispose();
@@ -434,6 +435,7 @@ public final class BotIRCInstance implements RequiresShutdown {
         return new Runnable() {
             @Override
             public void run() {
+                doNotAttemptReconnect = true;
                 sendQuit();
                 dispose();
             }
