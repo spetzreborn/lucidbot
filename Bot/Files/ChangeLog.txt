@@ -1,11 +1,15 @@
 Build: LucidBot 3.0 RC2
 
 What's new:
-*
+* /spells_ops for posting spells and ops from ingame to the bot via the web service
+* Fix to logging - logging for channels was case sensitive
+* Bug fixes for the API, removing some null pointer exceptions that would result in BAD REQUEST errors
+* /intel can now take raw intel of any sort, so you don't have to post single sots and soms and such to /intel/sots etc.
+* Fixed a bug where the bot would try to reconnect when you called !quit, before it finally shut down
+
 
 How to update:
-1. Remove the lib folder completely and replace with the new one
-2. Remove the plugin folder completely and replace with the new one
-3. Remove the "Core.WebServiceAPI.Enabled" property from utopia.properties
-4. Add ws.properties from the zip-file to the root folder next to the other properties files
-5. Replace LucidBot.jar with the new one from the zip-file
+1. Replace LucidBot.jar
+2. Replace utopia-api.jar in the plugins folder
+2. Replace utopia-ui.jar in the plugins folder
+2. Replace utopia-ws.jar in the plugins folder
