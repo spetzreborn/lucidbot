@@ -103,7 +103,7 @@ public class RS_HelpTopic implements HasNumericId {
     private RS_HelpTopic(final HelpTopic topic) {
         this(topic.getId(), topic.getName());
         this.helpText = topic.getHelpText();
-        this.collection = RS_HelpTopicCollection.fromHelpTopicCollection(topic.getCollection(), false);
+        this.collection = topic.getCollection() == null ? null : RS_HelpTopicCollection.fromHelpTopicCollection(topic.getCollection(), false);
     }
 
     public static RS_HelpTopic fromHelpTopic(final HelpTopic topic, final boolean full) {

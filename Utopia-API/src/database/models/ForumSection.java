@@ -35,6 +35,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -58,7 +59,7 @@ public class ForumSection implements Comparable<ForumSection>, HasNumericId {
     private AccessLevel minimumAccessLevel;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ForumThread> threads;
+    private List<ForumThread> threads = new ArrayList<>();
 
     public ForumSection(final String name, final AccessLevel minimumAccessLevel) {
         this.name = name;
