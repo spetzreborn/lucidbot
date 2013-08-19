@@ -29,7 +29,6 @@ package internal.database;
 
 import api.database.*;
 import api.tools.common.CleanupUtil;
-import internal.main.Main;
 import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -41,18 +40,29 @@ import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.hbm2ddl.SchemaValidator;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+
+import static com.google.common.base.Objects.firstNonNull;
 
 @ParametersAreNonnullByDefault
 @Log4j
 abstract class AbstractDatabaseManager implements DatabaseManager {
     private final Configuration configuration;
     private final Set<DatabaseUpdater> updaters;
+    private final Map<String, Integer> latestArtifactVersions = new HashMap<>();
 
     protected AbstractDatabaseManager(final Configuration configuration, final Set<DatabaseUpdater> updaters) {
         this.configuration = configuration;
         this.updaters = updaters;
+        for (DatabaseUpdater updater : updaters) {//assumed to be ordered by version already
+            latestArtifactVersions.put(updater.forArtifact(), updater.updatesToVersion());
+        }
     }
 
     @Override
@@ -69,11 +79,18 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
                 @Override
                 public DatabaseState execute(final Connection connection) throws SQLException {
                     try {
-                        int dbVersion = getDBVersion(connection);
-                        if (dbVersion == -1) {
+                        if (databaseIsEmpty(connection)) {
                             return DatabaseState.CONNECTED_UNINSTALLED_DB;
-                        } else if (dbVersion < Main.DB_VERSION) {
-                            return DatabaseState.CONNECTED_OUTDATED_DB;
+                        }
+
+                        //Transition period thing to make sure the new versions table is created
+                        ensureVersionsTableExists(connection, 9);
+
+                        for (Map.Entry<String, Integer> artifactVersion : latestArtifactVersions.entrySet()) {
+                            int dbVersion = getDBVersion(artifactVersion.getKey(), connection);
+                            if (dbVersion < artifactVersion.getValue()) {
+                                return DatabaseState.CONNECTED_OUTDATED_DB;
+                            }
                         }
 
                         SchemaValidator validator = new SchemaValidator(configuration);
@@ -93,14 +110,53 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         }
     }
 
-    private int getDBVersion(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT db_version FROM version");
+    private boolean databaseIsEmpty(final Connection connection) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW TABLES");
              ResultSet resultSet = preparedStatement.executeQuery()) {
+            return !resultSet.next();
+        } catch (final SQLException e) {
+            log.error("", e);
+        }
+        return true;
+    }
+
+    private void ensureVersionsTableExists(final Connection connection, final Integer initialVersion) {
+        PreparedStatement transition = null;
+        try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " +
+                "versions(artifact VARCHAR NOT NULL, db_version BIGINT NOT NULL DEFAULT 1, CONSTRAINT pk_versions PRIMARY KEY (artifact))")) {
+
+            statement.execute();
+
+            //The below is intended to be used only during a transition period between the old version and the new versions table
+            transition = connection.prepareStatement("INSERT INTO versions SELECT ?, ? FROM dual " +
+                    "WHERE NOT EXISTS (SELECT * FROM versions where artifact = ?)");
+            for (Map.Entry<String, Integer> artifactVersion : latestArtifactVersions.entrySet()) {
+                String artifact = artifactVersion.getKey();
+                transition.setString(1, artifact);
+                transition.setInt(2, firstNonNull(initialVersion, artifactVersion.getValue()));
+                transition.setString(3, artifact);
+                transition.addBatch();
+            }
+            transition.executeBatch();
+        } catch (final SQLException e) {
+            AbstractDatabaseManager.log.error("", e);
+        } finally {
+            CleanupUtil.closeSilently(transition);
+        }
+    }
+
+    private int getDBVersion(final String artifact, final Connection connection) {
+        ResultSet resultSet = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT db_version FROM versions WHERE artifact = ?")) {
+            preparedStatement.setString(1, artifact);
+            resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt("db_version");
             }
         } catch (final SQLException e) {
             log.error("", e);
+        } finally {
+            CleanupUtil.closeSilently(resultSet);
         }
         return -1;
     }
@@ -113,21 +169,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
             getSession().doWork(new Work() {
                 @Override
                 public void execute(final Connection connection) throws SQLException {
-                    Statement statement = null;
-                    PreparedStatement ps = null;
-                    try {
-                        statement = connection.createStatement();
-                        statement.execute("DROP TABLE IF EXISTS version");
-                        statement.execute("CREATE TABLE version(db_version BIGINT NOT NULL DEFAULT 1, CONSTRAINT pk_version PRIMARY KEY (db_version))");
-                        ps = connection.prepareStatement("INSERT INTO version VALUES(?)");
-                        ps.setLong(1, Main.DB_VERSION);
-                        ps.executeUpdate();
-                    } catch (final SQLException e) {
-                        AbstractDatabaseManager.log.error("", e);
-                    } finally {
-                        CleanupUtil.closeSilently(statement);
-                        CleanupUtil.closeSilently(ps);
-                    }
+                    ensureVersionsTableExists(connection, null);
                 }
             });
             session.getTransaction().commit();
@@ -145,19 +187,29 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         //Do scripted updates
         Session session = getSession();
         session.beginTransaction();
+
         try {
             getSession().doWork(new Work() {
                 @Override
                 public void execute(final Connection connection) throws SQLException {
-                    int dbVersion = getDBVersion(connection);
-
                     try {
+                        Map<String, Integer> artifactVersionsBeforeUpdate = new HashMap<>();
+                        for (String artifact : latestArtifactVersions.keySet()) {
+                            int version = getDBVersion(artifact, connection);
+                            artifactVersionsBeforeUpdate.put(artifact, version);
+                        }
+
                         for (DatabaseUpdater updater : updaters) {
-                            if (getDatabaseType().equals(updater.getDatabaseType()) && updater.updatesToVersion() > dbVersion) {
+                            if (getDatabaseType().equals(updater.getDatabaseType()) &&
+                                    updater.updatesToVersion() > artifactVersionsBeforeUpdate.get(updater.forArtifact())) {
                                 for (DatabaseUpdateAction updateAction : updater.getUpdateActions()) {
                                     updateAction.runDatabaseAction(connection);
                                 }
                             }
+                        }
+
+                        for (Map.Entry<String, Integer> entry : latestArtifactVersions.entrySet()) {
+                            updateDBVersion(entry.getKey(), entry.getValue(), connection);
                         }
                     } catch (SQLException e) {
                         throw new RuntimeException("Failed to run database updates", e);
@@ -165,7 +217,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
                 }
             });
             session.getTransaction().commit();
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             session.getTransaction().rollback();
             throw new DBException(e);
         }
@@ -173,39 +225,14 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         //Do whatever updates Hibernate can handle by itself
         SchemaUpdate schemaUpdate = new SchemaUpdate(configuration);
         schemaUpdate.execute(true, true);
-
-        //Set the new version
-        try {
-            executeSQL("UPDATE version SET db_version = " + Main.DB_VERSION);
-        } catch (SQLException e) {
-            AbstractDatabaseManager.log.error("Could not set the new db_version to " + Main.DB_VERSION + ", please do it manually", e);
-        }
     }
 
-    private void executeSQL(final String... queries) throws SQLException {
-        Session session = getSession();
-        session.beginTransaction();
-        try {
-            session.doWork(new Work() {
-                @Override
-                public void execute(final Connection connection) throws SQLException {
-                    Statement statement = null;
-                    try {
-                        statement = connection.createStatement();
-                        for (String query : queries) {
-                            statement.addBatch(query);
-                        }
-                        statement.executeBatch();
-                        connection.commit();
-                    } finally {
-                        CleanupUtil.closeSilently(statement);
-                    }
-                }
-            });
-            session.getTransaction().commit();
-        } catch (HibernateException e) {
-            session.getTransaction().rollback();
-            throw new DBException(e);
+    private void updateDBVersion(final String artifact, final long version, final Connection connection) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE versions SET db_version = ? WHERE artifact = ?")) {
+            statement.setLong(1, version);
+            statement.setString(2, artifact);
+        } catch (SQLException e) {
+            AbstractDatabaseManager.log.error("Could not set the new db_version to " + version + " for '" + artifact + "', please do it manually", e);
         }
     }
 

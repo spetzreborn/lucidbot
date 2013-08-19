@@ -28,6 +28,8 @@
 package api.database;
 
 public interface DatabaseUpdater extends Comparable<DatabaseUpdater> {
+    String forArtifact();
+
     int updatesToVersion();
 
     Iterable<? extends DatabaseUpdateAction> getUpdateActions();

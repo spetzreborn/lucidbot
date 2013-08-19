@@ -27,7 +27,14 @@
 
 package api.database;
 
+import internal.main.Main;
+
 public abstract class AbstractMySQLDatabaseUpdater extends AbstractDatabaseUpdater {
+    @Override
+    public String forArtifact() {
+        return Main.class.getSimpleName();
+    }
+
     @Override
     public Class<?> getDatabaseType() {
         return MySQL.class;

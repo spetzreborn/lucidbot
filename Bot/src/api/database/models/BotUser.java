@@ -118,12 +118,6 @@ public final class BotUser implements Comparable<BotUser>, HasNumericId {
     private String email;
 
     /**
-     * The user's GTalk address
-     */
-    @Column(name = "gtalk", length = 200)
-    private String gtalk;
-
-    /**
      * The user's email-to-sms-gateway address
      */
     @Column(name = "sms", length = 200)
@@ -162,7 +156,7 @@ public final class BotUser implements Comparable<BotUser>, HasNumericId {
     }
 
     public BotUser(final String mainNick, final boolean admin, final boolean owner, final String timeZone, final int dst,
-                   final String country, final String realName, final String email, final String gtalk, final String sms,
+                   final String country, final String realName, final String email, final String sms,
                    final boolean smsWorks) {
         this(mainNick, admin, owner);
         this.timeZone = timeZone;
@@ -170,7 +164,6 @@ public final class BotUser implements Comparable<BotUser>, HasNumericId {
         this.country = country;
         this.realName = realName;
         this.email = email;
-        this.gtalk = gtalk;
         this.sms = sms;
         this.smsConfirmed = smsWorks;
     }

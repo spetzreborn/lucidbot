@@ -27,12 +27,11 @@
 
 package database.updates.mysql;
 
-import api.database.AbstractMySQLDatabaseUpdater;
 import api.database.DatabaseUpdateAction;
 import api.database.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
-public class MySQLUpdateV1ToV2 extends AbstractMySQLDatabaseUpdater {
+public class MySQLUpdateV1ToV2 extends ApiMySQLDatabaseUpdater {
     @Override
     public int updatesToVersion() {
         return 2;

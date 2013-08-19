@@ -25,23 +25,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package database.updates.h2;
+package internal.database.updates.h2;
 
+import api.database.AbstractH2DatabaseUpdater;
 import api.database.DatabaseUpdateAction;
 import api.database.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
-public class H2UpdateV3ToV4 extends ApiH2DatabaseUpdater {
+public class H2UpdateV9ToV10 extends AbstractH2DatabaseUpdater {
     @Override
     public int updatesToVersion() {
-        return 4;
+        return 10;
     }
 
     @Override
     public Iterable<? extends DatabaseUpdateAction> getUpdateActions() {
-        return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE som ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                new SimpleUpdateAction("ALTER TABLE sos ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                new SimpleUpdateAction("ALTER TABLE sot ADD COLUMN accuracy INT NOT NULL DEFAULT 100"),
-                new SimpleUpdateAction("ALTER TABLE survey ADD COLUMN accuracy INT NOT NULL DEFAULT 100"));
+        return Lists.newArrayList(new SimpleUpdateAction("ALTER TABLE bot_user DROP COLUMN gtalk"));
     }
 }

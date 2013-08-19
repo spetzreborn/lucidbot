@@ -89,7 +89,7 @@ public class BotUsersSettingsPanel extends VerticalLayout {
         userTable = new Table();
         userTable.setContainerDataSource(getBotContainer());
         userTable.setColumnHeaders(new String[]{
-                "Main Nick", "Nicks", "Admin", "Owner", "TZ", "DST", "Country", "Name", "Email", "GTalk", "SMS", "SMS Works", "Edit",
+                "Main Nick", "Nicks", "Admin", "Owner", "TZ", "DST", "Country", "Name", "Email", "SMS", "SMS Works", "Edit",
                 "Delete"
         });
         userTable.setColumnWidth("mainNick", 100);
@@ -97,7 +97,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
         userTable.setColumnWidth("country", 100);
         userTable.setColumnWidth("realName", 80);
         userTable.setColumnWidth("email", 175);
-        userTable.setColumnWidth("gtalk", 175);
         userTable.setColumnWidth("sms", 175);
         userTable.setHeight("100%");
         userTable.setWidth("100%");
@@ -119,7 +118,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
         container.addContainerProperty("country", String.class, null);
         container.addContainerProperty("realName", String.class, null);
         container.addContainerProperty("email", String.class, null);
-        container.addContainerProperty("gtalk", String.class, null);
         container.addContainerProperty("sms", String.class, null);
         container.addContainerProperty("smsWorks", Boolean.class, null);
         container.addContainerProperty("edit", Button.class, null);
@@ -150,7 +148,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
         item.getItemProperty("country").setValue(user.getCountry());
         item.getItemProperty("realName").setValue(user.getRealName());
         item.getItemProperty("email").setValue(user.getEmail());
-        item.getItemProperty("gtalk").setValue(user.getGtalk());
         item.getItemProperty("sms").setValue(user.getSms());
         item.getItemProperty("smsWorks").setValue(user.isSmsConfirmed());
         item.getItemProperty("edit").setValue(new Button("Edit", new Button.ClickListener() {
@@ -194,7 +191,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
         private final TextField countryField;
         private final TextField realNameField;
         private final TextField emailField;
-        private final TextField gtalkField;
         private final TextField smsField;
         private final CheckBox smsWorksCheckBox;
         private final Button saveButton;
@@ -249,12 +245,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
             emailField.addValidator(new EmailValidator("Not a valid email address"));
             if (user != null) emailField.setValue(user.getEmail());
 
-            gtalkField = new TextField("GTalk");
-            gtalkField.setWidth("100%");
-            gtalkField.setNullRepresentation("");
-            gtalkField.addValidator(new EmailValidator("Not a valid gtalk address"));
-            if (user != null) gtalkField.setValue(user.getGtalk());
-
             smsField = new TextField("SMS email");
             smsField.setWidth("100%");
             smsField.setNullRepresentation("");
@@ -277,13 +267,12 @@ public class BotUsersSettingsPanel extends VerticalLayout {
                         String country = validate(countryField, String.class);
                         String realName = validate(realNameField, String.class);
                         String email = validate(emailField, String.class);
-                        String gtalk = validate(gtalkField, String.class);
                         String sms = validate(smsField, String.class);
                         boolean smsWorks = smsWorksCheckBox.booleanValue();
 
                         BotUser botUser;
                         if (itemId == null) {
-                            botUser = new BotUser(mainNick, isAdmin, isOwner, timeZone, dst, country, realName, email, gtalk, sms,
+                            botUser = new BotUser(mainNick, isAdmin, isOwner, timeZone, dst, country, realName, email, sms,
                                     smsWorks);
                             botUser.setPassword("password");
                             botUserDAOProvider.get().save(botUser);
@@ -298,7 +287,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
                             botUser.setCountry(country);
                             botUser.setRealName(realName);
                             botUser.setEmail(email);
-                            botUser.setGtalk(gtalk);
                             botUser.setSms(sms);
                             botUser.setSmsConfirmed(smsWorks);
                             botUserDAOProvider.get().save(botUser);
@@ -313,7 +301,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
                             item.getItemProperty("country").setValue(country);
                             item.getItemProperty("realName").setValue(realName);
                             item.getItemProperty("email").setValue(email);
-                            item.getItemProperty("gtalk").setValue(gtalk);
                             item.getItemProperty("sms").setValue(sms);
                             item.getItemProperty("smsWorks").setValue(smsWorks);
                         }
@@ -339,7 +326,6 @@ public class BotUsersSettingsPanel extends VerticalLayout {
             addComponent(countryField);
             addComponent(realNameField);
             addComponent(emailField);
-            addComponent(gtalkField);
             addComponent(smsField);
             addComponent(smsWorksCheckBox);
             HorizontalLayout buttons = new HorizontalLayout();

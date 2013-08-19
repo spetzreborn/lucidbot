@@ -27,7 +27,6 @@
 
 package database.updates.h2;
 
-import api.database.AbstractH2DatabaseUpdater;
 import api.database.DatabaseUpdateAction;
 import api.tools.common.CleanupUtil;
 import com.google.common.collect.Lists;
@@ -37,7 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class H2UpdateV4ToV5 extends AbstractH2DatabaseUpdater {
+public class H2UpdateV4ToV5 extends ApiH2DatabaseUpdater {
     @Override
     public int updatesToVersion() {
         return 5;

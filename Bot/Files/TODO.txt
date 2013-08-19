@@ -36,7 +36,6 @@ connect an order to a forum thread so that it can be explained in detail
 add a target and have the bot fill in hitters automatically
 allow scripts to listen for callbacks to timers they created themselves
 add actions to the tray icon to open the properties file for editing
-integrate with GTalk to allow people to send messages to IRC
 Request system (request intel, spells, ops etc.)
 !meter command that checks summary to find out hostility
 !endwar or something similar that removes all army and spells/op  timers as the war ends

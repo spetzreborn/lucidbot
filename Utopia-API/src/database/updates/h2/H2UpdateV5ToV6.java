@@ -1,11 +1,10 @@
 package database.updates.h2;
 
-import api.database.AbstractH2DatabaseUpdater;
 import api.database.DatabaseUpdateAction;
 import api.database.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
-public class H2UpdateV5ToV6 extends AbstractH2DatabaseUpdater {
+public class H2UpdateV5ToV6 extends ApiH2DatabaseUpdater {
     @Override
     public int updatesToVersion() {
         return 6;

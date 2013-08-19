@@ -1,11 +1,10 @@
 package database.updates.mysql;
 
-import api.database.AbstractMySQLDatabaseUpdater;
 import api.database.DatabaseUpdateAction;
 import api.database.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
-public class MySQLUpdateV6ToV7 extends AbstractMySQLDatabaseUpdater {
+public class MySQLUpdateV6ToV7 extends ApiMySQLDatabaseUpdater {
     @Override
     public int updatesToVersion() {
         return 7;

@@ -50,12 +50,6 @@ public class PropertiesConfig implements PropertiesSpecification {
     public static final String EMAIL_TLS = "Core.Email.UseTLS";
     public static final String EMAIL_USERNAME = "Core.Email.Username";
     public static final String EMAIL_PASSWORD = "Core.Email.Password";
-    public static final String GTALK_HOST = "Core.GTalk.Host";
-    public static final String GTALK_SERVICE_NAME = "Core.GTalk.ServiceName";
-    public static final String GTALK_PORT = "Core.GTalk.Port";
-    public static final String GTALK_USERNAME = "Core.GTalk.Username";
-    public static final String GTALK_PASSWORD = "Core.GTalk.Password";
-    public static final String GTALK_ENABLED = "Core.GTalk.Enabled";
     public static final String IRC_SERVER = "Core.IRC.Server";
     public static final String IRC_PORT = "Core.IRC.Port";
     public static final String IRC_SERVER_PASSWORD = "Core.IRC.ServerPassword";
@@ -104,10 +98,6 @@ public class PropertiesConfig implements PropertiesSpecification {
         defaults.put(EMAIL_HOST, "smtp.gmail.com");
         defaults.put(EMAIL_PORT, "587");
         defaults.put(EMAIL_TLS, "true");
-        defaults.put(GTALK_HOST, "talk.google.com");
-        defaults.put(GTALK_SERVICE_NAME, "gmail.com");
-        defaults.put(GTALK_PORT, "5222");
-        defaults.put(GTALK_ENABLED, "false");
         defaults.put(TRAY_TOOL_TIP, "LucidBot");
     }
 

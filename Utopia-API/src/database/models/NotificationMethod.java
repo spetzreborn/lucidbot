@@ -32,7 +32,6 @@ import api.database.models.BotUser;
 import api.tools.communication.MailException;
 import api.tools.text.StringUtil;
 import lombok.extern.log4j.Log4j;
-import org.jivesoftware.smack.XMPPException;
 import tools.communication.NotificationDeliverer;
 
 @Log4j
@@ -77,21 +76,6 @@ public enum NotificationMethod implements HasName {
         @Override
         public boolean userIsSupported(final BotUser user) {
             return user.getEmail() != null;
-        }
-    }, GTALK {
-        @Override
-        public void deliver(final NotificationDeliverer notificationDeliverer, final BotUser user, final String subject,
-                            final String message) {
-            try {
-                notificationDeliverer.deliverGTalkNotification(user.getGtalk(), message);
-            } catch (XMPPException e) {
-                log.error("Failed to send notification to " + user.getMainNick(), e);
-            }
-        }
-
-        @Override
-        public boolean userIsSupported(final BotUser user) {
-            return user.getGtalk() != null;
         }
     };
 

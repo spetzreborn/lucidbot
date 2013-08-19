@@ -31,8 +31,10 @@ import api.database.DatabaseUpdater;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import internal.database.updates.h2.H2UpdateV1ToV2;
+import internal.database.updates.h2.H2UpdateV9ToV10;
 import internal.database.updates.mysql.MySQLUpdateV1ToV2;
 import internal.database.updates.mysql.MySQLUpdateV2ToV3;
+import internal.database.updates.mysql.MySQLUpdateV9ToV10;
 
 public class DatabaseUpdateModule extends AbstractModule {
     @Override
@@ -41,5 +43,7 @@ public class DatabaseUpdateModule extends AbstractModule {
         binder.addBinding().to(H2UpdateV1ToV2.class);
         binder.addBinding().to(MySQLUpdateV1ToV2.class);
         binder.addBinding().to(MySQLUpdateV2ToV3.class);
+        binder.addBinding().to(H2UpdateV9ToV10.class);
+        binder.addBinding().to(MySQLUpdateV9ToV10.class);
     }
 }

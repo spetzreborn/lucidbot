@@ -42,7 +42,6 @@ import api.settings.BasicSetup;
 import api.settings.PluginServiceLoader;
 import api.settings.PropertiesCollection;
 import api.settings.PropertiesConfig;
-import api.tools.communication.JabberClient;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.*;
 import internal.web.JettyServer;
@@ -70,7 +69,7 @@ import static api.tools.collections.CollectionUtil.isNotEmpty;
 @Singleton
 public final class Main {
     public static final String VERSION = "3.0RC2";
-    public static final int DB_VERSION = 9;
+    public static final int DB_VERSION = 10;
     public static final String INSTALLATION_MODE = "lucidbot.installationMode";
     public static final long STARTUP_TIME = System.currentTimeMillis();
 
@@ -280,7 +279,6 @@ public final class Main {
         protected void configure() {
             bind(Main.class).toInstance(main);
             bind(EventBus.class).toInstance(new EventBus());
-            bind(JabberClient.class).asEagerSingleton();
             requestStaticInjection(ServiceLocator.class);
 
             //Install plugin modules

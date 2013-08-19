@@ -32,12 +32,10 @@ import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.irc.entities.IRCChannel;
 import api.irc.entities.IRCUser;
-import api.tools.communication.JabberClient;
 import api.tools.communication.MailClient;
 import api.tools.communication.MailException;
 import com.google.common.collect.Lists;
 import database.models.Notification;
-import org.jivesoftware.smack.XMPPException;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -52,15 +50,12 @@ public class NotificationDeliverer {
     private final IRCEntityManager ircEntityManager;
     private final IRCAccess ircAccess;
     private final MailClient mailClient;
-    private final JabberClient jabberClient;
 
     @Inject
-    public NotificationDeliverer(final IRCEntityManager ircEntityManager, final IRCAccess ircAccess, final MailClient mailClient,
-                                 final JabberClient jabberClient) {
+    public NotificationDeliverer(final IRCEntityManager ircEntityManager, final IRCAccess ircAccess, final MailClient mailClient) {
         this.ircEntityManager = ircEntityManager;
         this.ircAccess = ircAccess;
         this.mailClient = mailClient;
-        this.jabberClient = jabberClient;
     }
 
     /**
@@ -108,16 +103,4 @@ public class NotificationDeliverer {
             mailClient.sendMail("Bot", Lists.newArrayList(address), subject, message);
     }
 
-    /**
-     * Delivers a notification through GTalk.
-     *
-     * @param address the user's address
-     * @param message the content of the message
-     * @return true if the message was delivered, false if the user wasn't online or GTalk isn't enabled
-     * @throws XMPPException if the message cannot be delivered
-     */
-    public boolean deliverGTalkNotification(final String address, final String message) throws XMPPException {
-        return isNotNullOrEmpty(address) && isNotNullOrEmpty(message) && jabberClient.isEnabled() &&
-                jabberClient.sendGTalkMessage(address, message);
-    }
 }

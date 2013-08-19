@@ -53,7 +53,7 @@ public class ContactsCommandHandlerFactory implements CommandHandlerFactory {
         this.handlerProvider = handlerProvider;
 
         handledCommand.setHelpText(
-                "Used for adding and checking contact information. \"Known types\" of contact info are: sms, email, gtalk, country & name, " +
+                "Used for adding and checking contact information. \"Known types\" of contact info are: sms, email, country & name, " +
                         "but you can add arbitrary ones as well (for example skype)");
 
         parsers.add(CommandParser.getEmptyParser());
@@ -62,7 +62,7 @@ public class ContactsCommandHandlerFactory implements CommandHandlerFactory {
                 CommandParamGroupingSpecification.OPTIONAL);
         ParamParsingSpecification add = new ParamParsingSpecification("add", "add");
         ParamParsingSpecification remove = new ParamParsingSpecification("remove", "remove");
-        ParamParsingSpecification knownType = new ParamParsingSpecification("knownType", "sms|email|gtalk|country|name");
+        ParamParsingSpecification knownType = new ParamParsingSpecification("knownType", "sms|email|country|name");
         ParamParsingSpecification unknownType = new ParamParsingSpecification("unknownType", "[^ ]+");
         ParamParsingSpecification contact = new ParamParsingSpecification("contact", ".+");
         parsers.add(new CommandParser(user));

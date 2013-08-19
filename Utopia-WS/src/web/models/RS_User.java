@@ -146,14 +146,6 @@ public class RS_User implements HasNumericId {
     private String email;
 
     /**
-     * The user's gtalk address.
-     * <p/>
-     * This value is updatable, and needs to be sent in with each request if you don't want it to revert to it's default value (null).
-     */
-    @XmlElement(name = "GTalkAddress")
-    private String gtalk;
-
-    /**
      * The user's sms email gateway address.
      * <p/>
      * This value is updatable, and needs to be sent in with each request if you don't want it to revert to it's default value (null).
@@ -210,7 +202,6 @@ public class RS_User implements HasNumericId {
         this.country = user.getCountry();
         this.realName = user.getRealName();
         this.email = user.getEmail();
-        this.gtalk = user.getGtalk();
         this.sms = user.getSms();
         this.smsConfirmed = user.isSmsConfirmed();
         this.otherContacts = new LinkedList<>();
@@ -230,7 +221,6 @@ public class RS_User implements HasNumericId {
         botUser.setCountry(updatedUser.getCountry());
         botUser.setDst(updatedUser.isDstActive() ? 1 : 0);
         botUser.setEmail(updatedUser.getEmail());
-        botUser.setGtalk(updatedUser.getGtalk());
         botUser.setRealName(updatedUser.getRealName());
         botUser.setSms(updatedUser.getSms());
         botUser.setSmsConfirmed(updatedUser.isSmsConfirmed());
@@ -313,10 +303,6 @@ public class RS_User implements HasNumericId {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getGtalk() {
-        return gtalk;
     }
 
     public String getSms() {
