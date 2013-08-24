@@ -66,12 +66,15 @@ public final class JettyServer implements Runnable, RequiresShutdown {
     private final List<ContextHandler> handlers = new ArrayList<>();
 
     @Inject
-    public JettyServer(@Named(WEB_SERVER_PORT) final int port, final Injector injector) {
+    public JettyServer(@Named(WEB_SERVER_PORT) final int port) {
         this.server = new Server();
         ServerConnector serverConnector = new ServerConnector(server, new HttpConnectionFactory());
         serverConnector.setPort(port);
         server.setConnectors(new Connector[]{serverConnector});
+    }
 
+    @Inject
+    public void init(final Injector injector) {
         try {
             FileUtil.BotFileVisitor fileVisitor = FileUtil
                     .visitDirectory(Paths.get("webapps"), true, FileMatcher.getFileEndingMatcher(".war"));
