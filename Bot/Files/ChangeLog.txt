@@ -1,15 +1,15 @@
-Build: LucidBot 3.0 RC2
+Build: LucidBot 3.0 RC3
 
 What's new:
-* /spells_ops for posting spells and ops from ingame to the bot via the web service
-* Fix to logging - logging for channels was case sensitive
-* Bug fixes for the API, removing some null pointer exceptions that would result in BAD REQUEST errors
-* /intel can now take raw intel of any sort, so you don't have to post single sots and soms and such to /intel/sots etc.
-* Fixed a bug where the bot would try to reconnect when you called !quit, before it finally shut down
+* Removed GTalk integration (wasn't finished anyway)
+* Changed database version tracking. Now it's completely separate for the utopia plugins and the core bot
+* Fixed the web service. It should now accept json input correctly
 
 
 How to update:
 1. Replace LucidBot.jar
 2. Replace utopia-api.jar in the plugins folder
-2. Replace utopia-ui.jar in the plugins folder
-2. Replace utopia-ws.jar in the plugins folder
+3. Replace utopia-commands.jar in the plugins folder
+4. Replace utopia-ui.jar in the plugins folder
+5. Replace utopia-ws.jar in the plugins folder
+6. Remove the GTalk related properties from lucidbot.properties. They should be at the bottom of the file

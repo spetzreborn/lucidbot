@@ -71,7 +71,7 @@ final class MySQLDatabaseManager extends AbstractDatabaseManager {
         configuration.setProperty("hibernate.connection.useUnicode", "true");
         configuration.setProperty("hibernate.connection.characterEncoding", "UTF-8");
         configuration.setProperty("hibernate.connection.charSet", "UTF-8");
-        configuration.setProperty("hibernate.dialect", "internal.database.Mysql5BitBooleanDialect");
+        configuration.setProperty("hibernate.dialect", "internal.database.Mysql5CustomDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://" + dbHost + '/' + dbName + "?createDatabaseIfNotExist=true&transformedBitIsBoolean=true");
 

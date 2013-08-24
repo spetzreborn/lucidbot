@@ -123,7 +123,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
     private void ensureVersionsTableExists(final Connection connection, final Integer initialVersion) {
         PreparedStatement transition = null;
         try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " +
-                "versions(artifact VARCHAR NOT NULL, db_version BIGINT NOT NULL DEFAULT 1, CONSTRAINT pk_versions PRIMARY KEY (artifact))")) {
+                "versions(artifact VARCHAR(30) NOT NULL, db_version BIGINT NOT NULL DEFAULT 1, CONSTRAINT pk_versions PRIMARY KEY (artifact))")) {
 
             statement.execute();
 
@@ -231,6 +231,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         try (PreparedStatement statement = connection.prepareStatement("UPDATE versions SET db_version = ? WHERE artifact = ?")) {
             statement.setLong(1, version);
             statement.setString(2, artifact);
+            statement.execute();
         } catch (SQLException e) {
             AbstractDatabaseManager.log.error("Could not set the new db_version to " + version + " for '" + artifact + "', please do it manually", e);
         }

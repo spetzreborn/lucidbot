@@ -68,8 +68,7 @@ import static api.tools.collections.CollectionUtil.isNotEmpty;
 @Log4j
 @Singleton
 public final class Main {
-    public static final String VERSION = "3.0RC2";
-    public static final int DB_VERSION = 10;
+    public static final String VERSION = "3.0RC3";
     public static final String INSTALLATION_MODE = "lucidbot.installationMode";
     public static final long STARTUP_TIME = System.currentTimeMillis();
 
