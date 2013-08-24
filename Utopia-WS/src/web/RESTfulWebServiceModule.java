@@ -145,8 +145,7 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
             servletHolder.setInitParameter(FeaturesAndProperties.FEATURE_FORMATTED, "true");
             servletHolder.setInitParameter(FeaturesAndProperties.FEATURE_XMLROOTELEMENT_PROCESSING, "true");
             servletHolder.setInitParameter(REQUEST_FILTERS, "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
-            servletHolder.setInitParameter(RESPONSE_FILTERS, "com.sun.jersey.server.linking.LinkFilter," +
-                    "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
+            servletHolder.setInitParameter(RESPONSE_FILTERS, "com.sun.jersey.server.linking.LinkFilter,com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
             contextHandler.addServlet(servletHolder, "/*");
 
             securityHandler.setupSecurity(contextHandler);

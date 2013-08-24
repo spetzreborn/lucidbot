@@ -44,7 +44,7 @@ import java.util.Set;
 
 import static api.tools.collections.ListUtil.toEmptyListIfNull;
 
-@XmlType(name = "Bindings")
+@XmlRootElement(name = "Bindings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_Bindings implements BindingsContainer {
     /**

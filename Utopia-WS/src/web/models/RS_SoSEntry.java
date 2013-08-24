@@ -5,11 +5,11 @@ import database.models.SoSEntry;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import static com.google.common.base.Objects.firstNonNull;
 
-@XmlType(name = "SoSEntry")
+@XmlRootElement(name = "SoSEntry")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_SoSEntry {
     @XmlElement(required = true, name = "ScienceType")

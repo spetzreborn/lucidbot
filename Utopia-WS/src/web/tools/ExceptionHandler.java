@@ -30,7 +30,6 @@ package web.tools;
 import lombok.extern.log4j.Log4j;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -43,6 +42,6 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
         if (e instanceof WebApplicationException)
             return ((WebApplicationException) e).getResponse();
         else ExceptionHandler.log.error("Caught base Exception for web service request", e);
-        return Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN_TYPE).build();
+        return Response.serverError().build();
     }
 }

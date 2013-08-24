@@ -30,35 +30,35 @@ public class AllInOneIntelSubResource {
             @Nullable
             @Override
             public Object apply(@Nullable final Intel intel) {
-                return RS_Kingdom.fromKingdom((Kingdom) intel, true);
+                return RS_Kingdom.fromKingdom((Kingdom) intel, false);
             }
         });
         converters.put(SoM.class, new Function<Intel, Object>() {
             @Nullable
             @Override
             public Object apply(@Nullable final Intel intel) {
-                return RS_SoM.fromSoM((SoM) intel, true);
+                return RS_SoM.fromSoM((SoM) intel, false);
             }
         });
         converters.put(SoS.class, new Function<Intel, Object>() {
             @Nullable
             @Override
             public Object apply(@Nullable final Intel intel) {
-                return RS_SoS.fromSoS((SoS) intel, true);
+                return RS_SoS.fromSoS((SoS) intel, false);
             }
         });
         converters.put(SoT.class, new Function<Intel, Object>() {
             @Nullable
             @Override
             public Object apply(@Nullable final Intel intel) {
-                return RS_SoT.fromSoT((SoT) intel, true);
+                return RS_SoT.fromSoT((SoT) intel, false);
             }
         });
         converters.put(Survey.class, new Function<Intel, Object>() {
             @Nullable
             @Override
             public Object apply(@Nullable final Intel intel) {
-                return RS_Survey.fromSurvey((Survey) intel, true);
+                return RS_Survey.fromSurvey((Survey) intel, false);
             }
         });
     }

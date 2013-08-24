@@ -52,14 +52,14 @@ public class SoMSubResource {
         Map<String, IntelParser<?>> parsers = intelParserManagerProvider.get().getParsers(newSoM);
         if (parsers.isEmpty()) throw new IllegalArgumentException("Data is not parsable");
 
-        IntelParser<?> intelParser = parsers.get(0);
+        IntelParser<?> intelParser = parsers.values().iterator().next();
         if (!intelParser.getIntelTypeHandled().equals(SoM.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoM");
 
         Intel parsedSoM = intelParser.parse(webContext.getName(), newSoM);
         intelDAO.saveIntel(parsedSoM, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
-        return RS_SoM.fromSoM((SoM) parsedSoM, true);
+        return RS_SoM.fromSoM((SoM) parsedSoM, false);
     }
 
     RS_SoM getSoM(final long id) {

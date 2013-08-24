@@ -11,13 +11,13 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 import static com.google.common.base.Objects.firstNonNull;
 
-@XmlType(name = "DragonAction")
+@XmlRootElement(name = "DragonAction")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_DragonAction {
     /**

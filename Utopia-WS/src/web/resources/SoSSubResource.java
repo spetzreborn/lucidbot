@@ -44,14 +44,14 @@ public class SoSSubResource {
         Map<String, IntelParser<?>> parsers = intelParserManagerProvider.get().getParsers(newSos);
         if (parsers.isEmpty()) throw new IllegalArgumentException("Data is not parsable");
 
-        IntelParser<?> intelParser = parsers.get(0);
+        IntelParser<?> intelParser = parsers.values().iterator().next();
         if (!intelParser.getIntelTypeHandled().equals(SoS.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoS");
 
         Intel parsedSoS = intelParser.parse(webContext.getName(), newSos);
         intelDAO.saveIntel(parsedSoS, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
-        return RS_SoS.fromSoS((SoS) parsedSoS, true);
+        return RS_SoS.fromSoS((SoS) parsedSoS, false);
     }
 
     RS_SoS getSos(final long id) {

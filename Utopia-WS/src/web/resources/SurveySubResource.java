@@ -44,14 +44,14 @@ public class SurveySubResource {
         Map<String, IntelParser<?>> parsers = intelParserManagerProvider.get().getParsers(newSurvey);
         if (parsers.isEmpty()) throw new IllegalArgumentException("Data is not parsable");
 
-        IntelParser<?> intelParser = parsers.get(0);
+        IntelParser<?> intelParser = parsers.values().iterator().next();
         if (!intelParser.getIntelTypeHandled().equals(Survey.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a Survey");
 
         Intel parsedSurvey = intelParser.parse(webContext.getName(), newSurvey);
         intelDAO.saveIntel(parsedSurvey, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
-        return RS_Survey.fromSurvey((Survey) parsedSurvey, true);
+        return RS_Survey.fromSurvey((Survey) parsedSurvey, false);
     }
 
     RS_Survey getSurvey(final long id) {

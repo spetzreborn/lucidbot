@@ -39,7 +39,7 @@ import java.util.List;
 
 import static api.tools.collections.ListUtil.toEmptyListIfNull;
 
-@XmlType(name = "Personality")
+@XmlRootElement(name = "Personality")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_Personality implements HasNumericId {
     @XmlElement(name = "ID")
