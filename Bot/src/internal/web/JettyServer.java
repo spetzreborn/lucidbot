@@ -76,8 +76,7 @@ public final class JettyServer implements Runnable, RequiresShutdown {
     @Inject
     public void init(final Injector injector) {
         try {
-            FileUtil.BotFileVisitor fileVisitor = FileUtil
-                    .visitDirectory(Paths.get("webapps"), true, FileMatcher.getFileEndingMatcher(".war"));
+            FileUtil.BotFileVisitor fileVisitor = FileUtil.visitDirectory(Paths.get("webapps"), true, FileMatcher.getFileEndingMatcher(".war"));
 
             for (Path path : fileVisitor.getFiles()) {
                 WebAppContext webapp = new WebAppContext();
