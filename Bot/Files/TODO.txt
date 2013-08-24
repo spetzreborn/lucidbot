@@ -7,13 +7,11 @@ DOCS:
 * Scripting
 * Plugins
 * Templates
-* WADL + xsd + docs for web API
 * Complete command list + what is command definitions?
 * Package the bot with default aliases
 
 CLEANUP:
 Replace strings that are used in many places with constants
-make classes final
 add the JSR-305 annotations where appropriate, and also maybe some package level javadoc
 
 LIB UPDATES:
