@@ -33,7 +33,7 @@ import api.events.irc.*;
 import api.runtime.ThreadingManager;
 import api.settings.PropertiesCollection;
 import api.tools.common.CleanupUtil;
-import api.tools.text.StringUtil;
+import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import internal.irc.InputThread;
@@ -52,7 +52,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +61,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static api.settings.PropertiesConfig.*;
+import static api.tools.text.StringUtil.isNotNullOrEmpty;
 import static api.tools.text.StringUtil.lowerCase;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -185,13 +185,13 @@ public final class BotIRCInstance implements RequiresShutdown {
             socket = new Socket(hostname, port);
             socket.setSoTimeout(300_000);
 
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charsets.UTF_8));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8));
 
             inputThread = new InputThread(this, reader, eventBus);
             outputThread = new OutputThread(getNick(), writer, properties.getInteger(IRC_MAX_LENGTH), delayHandler);
 
-            if (StringUtil.isNotNullOrEmpty(serverPassword)) {
+            if (isNotNullOrEmpty(serverPassword)) {
                 sendAndLogCommand(IrcCommands.PassCommand.format(serverPassword));
             }
             sendAndLogCommand(IrcCommands.NickCommand.format(nick));

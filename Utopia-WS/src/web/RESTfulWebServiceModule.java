@@ -28,10 +28,14 @@
 package web;
 
 import api.settings.PropertiesCollection;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import com.google.common.io.InputSupplier;
 import com.google.inject.multibindings.Multibinder;
 import com.sun.jersey.core.util.FeaturesAndProperties;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -43,6 +47,17 @@ import web.tools.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 public class RESTfulWebServiceModule extends JerseyServletModule {
     private static final String REQUEST_FILTERS = "com.sun.jersey.spi.container.ContainerRequestFilters";
@@ -65,6 +80,8 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         bind(IllegalStateExceptionHandler.class).in(Singleton.class);
         bind(NullPointerExceptionHandler.class).in(Singleton.class);
         bind(ExceptionHandler.class).in(Singleton.class);
+
+        bind(CustomJsonReader.class).in(Singleton.class);
 
         bind(WebContextInjectable.class).in(Singleton.class);
 
@@ -143,6 +160,37 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         @Override
         public boolean isEnabled() {
             return properties.getBoolean(UtopiaWSPropertiesConfig.WEB_SERVICE_API);
+        }
+    }
+
+    @Provider
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class CustomJsonReader<T> implements MessageBodyReader<T> {
+        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+        @Override
+        public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
+            return true;
+        }
+
+        @Override
+        public T readFrom(final Class<T> type,
+                          final Type genericType,
+                          final Annotation[] annotations,
+                          final MediaType mediaType,
+                          final MultivaluedMap<String, String> httpHeaders,
+                          final InputStream entityStream) throws IOException, WebApplicationException {
+
+            InputSupplier<? extends InputStream> supplier = new InputSupplier<InputStream>() {
+                @Override
+                public InputStream getInput() throws IOException {
+                    return entityStream;
+                }
+            };
+            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(supplier, Charsets.UTF_8);
+
+            String json = CharStreams.toString(readerSupplier);
+            return OBJECT_MAPPER.readValue(json, type);
         }
     }
 }
