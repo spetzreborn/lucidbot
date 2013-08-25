@@ -29,27 +29,22 @@ package commands.scripts.factories;
 
 import api.commands.Command;
 import api.commands.CommandParser;
-import api.commands.ParamParsingSpecification;
 import listeners.ScriptManager;
 import spi.commands.CommandHandler;
 import spi.commands.CommandHandlerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ScriptCommandHandlerFactory implements CommandHandlerFactory {
     private final Command handledCommand;
-    private final List<CommandParser> parsers = new ArrayList<>();
+    private final List<CommandParser> parsers;
     private final ScriptManager scriptManager;
 
-    public ScriptCommandHandlerFactory(final Command handleCommand, final ScriptManager scriptManager) {
+    public ScriptCommandHandlerFactory(final Command handleCommand, final List<CommandParser> parsers, final ScriptManager scriptManager) {
         this.handledCommand = handleCommand;
         this.scriptManager = scriptManager;
-
-        ParamParsingSpecification params = new ParamParsingSpecification("params", ".*");
-        parsers.add(new CommandParser(params));
-        parsers.add(CommandParser.getEmptyParser());
+        this.parsers = parsers;
     }
 
     @Override

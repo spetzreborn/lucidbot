@@ -28,19 +28,21 @@
 package listeners;
 
 import api.commands.Command;
-import api.commands.CommandHandlingException;
+import api.commands.CommandParser;
+import api.commands.ParamParsingSpecification;
 import api.events.DirectoryChangeEventObserver;
 import api.events.bot.CommandRemovedEvent;
 import api.runtime.ThreadingManager;
 import api.tools.files.FileUtil;
 import api.tools.files.JavaFileFilter;
-import api.tools.text.StringUtil;
+import com.google.common.base.Charsets;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.log4j.Log4j;
 import spi.commands.CommandHandler;
+import spi.commands.ParameterizedScriptCommandHandler;
 import spi.commands.ScriptCommandHandler;
 import spi.events.EventListener;
 import spi.events.ScriptEventListener;
@@ -52,21 +54,20 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.*;
 
+import static api.tools.text.StringUtil.merge;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -80,18 +81,27 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
     private final ThreadingManager threadingManager;
 
     private final ConcurrentMap<Command, Path> commandHandledToFileMapping = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Command, List<CommandParser>> commandParserMapping = new ConcurrentHashMap<>();
     private final Cache<Command, ScriptCommandHandler> cache = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.HOURS).build();
 
     private final ConcurrentMap<ScriptEventListener, Class<?>> eventListenerToEventTypeMapping = new ConcurrentHashMap<>();
     private final ConcurrentMap<Path, ScriptEventListener> fileNameToEventListenerMapping = new ConcurrentHashMap<>();
 
-    private final ScriptEngineManager manager;
+    private ScriptEngineManager manager;
 
     @Inject
     public ScriptManager(final EventBus eventBus, final ThreadingManager threadingManager) {
         this.eventBus = eventBus;
         this.threadingManager = threadingManager;
+    }
 
+    @Inject
+    public void init() {
+        initScriptEngineManager();
+        findScripts();
+    }
+
+    private void initScriptEngineManager() {
         File engineDir = SCRIPTENGINES_DIR.toFile();
         List<URL> urls = new ArrayList<>();
         File[] files = engineDir.listFiles(new JavaFileFilter());
@@ -105,7 +115,9 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
         }
         ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), ClassLoader.getSystemClassLoader());
         manager = new ScriptEngineManager(classLoader);
+    }
 
+    private void findScripts() {
         File scriptsDir = SCRIPTS_DIR.toFile();
         File[] scripts = scriptsDir.listFiles();
         if (scripts != null) {
@@ -172,20 +184,31 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
             String extension = FileUtil.getFileExtension(scriptFile);
             ScriptEngine scriptEngine = manager.getEngineByExtension(extension);
             if (scriptEngine != null) {
-                String content = StringUtil.merge(Files.readAllLines(scriptFile, Charset.defaultCharset()), '\n');
+                List<String> allLinesInFile = Files.readAllLines(scriptFile, Charsets.UTF_8);
+                String content = merge(allLinesInFile, '\n');
                 scriptEngine.eval(content);
                 return (Invocable) scriptEngine;
             } else throw new IllegalStateException("Unknown script extension (no ScriptEngine exists): " + extension);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ScriptException(e);
         }
     }
 
     private boolean registerCommandHandler(final Path file, final Invocable scriptEngine) {
-        ScriptCommandHandler commandHandler = scriptEngine.getInterface(ScriptCommandHandler.class);
-        if (commandHandler == null) return false;
+        ScriptCommandHandler commandHandler = scriptEngine.getInterface(ParameterizedScriptCommandHandler.class);
+        List<CommandParser> parsers = new ArrayList<>();
+        if (commandHandler == null) {
+            commandHandler = scriptEngine.getInterface(ScriptCommandHandler.class);
+            if (commandHandler == null) return false;
+
+            parsers.add(new CommandParser(new ParamParsingSpecification("params", ".*")));
+            parsers.add(CommandParser.getEmptyParser());
+        } else {
+            Collections.addAll(parsers, ((ParameterizedScriptCommandHandler) commandHandler).getParsers());
+        }
         Command handler = commandHandler.handles();
         commandHandledToFileMapping.put(handler, file);
+        commandParserMapping.put(handler, parsers);
         return true;
     }
 
@@ -213,8 +236,8 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
         }
     }
 
-    public Set<Command> getAllHandledCommands() {
-        return commandHandledToFileMapping.keySet();
+    public Map<Command, List<CommandParser>> getAllHandledCommands() {
+        return commandParserMapping;
     }
 
     /**
@@ -236,35 +259,16 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
         }
     }
 
-    public static void main(String[] args) {
-        /*File engineDir = SCRIPTENGINES_DIR.toFile();
-        List<URL> urls = new ArrayList<>();
-        for (File file : engineDir.listFiles(new JavaFileFilter())) {
-            try {
-                urls.add(file.toURI().toURL());
-            } catch (MalformedURLException ignore) {
-            }
-        }
-        ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]));
-        ScriptEngineManager manager = new ScriptEngineManager(classLoader);
-        for (ScriptEngineFactory factory : manager.getEngineFactories()) {
-            //noinspection UseOfSystemOutOrSystemErr
-            System.out.println(factory.getExtensions() + " - " + factory.getLanguageName());
-        }*/
+    /*public static void main(String[] args) {
         ScriptManager scriptManager = new ScriptManager(new EventBus(), new ThreadingManager(5));
-        Set<Command> allHandledCommands = scriptManager.getAllHandledCommands();
-        for (Command handledCommand : allHandledCommands) {
-            System.out.println(handledCommand.getName());
-        }
-        if (!allHandledCommands.isEmpty()) {
-            try {
-                for (Command handledCommand : allHandledCommands) {
-                    CommandHandler handlerForCommand = scriptManager.getHandlerForCommand(handledCommand);
-                    System.out.println(handlerForCommand.handleCommand(null, null, null, null));
-                }
-            } catch (CommandHandlingException e) {
-                e.printStackTrace();
+        scriptManager.init();
+        System.out.println(Paths.get(".").toAbsolutePath());
+        Map<Command, List<CommandParser>> allHandledCommands = scriptManager.getAllHandledCommands();
+        for (Map.Entry<Command, List<CommandParser>> handledCommand : allHandledCommands.entrySet()) {
+            System.out.println(handledCommand.getKey().getName());
+            for (CommandParser commandParser : handledCommand.getValue()) {
+                System.out.println("!"+handledCommand.getKey().getName()+" "+commandParser.getSyntaxDescription());
             }
-        } else System.out.println("Massive fail");
-    }
+        }
+    }*/
 }

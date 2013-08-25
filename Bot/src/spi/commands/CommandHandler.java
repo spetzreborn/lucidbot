@@ -57,6 +57,8 @@ public interface CommandHandler {
      * @return see explanation above
      * @throws CommandHandlingException wraps any exceptions that occurred
      */
-    CommandResponse handleCommand(IRCContext context, Params params, Collection<Filter<?>> filters,
+    CommandResponse handleCommand(final IRCContext context,
+                                  final Params params,
+                                  final Collection<Filter<?>> filters,
                                   final DelayedEventPoster delayedEventPoster) throws CommandHandlingException;
 }

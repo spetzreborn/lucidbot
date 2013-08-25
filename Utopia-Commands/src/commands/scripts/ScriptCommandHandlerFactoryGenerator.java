@@ -28,6 +28,7 @@
 package commands.scripts;
 
 import api.commands.Command;
+import api.commands.CommandParser;
 import commands.scripts.factories.ScriptCommandHandlerFactory;
 import listeners.ScriptManager;
 import spi.commands.CommandHandlerFactory;
@@ -36,7 +37,8 @@ import spi.commands.DynamicCommandHandlerFactoryGenerator;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 public final class ScriptCommandHandlerFactoryGenerator implements DynamicCommandHandlerFactoryGenerator {
     private final ScriptManager scriptManager;
@@ -48,10 +50,10 @@ public final class ScriptCommandHandlerFactoryGenerator implements DynamicComman
 
     @Override
     public Collection<CommandHandlerFactory> generateCommandHandlerFactories() {
-        Set<Command> allHandledCommands = scriptManager.getAllHandledCommands();
+        Map<Command, List<CommandParser>> allHandledCommands = scriptManager.getAllHandledCommands();
         Collection<CommandHandlerFactory> out = new ArrayList<>(allHandledCommands.size());
-        for (Command handledCommand : allHandledCommands) {
-            out.add(new ScriptCommandHandlerFactory(handledCommand, scriptManager));
+        for (Map.Entry<Command, List<CommandParser>> handledCommandEntry : allHandledCommands.entrySet()) {
+            out.add(new ScriptCommandHandlerFactory(handledCommandEntry.getKey(), handledCommandEntry.getValue(), scriptManager));
         }
         return out;
     }

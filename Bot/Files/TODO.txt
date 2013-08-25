@@ -27,7 +27,6 @@ Barren Land and Unknown building types should be impossible to remove
 A better scheme for Private Messages, so that they don't get removed for the sender just because the recipient deletes etc.
 
 FUTURE:
-Params parsing support for scripts
 Early indications show that our operation was a success and we have 75% confidence in the information retrieved.
 Allow a bonus that affects building bonuses
 connect an order to a forum thread so that it can be explained in detail
