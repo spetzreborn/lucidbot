@@ -15,8 +15,8 @@ Replace strings that are used in many places with constants
 add the JSR-305 annotations where appropriate, and also maybe some package level javadoc
 
 LIB UPDATES:
-Update to Jersey 2.x
-Update to Log4J 2.x
+Update to Jersey 2.x <-- problematic as the Guice support isn't great atm
+Update to Log4J 2.x <-- not final yet
 Update Vaadin to 7.x or replace UI with GWT or something else
 
 GOOD TO HAVE:
