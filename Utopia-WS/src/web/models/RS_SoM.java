@@ -43,6 +43,7 @@ import java.util.List;
 import static api.tools.collections.ListUtil.toEmptyListIfNull;
 
 @XmlRootElement(name = "SoM")
+@XmlType(name = "SoM")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_SoM implements HasNumericId {
     @XmlElement(name = "ID")

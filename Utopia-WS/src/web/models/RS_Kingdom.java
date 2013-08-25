@@ -46,6 +46,7 @@ import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @XmlRootElement(name = "Kingdom")
+@XmlType(name = "Kingdom")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_Kingdom implements HasNumericId {
     @XmlElement(name = "ID")

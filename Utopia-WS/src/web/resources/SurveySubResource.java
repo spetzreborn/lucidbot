@@ -49,6 +49,7 @@ public class SurveySubResource {
             throw new IllegalArgumentException("Data is not recognized as a Survey");
 
         Intel parsedSurvey = intelParser.parse(webContext.getName(), newSurvey);
+        if (parsedSurvey == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSurvey, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
         return RS_Survey.fromSurvey((Survey) parsedSurvey, false);

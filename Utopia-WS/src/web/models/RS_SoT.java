@@ -32,10 +32,7 @@ import com.sun.jersey.server.linking.Ref;
 import database.models.SoT;
 import web.tools.ISODateTimeAdapter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.Date;
@@ -43,6 +40,7 @@ import java.util.Date;
 import static api.tools.text.StringUtil.isNullOrEmpty;
 
 @XmlRootElement(name = "SoT")
+@XmlType(name = "SoT")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_SoT implements HasNumericId {
     @XmlElement(name = "ID")

@@ -45,11 +45,11 @@ public class IntelResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Consumes({MediaType.TEXT_PLAIN})
     @Transactional
-    public JResponse<List<Object>> addIntel(@Documentation(value = "The formatted or unformatted intel (multiple items allowed)", itemName = "newIntel")
-                                            @NotEmpty(message = "The intel may not be null or empty")
-                                            final String newIntel,
-                                            @Context final WebContext webContext) throws Exception {
-        return JResponse.ok(allInOneIntelSubResource.get().addIntel(newIntel, webContext)).build();
+    public String addIntel(@Documentation(value = "The formatted or unformatted intel (multiple items allowed)", itemName = "newIntel")
+                           @NotEmpty(message = "The intel may not be null or empty")
+                           final String newIntel,
+                           @Context final WebContext webContext) throws Exception {
+        return allInOneIntelSubResource.get().addIntel(newIntel, webContext);
     }
 
     @Documentation("Parses the incoming text and returns the saved SoM")

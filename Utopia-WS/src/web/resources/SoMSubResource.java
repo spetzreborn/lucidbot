@@ -57,6 +57,7 @@ public class SoMSubResource {
             throw new IllegalArgumentException("Data is not recognized as a SoM");
 
         Intel parsedSoM = intelParser.parse(webContext.getName(), newSoM);
+        if (parsedSoM == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSoM, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
         return RS_SoM.fromSoM((SoM) parsedSoM, false);

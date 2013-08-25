@@ -48,6 +48,7 @@ public class SoTSubResource {
             throw new IllegalArgumentException("Data is not recognized as a SoT");
 
         Intel parsedSoT = intelParser.parse(webContext.getName(), newSoT);
+        if (parsedSoT == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSoT, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
         return RS_SoT.fromSoT((SoT) parsedSoT, false);

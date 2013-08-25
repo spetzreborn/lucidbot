@@ -44,6 +44,7 @@ import static api.tools.collections.ListUtil.toEmptyListIfNull;
 import static com.google.common.base.Objects.firstNonNull;
 
 @XmlRootElement(name = "Survey")
+@XmlType(name = "Survey")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RS_Survey implements HasNumericId {
     @XmlElement(name = "ID")

@@ -49,6 +49,7 @@ public class SoSSubResource {
             throw new IllegalArgumentException("Data is not recognized as a SoS");
 
         Intel parsedSoS = intelParser.parse(webContext.getName(), newSos);
+        if (parsedSoS == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSoS, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 
         return RS_SoS.fromSoS((SoS) parsedSoS, false);
