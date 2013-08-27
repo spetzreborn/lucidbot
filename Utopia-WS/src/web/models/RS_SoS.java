@@ -36,9 +36,7 @@ import web.tools.ISODateTimeAdapter;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static api.tools.collections.ListUtil.toEmptyListIfNull;
 
@@ -86,15 +84,35 @@ public class RS_SoS implements HasNumericId {
 
     private RS_SoS(final SoS sos) {
         this(sos.getId(), RS_Province.fromProvince(sos.getProvince(), false));
-        this.entries = new ArrayList<>();
-        for (SoSEntry entry : sos.getSciences()) {
-            this.entries.add(new RS_SoSEntry(entry));
-        }
+        this.entries = new ArrayList<>(mapEntries(sos));
         this.books = sos.getTotalBooks();
         this.exportLine = sos.getExportLine();
         this.savedBy = sos.getSavedBy();
         this.lastUpdated = sos.getLastUpdated();
         this.accuracy = sos.getAccuracy();
+    }
+
+    private Collection<RS_SoSEntry> mapEntries(final SoS sos) {
+        Map<String, RS_SoSEntry> entryMap = new HashMap<>();
+        for (SoSEntry entry : sos.getSciences()) {
+            String scienceTypeName = entry.getScienceType().getName();
+            if (entryMap.containsKey(scienceTypeName)) {
+                RS_SoSEntry sEntry = entryMap.get(scienceTypeName);
+                switch (entry.getType()) {
+                    case BOOKS:
+                        sEntry.setBooks((int) Math.round(entry.getValue()));
+                        break;
+                    case BOOKS_IN_PROGRESS:
+                        sEntry.setBooksInProgress((int) Math.round(entry.getValue()));
+                        break;
+                    case EFFECT:
+                        sEntry.setEffect(entry.getValue());
+                }
+            } else {
+                entryMap.put(scienceTypeName, new RS_SoSEntry(entry.getScienceType()));
+            }
+        }
+        return entryMap.values();
     }
 
     public static RS_SoS fromSoS(final SoS sos, final boolean full) {

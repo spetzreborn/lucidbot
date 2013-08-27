@@ -1,15 +1,12 @@
 Build: LucidBot 3.0 RC3
 
 What's new:
-* Removed GTalk integration (wasn't finished anyway)
-* Changed database version tracking. Now it's completely separate for the utopia plugins and the core bot
-* Fixed the web service. It should now accept json input correctly
+* Changed sos and survey entries to not be separate for done, in progress etc. (there's now one per building/science type with all the numbers inside it instead)
+* Introduced the interface ParameterizedScriptCommandHandler which allows scripts to tell the bot which parsers to use, making the Params object useful for script command handlers too. The javascript example has been updated to show how it's used (https://bitbucket.org/fredrik_yttergren/lucidbot/src/92d7fd746c495ad343af2f6797def024973ea35b/Utopia-API/scripts/hello_world.js?at=master)
 
 
 How to update:
 1. Replace LucidBot.jar
 2. Replace utopia-api.jar in the plugins folder
 3. Replace utopia-commands.jar in the plugins folder
-4. Replace utopia-ui.jar in the plugins folder
-5. Replace utopia-ws.jar in the plugins folder
-6. Remove the GTalk related properties from lucidbot.properties. They should be at the bottom of the file
+4. Replace utopia-ws.jar in the plugins folder

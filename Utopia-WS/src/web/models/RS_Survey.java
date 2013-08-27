@@ -36,9 +36,7 @@ import web.tools.ISODateTimeAdapter;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static api.tools.collections.ListUtil.toEmptyListIfNull;
 import static com.google.common.base.Objects.firstNonNull;
@@ -90,16 +88,33 @@ public class RS_Survey implements HasNumericId {
 
     private RS_Survey(final Survey survey) {
         this(survey.getId(), RS_Province.fromProvince(survey.getProvince(), false));
-        this.entries = new ArrayList<>();
-        for (SurveyEntry entry : survey.getBuildings()) {
-            this.entries.add(new RS_SurveyEntry(entry));
-        }
+        this.entries = new ArrayList<>(mapEntries(survey));
         this.built = survey.getTotalBuilt();
         this.inProgress = survey.getTotalInProgress();
         this.exportLine = survey.getExportLine();
         this.savedBy = survey.getSavedBy();
         this.lastUpdated = survey.getLastUpdated();
         this.accuracy = survey.getAccuracy();
+    }
+
+    private Collection<RS_SurveyEntry> mapEntries(final Survey survey) {
+        Map<String, RS_SurveyEntry> entryMap = new HashMap<>();
+        for (SurveyEntry entry : survey.getBuildings()) {
+            String buildingName = entry.getBuilding().getName();
+            if (entryMap.containsKey(buildingName)) {
+                RS_SurveyEntry sEntry = entryMap.get(buildingName);
+                switch (entry.getType()) {
+                    case BUILT:
+                        sEntry.setBuilt(entry.getValue());
+                        break;
+                    case IN_PROGRESS:
+                        sEntry.setInProgress(entry.getValue());
+                }
+            } else {
+                entryMap.put(buildingName, new RS_SurveyEntry(entry.getBuilding()));
+            }
+        }
+        return entryMap.values();
     }
 
     public static RS_Survey fromSurvey(final Survey survey, final boolean full) {
