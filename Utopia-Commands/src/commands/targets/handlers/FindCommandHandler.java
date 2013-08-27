@@ -36,7 +36,6 @@ import api.settings.PropertiesCollection;
 import api.tools.collections.Params;
 import api.tools.compare.DynamicComparator;
 import api.tools.numbers.NumberUtil;
-import api.tools.text.StringUtil;
 import api.tools.time.TimeUtil;
 import database.daos.ProvinceDAO;
 import database.models.Province;
@@ -52,6 +51,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 
+import static api.tools.text.StringUtil.splitOnSpace;
 import static tools.UtopiaPropertiesConfig.FINDER_MAX_RESULTS;
 import static tools.UtopiaPropertiesConfig.INTRA_KD_LOC;
 
@@ -86,11 +86,10 @@ public class FindCommandHandler implements CommandHandler {
             boolean hasSortingSpecified = params.containsKey("sorting");
             if (hasSortingSpecified) {
                 initLazyCollections(provinceWithResources);
-                String sorting = StringUtil.splitOnSpace(params.getParameter("sorting"))[1];
+                String sorting = splitOnSpace(params.getParameter("sorting"))[1];
                 Method sortingMethod = getSortingMethod(sorting);
                 if (sortingMethod == null)
                     return CommandResponse.errorResponse("Syntax error, sorting option not recognized");
-                sortingMethod.setAccessible(true);
                 Collections.sort(provinces, new DynamicComparator<Province>(sortingMethod));
                 if ("desc".equalsIgnoreCase(params.getParameter("sortingSpec"))) Collections.reverse(provinces);
                 try {
@@ -108,7 +107,7 @@ public class FindCommandHandler implements CommandHandler {
             int maxResults = properties.getInteger(FINDER_MAX_RESULTS);
             if (params.containsKey("limit")) {
                 String limitSpec = params.getParameter("limit");
-                maxResults = Math.min(maxResults, NumberUtil.parseInt(StringUtil.splitOnSpace(limitSpec)[1]));
+                maxResults = Math.min(maxResults, NumberUtil.parseInt(splitOnSpace(limitSpec)[1]));
             }
             if (!hasSortingSpecified && maxResults < provinces.size()) {
                 provinces = new ArrayList<>(provinces.subList(0, maxResults));
@@ -138,7 +137,7 @@ public class FindCommandHandler implements CommandHandler {
     private static Method getSortingMethod(final String name) {
         for (Method method : Province.class.getDeclaredMethods()) {
             SortEnabled annotation = method.getAnnotation(SortEnabled.class);
-            if (annotation != null && name.matches(annotation.value())) {
+            if (annotation != null && name.matches("(?i)(" + annotation.value() + ')')) {
                 method.setAccessible(true);
                 return method;
             }
