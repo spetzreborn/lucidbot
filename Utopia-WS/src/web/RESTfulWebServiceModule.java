@@ -38,6 +38,7 @@ import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -169,6 +170,7 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
 
         static {
             OBJECT_MAPPER.setDateFormat(DateFactory.getISODateTimeWithTimeZoneFormat());
+            OBJECT_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
         }
 
         public CustomJsonReader() {
