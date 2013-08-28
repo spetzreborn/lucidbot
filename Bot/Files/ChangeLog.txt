@@ -1,7 +1,7 @@
-Build: LucidBot 3.0 RC3
+Build: LucidBot 3.0 RC4
 
 What's new:
-* Bug fixes for
+* Bug fixes for the web service API
 * Changed sos and survey entries to not be separate for done, in progress etc. (there's now one per building/science type with all the numbers inside it instead)
 * Introduced the interface ParameterizedScriptCommandHandler which allows scripts to tell the bot which parsers to use, making the Params object useful for script command handlers too. The javascript example has been updated to show how it's used (https://bitbucket.org/fredrik_yttergren/lucidbot/src/92d7fd746c495ad343af2f6797def024973ea35b/Utopia-API/scripts/hello_world.js?at=master)
 
