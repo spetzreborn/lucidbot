@@ -28,6 +28,7 @@
 package web;
 
 import api.settings.PropertiesCollection;
+import api.tools.time.DateFactory;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.InputSupplier;
@@ -35,6 +36,7 @@ import com.google.inject.multibindings.Multibinder;
 import com.sun.jersey.core.util.FeaturesAndProperties;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -48,10 +50,8 @@ import web.tools.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,8 +164,16 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
 
     @Provider
     @Consumes(MediaType.APPLICATION_JSON)
-    public static class CustomJsonReader<T> implements MessageBodyReader<T> {
+    public static class CustomJsonReader extends JacksonJsonProvider {
         private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+        static {
+            OBJECT_MAPPER.setDateFormat(DateFactory.getISODateTimeWithTimeZoneFormat());
+        }
+
+        public CustomJsonReader() {
+            super(OBJECT_MAPPER);
+        }
 
         @Override
         public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
@@ -173,13 +181,12 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         }
 
         @Override
-        public T readFrom(final Class<T> type,
-                          final Type genericType,
-                          final Annotation[] annotations,
-                          final MediaType mediaType,
-                          final MultivaluedMap<String, String> httpHeaders,
-                          final InputStream entityStream) throws IOException, WebApplicationException {
-
+        public Object readFrom(final Class<Object> type,
+                               final Type genericType,
+                               final Annotation[] annotations,
+                               final MediaType mediaType,
+                               final MultivaluedMap<String, String> httpHeaders,
+                               final InputStream entityStream) throws IOException {
             InputSupplier<? extends InputStream> supplier = new InputSupplier<InputStream>() {
                 @Override
                 public InputStream getInput() throws IOException {
