@@ -43,7 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DateFactory {
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String DATE_TIME_TIMEZONE_FORMAT = "yyyy-MM-dd HH:mm:ssXXX";
+    private static final String DATE_TIME_TIMEZONE_FORMAT = "yyyy-MM-dd HH:mm:ssZ";
     private static final String DATE_TIME_NO_SECONDS_FORMAT = "yyyy-MM-dd HH:mm";
 
     private DateFactory() {

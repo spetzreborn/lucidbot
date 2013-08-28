@@ -15,6 +15,8 @@ import com.google.inject.matcher.Matchers;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.validation.*;
 import javax.validation.executable.ExecutableValidator;
@@ -22,16 +24,19 @@ import javax.validation.executable.ExecutableValidator;
 public class ValidationModule extends AbstractModule {
 
     protected void configure() {
-        bindInterceptor(Matchers.annotatedWith(ValidationEnabled.class), Matchers.any(), new MethodArgumentValidationInterceptor());
+        MethodArgumentValidationInterceptor interceptor = new MethodArgumentValidationInterceptor();
+        bindInterceptor(Matchers.annotatedWith(ValidationEnabled.class), Matchers.any(), interceptor);
+        requestInjection(interceptor);
     }
 
     private static class MethodArgumentValidationInterceptor implements MethodInterceptor {
-        private final ExecutableValidator validator = (ExecutableValidator) Validation.buildDefaultValidatorFactory().getValidator();
+        @Inject
+        private Provider<ExecutableValidator> validatorProvider;
 
         @Override
         public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
             ValidationUtil.validate(methodInvocation.getThis(), methodInvocation.getMethod(), methodInvocation.getArguments())
-                    .using(validator).throwOnFailedValidation();
+                    .using(validatorProvider.get()).throwOnFailedValidation();
             return methodInvocation.proceed();
         }
     }
