@@ -17,6 +17,7 @@ import web.tools.WebContext;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,12 @@ public class SurveySubResource {
         if (!intelParser.getIntelTypeHandled().equals(Survey.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a Survey");
 
-        Intel parsedSurvey = intelParser.parse(webContext.getName(), newSurvey);
+        Intel parsedSurvey = null;
+        try {
+            parsedSurvey = intelParser.parse(webContext.getName(), newSurvey);
+        } catch (ParseException e) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         if (parsedSurvey == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSurvey, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 

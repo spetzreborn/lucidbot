@@ -149,7 +149,7 @@ public class ProvinceResource {
         BotUser owner = botUserDAOProvider.get().getUser(provinceOwner.getId());
 
         Province existingProvince = provinceDAO.getProvinceForUser(owner);
-        existingProvince.setOwner(null);
+        if (existingProvince != null) existingProvince.setOwner(null);
 
         province.setProvinceOwner(owner);
         return RS_Province.fromProvince(province, true);

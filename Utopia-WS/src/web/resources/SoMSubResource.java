@@ -19,6 +19,7 @@ import web.tools.WebContext;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,12 @@ public class SoMSubResource {
         if (!intelParser.getIntelTypeHandled().equals(SoM.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoM");
 
-        Intel parsedSoM = intelParser.parse(webContext.getName(), newSoM);
+        Intel parsedSoM = null;
+        try {
+            parsedSoM = intelParser.parse(webContext.getName(), newSoM);
+        } catch (ParseException e) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         if (parsedSoM == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSoM, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 

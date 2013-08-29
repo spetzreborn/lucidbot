@@ -17,6 +17,7 @@ import web.tools.WebContext;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,12 @@ public class SoSSubResource {
         if (!intelParser.getIntelTypeHandled().equals(SoS.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoS");
 
-        Intel parsedSoS = intelParser.parse(webContext.getName(), newSos);
+        Intel parsedSoS = null;
+        try {
+            parsedSoS = intelParser.parse(webContext.getName(), newSos);
+        } catch (ParseException e) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         if (parsedSoS == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
         intelDAO.saveIntel(parsedSoS, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
 

@@ -96,20 +96,19 @@ public class RS_SoS implements HasNumericId {
         Map<String, RS_SoSEntry> entryMap = new HashMap<>();
         for (SoSEntry entry : sos.getSciences()) {
             String scienceTypeName = entry.getScienceType().getName();
-            if (entryMap.containsKey(scienceTypeName)) {
-                RS_SoSEntry sEntry = entryMap.get(scienceTypeName);
-                switch (entry.getType()) {
-                    case BOOKS:
-                        sEntry.setBooks((int) Math.round(entry.getValue()));
-                        break;
-                    case BOOKS_IN_PROGRESS:
-                        sEntry.setBooksInProgress((int) Math.round(entry.getValue()));
-                        break;
-                    case EFFECT:
-                        sEntry.setEffect(entry.getValue());
-                }
-            } else {
+            if (!entryMap.containsKey(scienceTypeName)) {
                 entryMap.put(scienceTypeName, new RS_SoSEntry(entry.getScienceType()));
+            }
+            RS_SoSEntry sEntry = entryMap.get(scienceTypeName);
+            switch (entry.getType()) {
+                case BOOKS:
+                    sEntry.setBooks((int) Math.round(entry.getValue()));
+                    break;
+                case BOOKS_IN_PROGRESS:
+                    sEntry.setBooksInProgress((int) Math.round(entry.getValue()));
+                    break;
+                case EFFECT:
+                    sEntry.setEffect(entry.getValue());
             }
         }
         return entryMap.values();

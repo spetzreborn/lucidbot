@@ -101,17 +101,16 @@ public class RS_Survey implements HasNumericId {
         Map<String, RS_SurveyEntry> entryMap = new HashMap<>();
         for (SurveyEntry entry : survey.getBuildings()) {
             String buildingName = entry.getBuilding().getName();
-            if (entryMap.containsKey(buildingName)) {
-                RS_SurveyEntry sEntry = entryMap.get(buildingName);
-                switch (entry.getType()) {
-                    case BUILT:
-                        sEntry.setBuilt(entry.getValue());
-                        break;
-                    case IN_PROGRESS:
-                        sEntry.setInProgress(entry.getValue());
-                }
-            } else {
+            if (!entryMap.containsKey(buildingName)) {
                 entryMap.put(buildingName, new RS_SurveyEntry(entry.getBuilding()));
+            }
+            RS_SurveyEntry sEntry = entryMap.get(buildingName);
+            switch (entry.getType()) {
+                case BUILT:
+                    sEntry.setBuilt(entry.getValue());
+                    break;
+                case IN_PROGRESS:
+                    sEntry.setInProgress(entry.getValue());
             }
         }
         return entryMap.values();

@@ -80,6 +80,7 @@ public class RESTfulWebServiceModule extends JerseyServletModule {
         bind(IllegalArgumentExceptionHandler.class).in(Singleton.class);
         bind(IllegalStateExceptionHandler.class).in(Singleton.class);
         bind(NullPointerExceptionHandler.class).in(Singleton.class);
+        bind(ValidationExceptionHandler.class).in(Singleton.class);
         bind(ExceptionHandler.class).in(Singleton.class);
 
         bind(CustomJsonReader.class).in(Singleton.class);

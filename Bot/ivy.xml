@@ -66,6 +66,9 @@
         <dependency org="org.hibernate" name="hibernate-validator" rev="5.0.1.Final" conf="compile->default;runtime->default">
             <artifact name="hibernate-validator" type="jar"/>
         </dependency>
+        <dependency org="javax.el" name="el-api" rev="2.2" conf="compile->default;runtime->default">
+            <artifact name="el-api" type="jar"/>
+        </dependency>
 
         <!-- Logging -->
         <dependency org="log4j" name="log4j" rev="1.2.17" conf="compile->default;runtime->default">
