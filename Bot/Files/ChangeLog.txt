@@ -1,4 +1,4 @@
-Build: LucidBot 3.0 RC5
+Build: LucidBot 3.0 RC6
 
 What's new:
 * Bug fixes for the web service API
