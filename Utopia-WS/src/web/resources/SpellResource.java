@@ -109,7 +109,6 @@ public class SpellResource {
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
 
         DurationSpell durationSpell = getOrCreateDurationSpell(province, user, spellType, spell);
-        spellDAO.save(durationSpell);
         afterCommitEventPosterProvider.get().addEventToPost(new DurationSpellRegisteredEvent(durationSpell.getId(), null));
         return RS_DurationSpell.fromDurationSpell(durationSpell);
     }
@@ -123,8 +122,11 @@ public class SpellResource {
             existing.setCommitter(user);
             existing.setExpires(op.getExpires());
             return existing;
+        } else {
+            DurationSpell newSpell = new DurationSpell(user, province, op.getExpires(), spellType);
+            province.addDurationSpell(newSpell);
+            return newSpell;
         }
-        return new DurationSpell(user, province, op.getExpires(), spellType);
     }
 
     @Documentation("Lists duration spells according to the specified criteria. " +
@@ -225,24 +227,9 @@ public class SpellResource {
         Province province = provinceDAOProvider.get().getProvince(spell.getProvince().getId());
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
 
-        InstantSpell instantSpell = getOrCreateInstantSpell(province, user, spellType, spell);
-        spellDAO.save(instantSpell);
+        InstantSpell instantSpell = province.registerInstantSpell(user, spellType, spell.getDamage());
         afterCommitEventPosterProvider.get().addEventToPost(new InstantSpellRegisteredEvent(instantSpell.getId(), null));
         return RS_InstantSpell.fromInstantSpell(instantSpell);
-    }
-
-    private static InstantSpell getOrCreateInstantSpell(final Province province,
-                                                        final BotUser user,
-                                                        final SpellType spellType,
-                                                        final RS_InstantSpell spell) {
-        for (InstantSpell instantSpell : province.getInstantSpells(spellType)) {
-            if (instantSpell.getCommitter().equals(user)) {
-                instantSpell.setAmount(instantSpell.getAmount() + spell.getAmount());
-                instantSpell.setDamage(instantSpell.getDamage() + spell.getDamage());
-                return instantSpell;
-            }
-        }
-        return new InstantSpell(user, province, spell.getDamage(), spell.getAmount(), spellType);
     }
 
     @Documentation("Lists instant spells according to the specified criteria. " +

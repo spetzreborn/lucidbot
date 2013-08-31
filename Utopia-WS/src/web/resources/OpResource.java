@@ -109,7 +109,6 @@ public class OpResource {
         OpType opType = opDAO.getOpType(op.getType().getId());
 
         DurationOp durationOp = getOrCreateDurationOp(province, user, opType, op);
-        opDAO.save(durationOp);
         afterCommitEventPosterProvider.get().addEventToPost(new DurationOpRegisteredEvent(durationOp.getId(), null));
         return RS_DurationOp.fromDurationOp(durationOp);
     }
@@ -123,8 +122,11 @@ public class OpResource {
             existing.setCommitter(user);
             existing.setExpires(op.getExpires());
             return existing;
+        } else {
+            DurationOp newOp = new DurationOp(user, province, op.getExpires(), opType);
+            province.addDurationOp(newOp);
+            return newOp;
         }
-        return new DurationOp(user, province, op.getExpires(), opType);
     }
 
     @Documentation("Lists duration ops according to the specified criteria. " +
@@ -225,24 +227,9 @@ public class OpResource {
         Province province = provinceDAOProvider.get().getProvince(op.getProvince().getId());
         OpType opType = opDAO.getOpType(op.getType().getId());
 
-        InstantOp instantOp = getOrCreateInstantOp(province, user, opType, op);
-        opDAO.save(instantOp);
+        InstantOp instantOp = province.registerInstantOp(user, opType, op.getDamage());
         afterCommitEventPosterProvider.get().addEventToPost(new InstantOpRegisteredEvent(instantOp.getId(), null));
         return RS_InstantOp.fromInstantOp(instantOp);
-    }
-
-    private static InstantOp getOrCreateInstantOp(final Province province,
-                                                  final BotUser user,
-                                                  final OpType opType,
-                                                  final RS_InstantOp op) {
-        for (InstantOp instantOp : province.getInstantOps(opType)) {
-            if (instantOp.getCommitter().equals(user)) {
-                instantOp.setAmount(instantOp.getAmount() + op.getAmount());
-                instantOp.setDamage(instantOp.getDamage() + op.getDamage());
-                return instantOp;
-            }
-        }
-        return new InstantOp(user, province, op.getDamage(), op.getAmount(), opType);
     }
 
     @Documentation("Lists instant ops according to the specified criteria. " +
