@@ -81,8 +81,8 @@ public class SoM implements ProvinceIntel, Comparable<SoM>, HasNumericId {
     @OneToMany(mappedBy = "som", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Army> armies = new HashSet<>();
 
-    @Column(name = "armies_out_when_posted")
-    private int armiesOutWhenPosted;
+    @Column(name = "armies_out_when_posted", nullable = false)
+    private int armiesOutWhenPosted = 0;
 
     @Column(name = "accuracy", nullable = false)
     private int accuracy = 100;
