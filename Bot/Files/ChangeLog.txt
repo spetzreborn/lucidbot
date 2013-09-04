@@ -1,4 +1,4 @@
-Build: LucidBot 3.0 RC6
+Build: LucidBot 3.0 Final
 
 What's new:
 * Bug fixes for the web service API
@@ -6,3 +6,4 @@ What's new:
 How to update:
 1. Replace LucidBot.jar
 2. Replace utopia-ws.jar in the plugins folder
+3. Replace utopia-api.jar in the plugins folder
