@@ -32,6 +32,7 @@ import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.tools.validation.ValidationEnabled;
 import com.google.common.base.Function;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.KingdomDAO;
@@ -108,8 +109,13 @@ public class OpResource {
         Province province = provinceDAOProvider.get().getProvince(op.getProvince().getId());
         OpType opType = opDAO.getOpType(op.getType().getId());
 
-        DurationOp durationOp = getOrCreateDurationOp(province, user, opType, op);
-        afterCommitEventPosterProvider.get().addEventToPost(new DurationOpRegisteredEvent(durationOp.getId(), null));
+        final DurationOp durationOp = getOrCreateDurationOp(province, user, opType, op);
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new DurationOpRegisteredEvent(durationOp.getId(), null);
+            }
+        });
         return RS_DurationOp.fromDurationOp(durationOp);
     }
 
@@ -227,8 +233,13 @@ public class OpResource {
         Province province = provinceDAOProvider.get().getProvince(op.getProvince().getId());
         OpType opType = opDAO.getOpType(op.getType().getId());
 
-        InstantOp instantOp = province.registerInstantOp(user, opType, op.getDamage());
-        afterCommitEventPosterProvider.get().addEventToPost(new InstantOpRegisteredEvent(instantOp.getId(), null));
+        final InstantOp instantOp = province.registerInstantOp(user, opType, op.getDamage());
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new InstantOpRegisteredEvent(instantOp.getId(), null);
+            }
+        });
         return RS_InstantOp.fromInstantOp(instantOp);
     }
 

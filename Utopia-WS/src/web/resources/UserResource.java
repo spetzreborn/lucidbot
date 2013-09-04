@@ -35,6 +35,7 @@ import api.database.models.Nickname;
 import api.database.models.UserStatistic;
 import api.events.bot.UserRemovedEvent;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.UserActivitiesDAO;
@@ -211,11 +212,16 @@ public class UserResource {
                            @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
-        BotUser user = userDAO.getUser(id);
+        final BotUser user = userDAO.getUser(id);
         if (user == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
         else if (user.isOwner()) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         userDAO.delete(user);
-        afterCommitEventPosterProvider.get().addEventToPost(new UserRemovedEvent(user.getMainNick()));
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new UserRemovedEvent(user.getMainNick());
+            }
+        });
     }
 }

@@ -31,6 +31,7 @@ import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.EventDAO;
@@ -98,9 +99,14 @@ public class EventResource {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         Bindings bindings = bindingsParserProvider.get().parse(newEvent.getBindings());
-        Event event = new Event(Event.EventType.fromName(newEvent.getType()), newEvent.getDescription(), newEvent.getEventTime(), bindings);
-        event = eventDAO.save(event);
-        afterCommitEventPosterProvider.get().addEventToPost(new EventAddedEvent(event.getId(), null));
+        final Event event = new Event(Event.EventType.fromName(newEvent.getType()), newEvent.getDescription(), newEvent.getEventTime(), bindings);
+        eventDAO.save(event);
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new EventAddedEvent(event.getId(), null);
+            }
+        });
         return RS_Event.fromEvent(event, true);
     }
 
@@ -159,13 +165,18 @@ public class EventResource {
                                 @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
-        Event event = eventDAO.getEvent(id);
+        final Event event = eventDAO.getEvent(id);
         if (event == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
         validate(updatedEvent).using(validatorProvider.get()).forGroups(Update.class).throwOnFailedValidation();
 
         RS_Event.toEvent(event, updatedEvent);
-        afterCommitEventPosterProvider.get().addEventToPost(new EventAddedEvent(event.getId(), null));
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new EventAddedEvent(event.getId(), null);
+            }
+        });
 
         return RS_Event.fromEvent(event, true);
     }

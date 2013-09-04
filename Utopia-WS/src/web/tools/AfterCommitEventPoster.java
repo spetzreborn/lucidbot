@@ -28,6 +28,7 @@
 package web.tools;
 
 import api.database.TransactionManager;
+import com.google.common.base.Supplier;
 import com.google.common.eventbus.EventBus;
 
 import javax.inject.Inject;
@@ -39,7 +40,7 @@ import java.util.List;
  */
 public class AfterCommitEventPoster implements Runnable {
     private final EventBus eventBus;
-    private final List<Object> events = new ArrayList<>();
+    private final List<Supplier<?>> events = new ArrayList<>();
 
     @Inject
     public AfterCommitEventPoster(final EventBus eventBus) {
@@ -47,17 +48,17 @@ public class AfterCommitEventPoster implements Runnable {
     }
 
     /**
-     * @param event an event to post later
+     * @param eventProvider a supplier of an event to post later
      */
-    public void addEventToPost(final Object event) {
+    public void addEventToPost(final Supplier<?> eventProvider) {
         if (events.isEmpty()) TransactionManager.addAfterCommitAction(this);
-        events.add(event);
+        events.add(eventProvider);
     }
 
     @Override
     public void run() {
-        for (Object event : events) {
-            eventBus.post(event);
+        for (Supplier<?> eventProvider : events) {
+            eventBus.post(eventProvider.get());
         }
     }
 }

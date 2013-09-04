@@ -31,6 +31,7 @@ import api.database.Transactional;
 import api.timers.Timer;
 import api.timers.TimerManager;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.AidDAO;
@@ -92,15 +93,20 @@ public class AidResource {
                          @Valid final RS_Aid newAid) {
         Province province = provinceDAOProvider.get().getProvince(newAid.getProvince().getId());
 
-        Aid aid = new Aid(province, AidType.fromName(newAid.getType()));
+        final Aid aid = new Aid(province, AidType.fromName(newAid.getType()));
         RS_Aid.toAid(aid, newAid);
 
-        aid = aidDAO.save(aid);
+        aidDAO.save(aid);
         if (aid.getExpiryDate() != null) {
             long delay = aid.getExpiryDate().getTime() - System.currentTimeMillis();
             timerManagerProvider.get().schedule(new Timer(Aid.class, aid.getId(), aidManagerProvider.get()), delay, TimeUnit.MILLISECONDS);
         }
-        afterCommitEventPosterProvider.get().addEventToPost(new AidAddedEvent(aid.getId(), null));
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new AidAddedEvent(aid.getId(), null);
+            }
+        });
 
         return RS_Aid.fromAid(aid);
     }

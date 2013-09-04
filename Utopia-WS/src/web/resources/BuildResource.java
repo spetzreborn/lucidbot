@@ -31,6 +31,7 @@ import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.BuildDAO;
@@ -107,12 +108,17 @@ public class BuildResource {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
         Bindings bindings = bindingsParserProvider.get().parse(newBuild.getBindings());
-        Build build = new Build(bindings, newBuild.getType(), webContext.getName());
+        final Build build = new Build(bindings, newBuild.getType(), webContext.getName());
 
         editBuildEntries(build, newBuild, buildingDAOProvider.get());
         RS_Build.toBuild(build, newBuild);
-        build = buildDAO.save(build);
-        afterCommitEventPosterProvider.get().addEventToPost(new BuildAddedEvent(build.getId(), null));
+        buildDAO.save(build);
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new BuildAddedEvent(build.getId(), null);
+            }
+        });
 
         return RS_Build.fromBuild(build);
     }

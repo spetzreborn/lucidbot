@@ -30,6 +30,7 @@ package web.resources;
 import api.database.Transactional;
 import api.events.DelayedEventPoster;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.DragonDAO;
@@ -211,14 +212,19 @@ public class KingdomResource {
                              @Context final WebContext webContext) {
         if (!webContext.isInRole(ADMIN_ROLE)) throw new WebApplicationException(Response.Status.FORBIDDEN);
 
-        Kingdom kingdom = kingdomDAO.getKingdom(id);
+        final Kingdom kingdom = kingdomDAO.getKingdom(id);
         if (kingdom == null) throw new WebApplicationException(Response.Status.NOT_FOUND);
 
         kingdom.setNapAdded(new Date());
         kingdom.setNapDescription(nap.getDescription());
         kingdom.setNapEndDate(nap.getEnds());
 
-        afterCommitEventPosterProvider.get().addEventToPost(new NapAddedEvent(kingdom.getId(), null));
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new NapAddedEvent(kingdom.getId(), null);
+            }
+        });
 
         return RS_Kingdom.fromKingdom(kingdom, true);
     }

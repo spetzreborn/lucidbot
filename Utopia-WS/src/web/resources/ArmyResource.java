@@ -32,6 +32,7 @@ import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.timers.Timer;
 import api.timers.TimerManager;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.ArmyDAO;
@@ -101,7 +102,7 @@ public class ArmyResource {
                            @Valid final RS_Army newArmy) {
         Province province = provinceDAOProvider.get().getProvince(newArmy.getProvince().getId());
 
-        Army army = new Army(province, newArmy.getArmyNumber(), Army.ArmyType.fromName(newArmy.getType()), newArmy.getReturning(), newArmy.getGain());
+        final Army army = new Army(province, newArmy.getArmyNumber(), Army.ArmyType.fromName(newArmy.getType()), newArmy.getReturning(), newArmy.getGain());
         RS_Army.toArmy(army, newArmy);
 
         for (Army existing : province.getArmies()) {
@@ -110,11 +111,16 @@ public class ArmyResource {
             }
         }
 
-        army = armyDAO.save(army);
+        armyDAO.save(army);
 
         long delay = army.getReturningDate().getTime() - System.currentTimeMillis();
         timerManagerProvider.get().schedule(new Timer(Army.class, army.getId(), armyManagerProvider.get()), delay, TimeUnit.MILLISECONDS);
-        afterCommitEventPosterProvider.get().addEventToPost(new ArmyAddedEvent(army.getId(), null));
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new ArmyAddedEvent(army.getId(), null);
+            }
+        });
 
         return RS_Army.fromArmy(army, true);
     }

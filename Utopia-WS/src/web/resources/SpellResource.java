@@ -32,6 +32,7 @@ import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.tools.validation.ValidationEnabled;
 import com.google.common.base.Function;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.KingdomDAO;
@@ -108,22 +109,27 @@ public class SpellResource {
         Province province = provinceDAOProvider.get().getProvince(spell.getProvince().getId());
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
 
-        DurationSpell durationSpell = getOrCreateDurationSpell(province, user, spellType, spell);
-        afterCommitEventPosterProvider.get().addEventToPost(new DurationSpellRegisteredEvent(durationSpell.getId(), null));
+        final DurationSpell durationSpell = getOrCreateDurationSpell(province, user, spellType, spell);
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new DurationSpellRegisteredEvent(durationSpell.getId(), null);
+            }
+        });
         return RS_DurationSpell.fromDurationSpell(durationSpell);
     }
 
     private static DurationSpell getOrCreateDurationSpell(final Province province,
                                                           final BotUser user,
                                                           final SpellType spellType,
-                                                          final RS_DurationSpell op) {
+                                                          final RS_DurationSpell spell) {
         DurationSpell existing = province.getDurationSpell(spellType);
         if (existing != null) {
             existing.setCommitter(user);
-            existing.setExpires(op.getExpires());
+            existing.setExpires(spell.getExpires());
             return existing;
         } else {
-            DurationSpell newSpell = new DurationSpell(user, province, op.getExpires(), spellType);
+            DurationSpell newSpell = new DurationSpell(user, province, spell.getExpires(), spellType);
             province.addDurationSpell(newSpell);
             return newSpell;
         }
@@ -227,8 +233,13 @@ public class SpellResource {
         Province province = provinceDAOProvider.get().getProvince(spell.getProvince().getId());
         SpellType spellType = spellDAO.getSpellType(spell.getType().getId());
 
-        InstantSpell instantSpell = province.registerInstantSpell(user, spellType, spell.getDamage());
-        afterCommitEventPosterProvider.get().addEventToPost(new InstantSpellRegisteredEvent(instantSpell.getId(), null));
+        final InstantSpell instantSpell = province.registerInstantSpell(user, spellType, spell.getDamage());
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new InstantSpellRegisteredEvent(instantSpell.getId(), null);
+            }
+        });
         return RS_InstantSpell.fromInstantSpell(instantSpell);
     }
 

@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 @AllArgsConstructor
 @Getter
 public class DurationSpellRegisteredEvent {
-    private final long DurationSpellId;
+    private final long durationSpellId;
     @Nullable
     private final IRCContext context;
 }

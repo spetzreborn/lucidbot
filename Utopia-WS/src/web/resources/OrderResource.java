@@ -4,6 +4,7 @@ import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
 import api.tools.validation.ValidationEnabled;
+import com.google.common.base.Supplier;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
 import database.daos.OrderCategoryDAO;
@@ -77,9 +78,14 @@ public class OrderResource {
         if (newOrder.getCategory() != null)
             category = orderCategoryDAOProvider.get().getOrderCategory(newOrder.getCategory().getId());
 
-        Order order = new Order(bindings, category, newOrder.getOrder(), webContext.getName());
-        order = orderDAO.save(order);
-        afterCommitEventPosterProvider.get().addEventToPost(new OrderAddedEvent(order.getId(), null));
+        final Order order = new Order(bindings, category, newOrder.getOrder(), webContext.getName());
+        orderDAO.save(order);
+        afterCommitEventPosterProvider.get().addEventToPost(new Supplier<Object>() {
+            @Override
+            public Object get() {
+                return new OrderAddedEvent(order.getId(), null);
+            }
+        });
         return RS_Order.fromOrder(order);
     }
 
