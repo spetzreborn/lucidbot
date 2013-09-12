@@ -41,27 +41,23 @@ import javax.inject.Inject;
 import static api.database.Transactions.inTransaction;
 
 public class Races implements EntitySetup {
-    public final Race avian = new Race("Avian", "AV", 1, 1.5, "Griffins", 4, "Harpies", 4, "Drakes", 6, 3, 5.25, 100,
+    public final Race avian = new Race("Avian", "AV", 1, 1.5, "Griffins", 4, "Harpies", 4, "Drakes", 6, 2, 5, 100,
             IntelAccuracySpecification.NEVER, false, null, null, Sets.<Bonus>newHashSet(), Lists.<SpellType>newArrayList());
-    public final Race dwarf = new Race("Dwarf", "DW", 1, 1.5, "Warriors", 4, "Axemen", 4, "Berserkers", 6, 2, 5.0, 100,
-            IntelAccuracySpecification.NEVER, false, null, null, Sets.<Bonus>newHashSet(),
+    public final Race dwarf = new Race("Dwarf", "DW", 1, 1.5, "Warriors", 4, "Axemen", 4, "Berserkers", 6, 3, 5.25, 100,
+            IntelAccuracySpecification.NEVER, false, null, null, Sets.newHashSet(new Bonus("Dwarf Gains", BonusType.GAIN, BonusApplicability.OFFENSIVELY, false, 0.1)),
             Lists.<SpellType>newArrayList());
-    public final Race elf = new Race("Elf", "EL", 1, 1.5, "Rangers", 4, "Archers", 5, "Elf Lords", 5, 3, 4.75, 100,
+    public final Race elf = new Race("Elf", "EL", 1, 1.5, "Rangers", 4, "Archers", 4, "Elf Lords", 5, 3, 5, 100,
             IntelAccuracySpecification.NEVER, false, null, null,
-            Sets.newHashSet(new Bonus("Elf WPA", BonusType.WPA, BonusApplicability.BOTH, true, 0.5)),
+            Sets.newHashSet(new Bonus("Elf WPA", BonusType.WPA, BonusApplicability.BOTH, true, 0.3)),
             Lists.<SpellType>newArrayList());
-    public final Race faery = new Race("Faery", "FA", 1, 1.5, "Magicians", 4, "Druids", 4, "Beastmasters", 3, 6, 6.0, 0,
+    public final Race faery = new Race("Faery", "FA", 1, 1.5, "Magicians", 4, "Druids", 4, "Beastmasters", 3, 5, 5.25, 0,
             IntelAccuracySpecification.NEVER, false, null, null,
-            Sets.newHashSet(new Bonus("Faery Honor Bonus", BonusType.HONOR, BonusApplicability.BOTH, true, 0.5),
-                    new Bonus("Faery WPA", BonusType.WPA, BonusApplicability.BOTH, true, 0.1),
-                    new Bonus("Faery TPA", BonusType.TPA, BonusApplicability.BOTH, true, 0.1)),
-            Lists.<SpellType>newArrayList());
-    public final Race halfling = new Race("Halfling", "HA", 2, 3, "Strongarms", 4, "Slingers", 4, "Brutes", 5, 5, 5.5, 60,
+            Sets.<Bonus>newHashSet(), Lists.<SpellType>newArrayList());
+    public final Race halfling = new Race("Halfling", "HA", 2, 3, "Strongarms", 4, "Slingers", 4, "Brutes", 4, 4, 4, 60,
             IntelAccuracySpecification.NEVER, false, null, null,
-            Sets.newHashSet(new Bonus("Halfling TPA", BonusType.TPA, BonusApplicability.BOTH, true, 0.5),
-                    new Bonus("Halfling Gains", BonusType.GAIN, BonusApplicability.OFFENSIVELY, false, 0.15)),
+            Sets.newHashSet(new Bonus("Halfling TPA", BonusType.TPA, BonusApplicability.BOTH, true, 0.5)),
             Lists.<SpellType>newArrayList());
-    public final Race human = new Race("Human", "HU", 1, 1.5, "Swordsmen", 5, "Archers", 4, "Knights", 4, 4, 4.0, 20,
+    public final Race human = new Race("Human", "HU", 1, 1.5, "Swordsmen", 4, "Archers", 4, "Knights", 6, 4, 5.5, 20,
             IntelAccuracySpecification.NEVER, false, null, null, Sets.<Bonus>newHashSet(),
             Lists.<SpellType>newArrayList());
     public final Race orc = new Race("Orc", "OR", 1, 1.5, "Goblins", 4, "Trolls", 4, "Ogres", 7, 1, 5.75, 100,

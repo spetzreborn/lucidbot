@@ -68,8 +68,8 @@ public class RacesSettingsPanel extends VerticalLayout {
     private final Button loadDefaultsButton;
 
     private final Map<Object, Race> raceMap = new HashMap<>();
-    private final Map<String, Bonus> bonusMap = new HashMap<>();
-    private final Map<String, SpellType> spellMap = new HashMap<>();
+    private final Map<String, Bonus> bonusMap = new TreeMap<>();
+    private final Map<String, SpellType> spellMap = new TreeMap<>();
 
     @Inject
     public RacesSettingsPanel(final Provider<RaceDAO> raceDAOProvider, final Provider<BonusDAO> bonusDAOProvider,

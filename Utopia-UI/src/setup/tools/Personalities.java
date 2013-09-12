@@ -33,7 +33,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Provider;
 import database.daos.PersonalityDAO;
-import database.models.*;
+import database.models.Bonus;
+import database.models.IntelAccuracySpecification;
+import database.models.Personality;
 import spi.settings.EntitySetup;
 
 import javax.inject.Inject;
@@ -50,14 +52,12 @@ public class Personalities implements EntitySetup {
             Sets.<Bonus>newHashSet());
     public final Personality warrior = new Personality("Warrior", "Warrior", IntelAccuracySpecification.NEVER, false, null, null,
             Sets.<Bonus>newHashSet());
-    public final Personality tactician = new Personality("Tactician", "Conniving", IntelAccuracySpecification.IN_WAR, false, null, null,
+    public final Personality tactician = new Personality("Tactician", "Conniving", IntelAccuracySpecification.ALWAYS, false, null, null,
             Sets.<Bonus>newHashSet());
     public final Personality cleric = new Personality("Cleric", "Blessed", IntelAccuracySpecification.NEVER, false, null, null,
             Sets.<Bonus>newHashSet());
     public final Personality warHero = new Personality("War Hero", "Hero", IntelAccuracySpecification.NEVER, true, null, null,
-            Sets.<Bonus>newHashSet(
-                    new Bonus("War Hero Honor Bonus", BonusType.HONOR, BonusApplicability.BOTH,
-                            true, 1.5)));
+            Sets.<Bonus>newHashSet());
 
     private final Provider<PersonalityDAO> personalityDAOProvider;
 

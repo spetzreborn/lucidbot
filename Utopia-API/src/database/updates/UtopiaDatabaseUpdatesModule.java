@@ -51,5 +51,7 @@ public class UtopiaDatabaseUpdatesModule extends AbstractModule {
         binder.addBinding().to(MySQLUpdateV7ToV8.class);
         binder.addBinding().to(H2UpdateV8ToV9.class);
         binder.addBinding().to(MySQLUpdateV8ToV9.class);
+        binder.addBinding().to(H2UpdateV9ToV10.class);
+        binder.addBinding().to(MySQLUpdateV9ToV10.class);
     }
 }

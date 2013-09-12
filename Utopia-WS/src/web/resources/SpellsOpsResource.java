@@ -39,24 +39,24 @@ public class SpellsOpsResource {
     @Documentation("Adds any number of spells and ops (unformatted right from the game) and returns how many were parsed successfully. The 'single' boolean " +
             "flag may be used to specify if only a single op/spell is in the supplied text (if so the bot can save time by not continuing looking for matches after it finds one).")
     @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN})
     @Consumes({MediaType.TEXT_PLAIN})
     @Transactional
-    public int addSpellsAndOps(@Documentation(value = "The spells and ops to add", itemName = "spellsAndOps")
-                               final String spellsAndOps,
-                               @Context
-                               final WebContext context,
-                               @Documentation("Set this to true to signal that the posted text only contains a single spell/op")
-                               @QueryParam("single")
-                               final boolean singleSpellOp,
-                               @Documentation("The target province's name. For spells and ops that contain the target name in them, or for self spells, this is " +
-                                       "redundant and should be left out. In other cases it should be specified unless you want whatever target the user " +
-                                       "currently has set for spells and ops to be used instead")
-                               @QueryParam("targetName")
-                               final String targetName) {
-        return singleSpellOp ?
+    public String addSpellsAndOps(@Documentation(value = "The spells and ops to add", itemName = "spellsAndOps")
+                                  final String spellsAndOps,
+                                  @Context
+                                  final WebContext context,
+                                  @Documentation("Set this to true to signal that the posted text only contains a single spell/op")
+                                  @QueryParam("single")
+                                  final boolean singleSpellOp,
+                                  @Documentation("The target province's name. For spells and ops that contain the target name in them, or for self spells, this is " +
+                                          "redundant and should be left out. In other cases it should be specified unless you want whatever target the user " +
+                                          "currently has set for spells and ops to be used instead")
+                                  @QueryParam("targetName")
+                                  final String targetName) {
+        return String.valueOf(singleSpellOp ?
                 spellsOpsParser.parseSingle(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName)) :
-                spellsOpsParser.parseMultiple(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName));
+                spellsOpsParser.parseMultiple(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName)));
     }
 
     private TargetLocatorFactory createTargetLocatorFactory(final String targetName) {
