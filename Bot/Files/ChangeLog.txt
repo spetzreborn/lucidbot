@@ -1,9 +1,12 @@
-Build: LucidBot 3.0 Final
+Build: LucidBot 3.1
 
 What's new:
-* Bug fixes for the web service API
+* Updates for age 59
+* Sort bonuses and spells in the race editing popup
+* Minor fix to the web service regarding /spells_ops
 
 How to update:
 1. Replace LucidBot.jar
 2. Replace utopia-ws.jar in the plugins folder
 3. Replace utopia-api.jar in the plugins folder
+4. Replace utopia-ui.jar in the plugins folder
