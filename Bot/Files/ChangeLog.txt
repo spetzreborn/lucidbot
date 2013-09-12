@@ -1,5 +1,8 @@
 Build: LucidBot 3.1
 
+**IMPORTANT NOTE**
+There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.1 release. Rather update to 3.0 RC1 first, and then to FINAL afterwards.
+
 What's new:
 * Updates for age 59
 * Sort bonuses and spells in the race editing popup
