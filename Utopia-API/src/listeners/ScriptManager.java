@@ -61,10 +61,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static api.tools.text.StringUtil.merge;
@@ -84,7 +81,7 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
     private final ConcurrentMap<Command, List<CommandParser>> commandParserMapping = new ConcurrentHashMap<>();
     private final Cache<Command, ScriptCommandHandler> cache = CacheBuilder.newBuilder().expireAfterAccess(6, TimeUnit.HOURS).build();
 
-    private final ConcurrentMap<ScriptEventListener, Class<?>> eventListenerToEventTypeMapping = new ConcurrentHashMap<>();
+    private final Collection<ListenerTuple> eventListenerToEventTypeMapping = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<Path, ScriptEventListener> fileNameToEventListenerMapping = new ConcurrentHashMap<>();
 
     private ScriptEngineManager manager;
@@ -122,7 +119,7 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
         File[] scripts = scriptsDir.listFiles();
         if (scripts != null) {
             for (File file : scripts) {
-                identifyScript(file.toPath());
+                if (!file.isDirectory()) identifyScript(file.toPath());
             }
         }
     }
@@ -195,29 +192,41 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
     }
 
     private boolean registerCommandHandler(final Path file, final Invocable scriptEngine) {
-        ScriptCommandHandler commandHandler = scriptEngine.getInterface(ParameterizedScriptCommandHandler.class);
-        List<CommandParser> parsers = new ArrayList<>();
-        if (commandHandler == null) {
-            commandHandler = scriptEngine.getInterface(ScriptCommandHandler.class);
-            if (commandHandler == null) return false;
+        try {
+            ScriptCommandHandler commandHandler = scriptEngine.getInterface(ParameterizedScriptCommandHandler.class);
+            List<CommandParser> parsers = new ArrayList<>();
+            if (commandHandler == null) {
+                commandHandler = scriptEngine.getInterface(ScriptCommandHandler.class);
+                if (commandHandler == null) return false;
 
-            parsers.add(new CommandParser(new ParamParsingSpecification("params", ".*")));
-            parsers.add(CommandParser.getEmptyParser());
-        } else {
-            Collections.addAll(parsers, ((ParameterizedScriptCommandHandler) commandHandler).getParsers());
+                parsers.add(new CommandParser(new ParamParsingSpecification("params", ".*")));
+                parsers.add(CommandParser.getEmptyParser());
+            } else {
+                Collections.addAll(parsers, ((ParameterizedScriptCommandHandler) commandHandler).getParsers());
+            }
+            Command handler = commandHandler.handles();
+            commandHandledToFileMapping.put(handler, file);
+            commandParserMapping.put(handler, parsers);
+            return true;
+        } catch (Throwable throwable) {
+            if (!(throwable instanceof NoSuchMethodException))
+                ScriptManager.log.error("Caught throwable from script " + file.toAbsolutePath(), throwable);
         }
-        Command handler = commandHandler.handles();
-        commandHandledToFileMapping.put(handler, file);
-        commandParserMapping.put(handler, parsers);
-        return true;
+        return false;
     }
 
     private boolean registerEventListener(final Path file, final Invocable scriptEngine) {
         ScriptEventListener listener = scriptEngine.getInterface(ScriptEventListener.class);
         if (listener == null) return false;
-        fileNameToEventListenerMapping.put(file, listener);
-        eventListenerToEventTypeMapping.put(listener, listener.handles());
-        return true;
+
+        try {
+            fileNameToEventListenerMapping.put(file, listener);
+            eventListenerToEventTypeMapping.add(new ListenerTuple(listener, listener.handles()));
+            return true;
+        } catch (Throwable throwable) {
+            ScriptManager.log.error("Event handling script " + file.toAbsolutePath() + " threw exception", throwable);
+        }
+        return false;
     }
 
     public CommandHandler getHandlerForCommand(final Command command) {
@@ -247,15 +256,29 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
      */
     @Subscribe
     public void onEvent(final Object event) {
-        for (final Map.Entry<ScriptEventListener, Class<?>> entry : eventListenerToEventTypeMapping.entrySet()) {
-            if (entry.getValue().equals(event.getClass())) {
+        for (final ListenerTuple entry : eventListenerToEventTypeMapping) {
+            if (entry.handles.equals(event.getClass())) {
                 threadingManager.execute(new Runnable() {
                     @Override
                     public void run() {
-                        entry.getKey().handleEvent(event);
+                        try {
+                            entry.eventListener.handleEvent(event);
+                        } catch (Throwable throwable) {
+                            ScriptManager.log.error("Event handling script threw exception", throwable);
+                        }
                     }
                 });
             }
+        }
+    }
+
+    private static class ListenerTuple {
+        private final ScriptEventListener eventListener;
+        private final Class<?> handles;
+
+        private ListenerTuple(final ScriptEventListener eventListener, final Class<?> handles) {
+            this.eventListener = eventListener;
+            this.handles = handles;
         }
     }
 

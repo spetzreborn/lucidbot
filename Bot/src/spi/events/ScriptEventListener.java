@@ -34,12 +34,12 @@ public interface ScriptEventListener {
     /**
      * @return the type of event to listen for
      */
-    Class<?> handles();
+    Class<?> handles() throws Throwable;
 
     /**
      * Handles an event when one is announced
      *
      * @param event the event
      */
-    void handleEvent(Object event);
+    void handleEvent(Object event) throws Throwable;
 }

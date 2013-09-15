@@ -36,5 +36,5 @@ public interface ScriptCommandHandler extends CommandHandler {
     /**
      * @return the Command the script handles
      */
-    Command handles();
+    Command handles() throws Throwable;
 }

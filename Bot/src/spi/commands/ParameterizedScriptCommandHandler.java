@@ -7,6 +7,6 @@ public interface ParameterizedScriptCommandHandler extends ScriptCommandHandler 
     /**
      * @return the parsers supported by the CommandHandler. One of these must match the command!
      */
-    CommandParser[] getParsers();
+    CommandParser[] getParsers() throws Throwable;
 
 }
