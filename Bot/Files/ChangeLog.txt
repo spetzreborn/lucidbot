@@ -1,15 +1,11 @@
-Build: LucidBot 3.1
+Build: LucidBot 3.2
 
 **IMPORTANT NOTE**
 There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.1 release. Rather update to 3.0 RC1 first, and then to FINAL afterwards.
 
 What's new:
-* Updates for age 59
-* Sort bonuses and spells in the race editing popup
-* Minor fix to the web service regarding /spells_ops
+* Scripting fixes and more elaborate examples (for python)
 
 How to update:
 1. Replace LucidBot.jar
-2. Replace utopia-ws.jar in the plugins folder
-3. Replace utopia-api.jar in the plugins folder
-4. Replace utopia-ui.jar in the plugins folder
+2. Replace utopia-api.jar in the plugins folder
