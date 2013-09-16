@@ -1,5 +1,6 @@
 package web.resources;
 
+import api.database.models.BotUser;
 import api.events.DelayedEventPoster;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
@@ -49,14 +50,15 @@ public class SurveySubResource {
         if (!intelParser.getIntelTypeHandled().equals(Survey.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a Survey");
 
+        BotUser botUser = webContext.getBotUser();
         Intel parsedSurvey = null;
         try {
-            parsedSurvey = intelParser.parse(webContext.getName(), newSurvey);
+            parsedSurvey = intelParser.parse(botUser.getMainNick(), newSurvey);
         } catch (ParseException e) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
         if (parsedSurvey == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
-        intelDAO.saveIntel(parsedSurvey, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
+        intelDAO.saveIntel(parsedSurvey, botUser.getId(), delayedEventPosterProvider.get());
 
         return RS_Survey.fromSurvey((Survey) parsedSurvey, false);
     }

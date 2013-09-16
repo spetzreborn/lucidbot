@@ -1,5 +1,6 @@
 package web.resources;
 
+import api.database.models.BotUser;
 import api.events.DelayedEventPoster;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;
@@ -49,14 +50,15 @@ public class SoSSubResource {
         if (!intelParser.getIntelTypeHandled().equals(SoS.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoS");
 
+        BotUser botUser = webContext.getBotUser();
         Intel parsedSoS = null;
         try {
-            parsedSoS = intelParser.parse(webContext.getName(), newSos);
+            parsedSoS = intelParser.parse(botUser.getMainNick(), newSos);
         } catch (ParseException e) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
         if (parsedSoS == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
-        intelDAO.saveIntel(parsedSoS, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
+        intelDAO.saveIntel(parsedSoS, botUser.getId(), delayedEventPosterProvider.get());
 
         return RS_SoS.fromSoS((SoS) parsedSoS, false);
     }

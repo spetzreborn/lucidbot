@@ -1,5 +1,6 @@
 package web.resources;
 
+import api.database.models.BotUser;
 import api.events.DelayedEventPoster;
 import api.timers.TimerManager;
 import com.google.inject.Provider;
@@ -57,14 +58,15 @@ public class SoMSubResource {
         if (!intelParser.getIntelTypeHandled().equals(SoM.class.getSimpleName()))
             throw new IllegalArgumentException("Data is not recognized as a SoM");
 
+        BotUser botUser = webContext.getBotUser();
         Intel parsedSoM = null;
         try {
-            parsedSoM = intelParser.parse(webContext.getName(), newSoM);
+            parsedSoM = intelParser.parse(botUser.getMainNick(), newSoM);
         } catch (ParseException e) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
         if (parsedSoM == null) throw new WebApplicationException(Response.Status.NOT_MODIFIED);
-        intelDAO.saveIntel(parsedSoM, webContext.getBotUser().getId(), delayedEventPosterProvider.get());
+        intelDAO.saveIntel(parsedSoM, botUser.getId(), delayedEventPosterProvider.get());
 
         return RS_SoM.fromSoM((SoM) parsedSoM, false);
     }
