@@ -42,7 +42,7 @@
     </publications>
 
     <dependencies>
-        <dependency org="com.google.guava" name="guava" rev="14.0.1" conf="compile->default">
+        <dependency org="com.google.guava" name="guava" rev="15.0" conf="compile->default">
             <artifact name="guava" type="jar"/>
         </dependency>
         <dependency org="org.projectlombok" name="lombok" rev="0.12.0" conf="compile->default">
@@ -98,7 +98,7 @@
         </dependency>
 
         <!-- Testing -->
-        <dependency org="org.testng" name="testng" rev="6.8.5" conf="test->default">
+        <dependency org="org.testng" name="testng" rev="6.8.7" conf="test->default">
             <artifact name="testng" type="jar"/>
         </dependency>
         <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default">
