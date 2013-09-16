@@ -132,7 +132,7 @@ public class Army implements Comparable<Army>, HasNumericId {
     }
 
     public Army(final Province province,
-                final Integer armyNumber,
+                final int armyNumber,
                 final ArmyType type,
                 final Date returningDate,
                 final int landGained) {

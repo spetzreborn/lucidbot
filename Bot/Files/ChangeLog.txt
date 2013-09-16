@@ -1,11 +1,13 @@
-Build: LucidBot 3.2
+Build: LucidBot 3.3
 
 **IMPORTANT NOTE**
-There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.1 release. Rather update to 3.0 RC1 first, and then to FINAL afterwards.
+There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.3 release. Rather update to 3.0 RC1 first, and then to FINAL afterwards.
 
 What's new:
-* Scripting fixes and more elaborate examples (for python)
+* Updated libraries
+* Fixed an army parsing bug
 
 How to update:
 1. Replace LucidBot.jar
-2. Replace utopia-api.jar in the plugins folder
+2. Replace the plugin folder
+3. Replace the lib folder

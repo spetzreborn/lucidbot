@@ -137,7 +137,7 @@ class NewAttacksListener implements EventListener {
         String attackGain = RegexUtil.NON_NUMBER_PATTERN.matcher(attack.getGain()).replaceAll("");
         int gain = StringUtil.isNullOrEmpty(attackGain) ? 0 : NumberUtil.parseInt(attackGain);
         Army army = armyManager
-                .saveIRCArmy(new Army(attacker, null, Army.ArmyType.IRC_ARMY_OUT, new Date(event.getReturnTime()), gain), context,
+                .saveIRCArmy(new Army(attacker, -1, Army.ArmyType.IRC_ARMY_OUT, new Date(event.getReturnTime()), gain), context,
                         delayedEventPoster);
         ircAccess.sendNoticeOrPM(event.getContext(), "Army saved, returning in " + TimeUtil.compareDateToCurrent(army.getReturningDate()));
     }

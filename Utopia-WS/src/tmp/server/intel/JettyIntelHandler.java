@@ -50,6 +50,7 @@ import java.util.Map;
 
 import static api.database.Transactions.inTransaction;
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
+import static com.google.common.base.Objects.firstNonNull;
 
 @Log4j
 public class JettyIntelHandler extends AbstractHandler {
@@ -91,8 +92,7 @@ public class JettyIntelHandler extends AbstractHandler {
                         public Object call(final DelayedEventPoster delayedEventPoster) throws Exception {
                             response.getWriter().println("+LOGIN");
                             response.getWriter().flush();
-                            String data = request.getParameter("bulk_data") == null ? request.getParameter("data")
-                                    : request.getParameter("bulk_data");
+                            String data = firstNonNull(request.getParameter("bulk_data"), request.getParameter("data"));
                             data = data.replace('\r', ' ').replace('\n', ' ');
                             Map<String, Intel> map = parseIntel(data, botUser);
                             if (map.isEmpty()) {
@@ -113,6 +113,7 @@ public class JettyIntelHandler extends AbstractHandler {
                     response.getWriter().println("-LOGIN");
                     response.getWriter().flush();
                 }
+                response.flushBuffer();
             } catch (Exception e) {
                 log.error("", e);
             }
