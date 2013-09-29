@@ -106,7 +106,6 @@ public final class Properties {
      * Loads the properties from file
      */
     public void loadFromFile() {
-        propertiesLock.readLock().lock();
         try {
             for (String line : Files.readAllLines(file, Charsets.UTF_8)) {
                 if (isNotNullOrEmpty(line) && !line.trim().startsWith("#")) {
@@ -123,8 +122,6 @@ public final class Properties {
             }
         } catch (IOException e) {
             log.error("Could not read the properties files", e);
-        } finally {
-            propertiesLock.readLock().unlock();
         }
     }
 
