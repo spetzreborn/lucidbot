@@ -54,7 +54,7 @@ public enum CommandParamGroupingSpecification {
     REPEAT {
         @Override
         public StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex) {
-            return builder.append("(?<").append(paramName).append(">?:(?:").append(regex).append(')').append("(?:\\s+|$))+").append(')');
+            return builder.append("(?<").append(paramName).append(">(?:(?:").append(regex).append(')').append("(?:\\s+|$))+").append(')');
         }
 
         @Override
