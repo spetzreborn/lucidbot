@@ -70,7 +70,11 @@ public final class Command implements HasName, Comparable<Command> {
      */
     private AccessLevel requiredAccessLevel = AccessLevel.USER;
     /**
-     * Whether the required access level may be relaxed. Defaults to true but should be set to false if a command won't work with a lower access level
+     * The original access level required to use this command
+     */
+    private AccessLevel originalRequiredAccessLevel = AccessLevel.USER;
+    /**
+     * Whether the required access level may be relaxed from the default. Defaults to true but should be set to false if a command won't work with a lower access level
      * than what is initially specified. For example, some commands may stop working if the user isn't admin, and so the bot user shouldn't be able
      * to lower the access level for that command to anything below admin.
      */

@@ -137,6 +137,6 @@ public class CommandBuilder {
      * @return a new Command configured by the parameters of this build
      */
     public Command build() {
-        return new Command(name, syntax, helpText, commandType, requiredAccessLevel, accessLevelDowngradable, templateFile);
+        return new Command(name, syntax, helpText, commandType, requiredAccessLevel, requiredAccessLevel, accessLevelDowngradable, templateFile);
     }
 }
