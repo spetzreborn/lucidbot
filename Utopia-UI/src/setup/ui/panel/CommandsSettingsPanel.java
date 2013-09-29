@@ -179,7 +179,7 @@ public class CommandsSettingsPanel extends VerticalLayout {
             if (command != null) typeField.setValue(command.getCommandType());
 
             Collection<AccessLevel> accessLevels = Lists.newArrayList(AccessLevel.values());
-            if (!command.isDowngradableAccessLevel()) accessLevels = Collections2.filter(accessLevels, new Predicate<AccessLevel>() {
+            if (command != null && !command.isDowngradableAccessLevel()) accessLevels = Collections2.filter(accessLevels, new Predicate<AccessLevel>() {
                 @Override
                 public boolean apply(@Nullable final AccessLevel input) {
                     return input.compareTo(command.getOriginalRequiredAccessLevel()) >= 0;
