@@ -8,6 +8,7 @@ What's new:
 * Command related improvements: CommandBuilder replaces CommandFactory (see the script examples, because CommandFactory will be removed in a later version). Also, it's ok to use capturing groups in parsers now, as long as they aren't named the same as the parameters
 * Fixed file updates for scripts, so they should update automatically now (i.e. no need for rebooting after changing them)
 * Some spring (fall?) cleaning that shouldn't should have any effects on actual functionality
+* In the slap command, armies_home has now become armiesHome instead
 
 How to update:
 1. Replace LucidBot.jar

@@ -57,7 +57,7 @@ public class SlapCommandHandlerFactory implements CommandHandlerFactory {
 
         handledCommand.setHelpText("Used for making the bot highlight users based on different criteria");
 
-        ParamParsingSpecification armiesHome = new ParamParsingSpecification("armies_home", "armies home");
+        ParamParsingSpecification armiesHome = new ParamParsingSpecification("armiesHome", "armies home");
         ParamParsingSpecification admins = new ParamParsingSpecification("admins", "admins");
         ParamParsingSpecification all = new ParamParsingSpecification("all", "all|\\*");
         ParamParsingSpecification event = new ParamParsingSpecification("event", Event.EventType.getRegexGroup());

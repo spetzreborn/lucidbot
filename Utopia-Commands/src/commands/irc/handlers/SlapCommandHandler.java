@@ -84,7 +84,7 @@ public class SlapCommandHandler implements CommandHandler {
         try {
             if (context.getChannel() == null) return CommandResponse.errorResponse("Command can only be used in a channel on IRC");
 
-            if (params.containsKey("armies_home")) {
+            if (params.containsKey("armiesHome")) {
                 return slapArmiesHome(context, filters);
             } else if (params.containsKey("admins")) {
                 Collection<BotUser> adminUsers = userDAO.getAdminUsers();
