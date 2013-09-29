@@ -9,6 +9,7 @@ What's new:
 * Fixed file updates for scripts, so they should update automatically now (i.e. no need for rebooting after changing them)
 * Some spring (fall?) cleaning that shouldn't should have any effects on actual functionality
 * In the slap command, armies_home has now become armiesHome instead
+* Not all commands are downgradable any longer. For example, some commands rely on the user being registered, and so they won't work if they're made public (which is now enforced)
 
 How to update:
 1. Replace LucidBot.jar

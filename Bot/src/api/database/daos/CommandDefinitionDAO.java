@@ -85,7 +85,8 @@ public class CommandDefinitionDAO extends AbstractDAO<CommandDefinition> {
             command.setCommandType(def.getCommandType());
             if (def.getHelpText() != null) command.setHelpText(def.getHelpText());
             if (def.getSyntax() != null) command.setSyntax(def.getSyntax());
-            if (def.getAccessLevel() != null) command.setRequiredAccessLevel(def.getAccessLevel());
+            if (def.getAccessLevel() != null && (command.isDowngradableAccessLevel() || def.getAccessLevel().compareTo(command.getOriginalRequiredAccessLevel()) >= 0))
+                command.setRequiredAccessLevel(def.getAccessLevel());
             if (def.getTemplateFile() != null) command.setTemplateFile(def.getTemplateFile());
         }
     }
