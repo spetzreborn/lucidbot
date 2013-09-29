@@ -1,13 +1,14 @@
-Build: LucidBot 3.3
+Build: LucidBot 3.4
 
 **IMPORTANT NOTE**
-There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.3 release. Rather update to 3.0 RC1 first, and then to FINAL afterwards.
+There are some database related upgrade issues. If you're updating from a build prior to b44, don't go straight to the 3.4 release. Rather update to b44 (or any other build prior to 3.0 RC3) first, and then to 3.4 afterwards.
 
 What's new:
-* Updated libraries
-* Fixed an army parsing bug
+* Added the parameter targetKingdom to the spells_ops web service resource. Specifying the kd loc will let the bot create the specified target if it doesn't exist
+* Command related improvements: CommandBuilder replaces CommandFactory (see the script examples, because CommandFactory will be removed in a later version). Also, it's ok to use capturing groups in parsers now, as long as they aren't named the same as the parameters
+* Fixed file updates for scripts, so they should update automatically now (i.e. no need for rebooting after changing them)
+* Some spring (fall?) cleaning that shouldn't should have any effects on actual functionality
 
 How to update:
 1. Replace LucidBot.jar
-2. Replace the plugin folder
-3. Replace the lib folder
+2. Remove and replace the plugins folder and all the jar files in it

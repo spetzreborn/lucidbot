@@ -27,9 +27,9 @@
 
 package tmp.server.intel;
 
-import api.database.CallableTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.CallableTransactionTask;
 import api.events.DelayedEventPoster;
 import com.google.inject.Provider;
 import database.daos.IntelDAO;
@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
 import static api.tools.text.StringUtil.isNullOrEmpty;
 

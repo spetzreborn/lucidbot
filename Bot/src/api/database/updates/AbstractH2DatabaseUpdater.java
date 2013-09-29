@@ -25,8 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.updates;
 
+import api.database.H2;
 import internal.main.Main;
 
 public abstract class AbstractH2DatabaseUpdater extends AbstractDatabaseUpdater {

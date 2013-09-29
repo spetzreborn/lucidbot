@@ -31,7 +31,6 @@ import api.events.irc.TopicEvent;
 import api.events.irc.UserListEvent;
 import api.irc.BotIRCInstance;
 import api.irc.entities.IRCUserOpType;
-import api.tools.text.StringUtil;
 import com.google.common.eventbus.EventBus;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -39,6 +38,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static api.tools.text.StringUtil.splitOnSpace;
 
 /**
  * Server codes
@@ -90,7 +91,7 @@ public enum ServerCode {
             int channelEndIndex = message.indexOf(" :");
             String channel = message.substring(message.indexOf('#'), channelEndIndex);
 
-            String[] users = StringUtil.splitOnSpace(message.substring(channelEndIndex + 2));
+            String[] users = splitOnSpace(message.substring(channelEndIndex + 2));
             Map<String, Set<IRCUserOpType>> userInfo = new HashMap<>(users.length);
             for (String nick : users) {
                 int actualNickStart;

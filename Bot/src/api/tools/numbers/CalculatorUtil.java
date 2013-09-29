@@ -28,7 +28,6 @@
 package api.tools.numbers;
 
 import api.tools.text.RegexUtil;
-import api.tools.text.StringUtil;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -36,6 +35,8 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static api.tools.text.StringUtil.isNullOrEmpty;
+import static api.tools.text.StringUtil.splitOnSpace;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @ParametersAreNonnullByDefault
@@ -68,7 +69,7 @@ public class CalculatorUtil {
      */
     @Nullable
     public static Double calc(@Nullable final String in, final boolean nullOnUnknownSymbols) {
-        if (StringUtil.isNullOrEmpty(in) || nullOnUnknownSymbols && NOT_ALLOWED.matcher(in).find()) return null;
+        if (isNullOrEmpty(in) || nullOnUnknownSymbols && NOT_ALLOWED.matcher(in).find()) return null;
 
         try {
             String formatted = formatInfixExpression(in);
@@ -89,10 +90,11 @@ public class CalculatorUtil {
         return formatted.trim();
     }
 
-    private static List<String> infixToRPN(String formattedInfixExpression) {
+    private static List<String> infixToRPN(final String formattedInfixExpression) {
         List<String> out = new ArrayList<>();
-        LinkedList<String> stack = new LinkedList<>();
-        for (String token : StringUtil.splitOnSpace(formattedInfixExpression)) {
+        Deque<String> stack = new LinkedList<>();
+
+        for (String token : splitOnSpace(formattedInfixExpression)) {
             if (isOperator(token)) {
                 while (!stack.isEmpty() && isOperator(stack.peek())) {
                     if (isLeftAssociative(token) && comparePrecedence(token, stack.peek()) <= 0 ||
@@ -103,9 +105,9 @@ public class CalculatorUtil {
                     break;
                 }
                 stack.push(token);
-            } else if ("(".equals(token) || "[".equals(token)) {
+            } else if (isOpeningGroupSymbol(token)) {
                 stack.push(token);
-            } else if (")".equals(token) || "]".equals(token)) {
+            } else if (isClosingGroupSymbol(token)) {
                 while (!stack.isEmpty() && !"(".equals(stack.peek()) && !"[".equals(stack.peek())) {
                     out.add(stack.pop());
                 }
@@ -120,20 +122,28 @@ public class CalculatorUtil {
         return out;
     }
 
-    private static boolean isOperator(String token) {
+    private static boolean isOperator(final String token) {
         return OPERATOR_MAP.containsKey(token);
     }
 
-    private static boolean isLeftAssociative(String token) {
+    private static boolean isLeftAssociative(final String token) {
         return OPERATOR_MAP.get(token).isLeftAssoc;
     }
 
-    private static int comparePrecedence(String token1, String token2) {
+    private static int comparePrecedence(final String token1, final String token2) {
         return Operator.comparePrecedence(OPERATOR_MAP.get(token1), OPERATOR_MAP.get(token2));
     }
 
-    private static Double eval(List<String> tokens) {
-        LinkedList<Double> stack = new LinkedList<>();
+    private static boolean isOpeningGroupSymbol(final String token) {
+        return "(".equals(token) || "[".equals(token);
+    }
+
+    private static boolean isClosingGroupSymbol(final String token) {
+        return ")".equals(token) || "]".equals(token);
+    }
+
+    private static Double eval(final List<String> tokens) {
+        Deque<Double> stack = new LinkedList<>();
         for (String token : tokens) {
             if (isOperator(token)) {
                 Double pop = stack.pop();
@@ -147,9 +157,9 @@ public class CalculatorUtil {
 
     /**
      * Formats the specified Double with the default format for the Bot.
-     * The default format is currently (might change):
-     * Locale: US
-     * Uses grouping
+     * The default format is currently (might change):<br>
+     * Locale: US<br>
+     * Uses grouping<br>
      * Max 5 decimals
      *
      * @param d the Double to format
@@ -161,8 +171,8 @@ public class CalculatorUtil {
 
     /**
      * Formats the specified Double with the default format for the Bot.
-     * The default format is currently (might change):
-     * Locale: US
+     * The default format is currently (might change):<br>
+     * Locale: US<br>
      * Uses grouping
      *
      * @param d           the Double to format

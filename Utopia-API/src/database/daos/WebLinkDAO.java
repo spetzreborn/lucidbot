@@ -28,15 +28,17 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.WebLink;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class WebLinkDAO extends AbstractDAO<WebLink> {
     @Inject
     public WebLinkDAO(final Provider<Session> sessionProvider) {

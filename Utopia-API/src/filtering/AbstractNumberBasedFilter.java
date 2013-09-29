@@ -29,18 +29,22 @@ package filtering;
 
 import spi.filters.AbstractFilter;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public abstract class AbstractNumberBasedFilter<E extends Number & Comparable<E>> extends AbstractFilter<E> {
     private final E lowerBound;
     private final E upperBound;
 
-    protected AbstractNumberBasedFilter(final Class<E> clazz, final E lowerBound, final E upperBound) {
+    protected AbstractNumberBasedFilter(final Class<E> clazz, @Nullable final E lowerBound, @Nullable final E upperBound) {
         super(clazz);
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
     }
 
     @Override
-    public boolean passesFilter(final E value) {
+    public boolean passesFilter(@Nullable final E value) {
         //If it's a range (both lower and upper bound available), check with possible equals
         if (lowerBound != null && upperBound != null) return value != null && value.compareTo(upperBound) <= 0 &&
                 value.compareTo(lowerBound) >= 0;

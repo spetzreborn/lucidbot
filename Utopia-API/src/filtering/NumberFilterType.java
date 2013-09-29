@@ -29,11 +29,13 @@ package filtering;
 
 import api.irc.ValidationType;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ParametersAreNonnullByDefault
 public enum NumberFilterType {
     GREATER_THAN("[>]\\s*(" + ValidationType.DOUBLE.getPattern() + ")\\s*"),
     GREATER_THAN_WITH_K("[>]\\s*(" + ValidationType.DOUBLE_WITH_K.getPattern() + ")\\s*"),

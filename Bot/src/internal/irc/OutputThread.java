@@ -143,8 +143,7 @@ public final class OutputThread extends Thread {
         private final BlockingQueue<IRCOutput> outputs;
         private final AtomicBoolean die;
 
-        private SpecificHandlerQueueMonitor(final BlockingQueue<IRCOutput> queue, final BlockingQueue<IRCOutput> outputs,
-                                            final AtomicBoolean die) {
+        private SpecificHandlerQueueMonitor(final BlockingQueue<IRCOutput> queue, final BlockingQueue<IRCOutput> outputs, final AtomicBoolean die) {
             this.queue = queue;
             this.outputs = outputs;
             this.die = die;

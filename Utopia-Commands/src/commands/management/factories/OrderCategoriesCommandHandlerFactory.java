@@ -28,7 +28,7 @@
 package commands.management.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class OrderCategoriesCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "ordercategories");
+    private final Command handledCommand = CommandBuilder.forCommand("ordercategories").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<OrderCategoriesCommandHandler> handlerProvider;

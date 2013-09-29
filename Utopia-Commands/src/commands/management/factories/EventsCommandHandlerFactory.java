@@ -28,7 +28,7 @@
 package commands.management.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class EventsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "events");
+    private final Command handledCommand = CommandBuilder.forCommand("events").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<EventsCommandHandler> handlerProvider;

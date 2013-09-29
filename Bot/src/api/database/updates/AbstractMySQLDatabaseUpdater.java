@@ -25,8 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.updates;
 
+import api.database.MySQL;
 import internal.main.Main;
 
 public abstract class AbstractMySQLDatabaseUpdater extends AbstractDatabaseUpdater {

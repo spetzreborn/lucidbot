@@ -28,15 +28,17 @@
 package api.database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.Alias;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class AliasDAO extends AbstractDAO<Alias> {
     @Inject
     public AliasDAO(final Provider<Session> sessionProvider) {

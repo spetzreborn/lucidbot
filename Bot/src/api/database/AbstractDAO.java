@@ -27,6 +27,7 @@
 
 package api.database;
 
+import api.database.transactions.Transactional;
 import api.tools.database.DBUtil;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
@@ -53,8 +54,8 @@ public abstract class AbstractDAO<E> {
     private final Provider<Session> sessionProvider;
 
     protected AbstractDAO(final Class<E> clazz, final Provider<Session> sessionProvider) {
-        this.sessionProvider = sessionProvider;
         this.clazz = checkNotNull(clazz);
+        this.sessionProvider = checkNotNull(sessionProvider);
     }
 
     protected Session getSession() {
@@ -72,7 +73,7 @@ public abstract class AbstractDAO<E> {
             for (final E object : objects) {
                 getSession().delete(object);
             }
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DBException(e);
         }
     }
@@ -105,8 +106,7 @@ public abstract class AbstractDAO<E> {
     @Transactional
     protected <T> List<T> find(final Class<T> clazz, @Nullable final Object... criterion) {
         try {
-            Criteria criteria = getSession().createCriteria(checkNotNull(clazz))
-                    .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+            Criteria criteria = getSession().createCriteria(checkNotNull(clazz)).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
             criteria = DBUtil.resolveAndAddCriterion(criteria, criterion);
             return listAndCast(clazz, criteria);
         } catch (Exception e) {
@@ -118,7 +118,7 @@ public abstract class AbstractDAO<E> {
     protected List<E> listAndCast(final Criteria criteria) {
         try {
             return criteria.list();
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DBException(e);
         }
     }
@@ -137,7 +137,7 @@ public abstract class AbstractDAO<E> {
         try {
             getSession().saveOrUpdate(checkNotNull(object));
             return object;
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             throw new DBException(e);
         }
     }

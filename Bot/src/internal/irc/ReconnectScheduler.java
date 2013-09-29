@@ -28,7 +28,7 @@ public class ReconnectScheduler {
         this.reconnectDelay = reconnectDelay;
     }
 
-    public synchronized void scheduleReconnectAttempt(final Runnable reconnectAction) {
+    public void scheduleReconnectAttempt(final Runnable reconnectAction) {
         long currentTime = System.currentTimeMillis();
         long delay;
 

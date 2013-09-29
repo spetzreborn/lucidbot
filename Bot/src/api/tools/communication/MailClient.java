@@ -29,7 +29,6 @@ package api.tools.communication;
 
 import api.irc.ValidationType;
 import api.settings.PropertiesCollection;
-import api.tools.text.StringUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
@@ -41,6 +40,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import static api.settings.PropertiesConfig.*;
+import static api.tools.text.StringUtil.isNullOrEmpty;
+import static api.tools.text.StringUtil.validateInput;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -62,18 +63,17 @@ public final class MailClient {
      * @param to      to who
      * @param subject subject of the email
      * @param content the content (body) of the email
-     * @throws MessagingException .
+     * @throws MailException .
      */
-    public void sendMail(final String from, final Iterable<String> to, final String subject, final String content) throws
-            MailException {
+    public void sendMail(final String from, final Iterable<String> to, final String subject, final String content) throws MailException {
         String host = properties.get(EMAIL_HOST);
         String port = properties.get(EMAIL_PORT);
         String useTls = properties.get(EMAIL_TLS);
         String username = properties.get(EMAIL_USERNAME);
         String password = properties.get(EMAIL_PASSWORD);
-        if (StringUtil.isNullOrEmpty(host) || StringUtil.isNullOrEmpty(port) || !StringUtil.validateInput(ValidationType.INT, port) ||
-                StringUtil.isNullOrEmpty(useTls) || !StringUtil.validateInput(ValidationType.BOOLEAN, useTls) ||
-                StringUtil.isNullOrEmpty(username)) throw new MailException("Cannot send emails due to missing email properties");
+        if (isNullOrEmpty(host) || isNullOrEmpty(port) || !validateInput(ValidationType.INT, port) ||
+                isNullOrEmpty(useTls) || !validateInput(ValidationType.BOOLEAN, useTls) ||
+                isNullOrEmpty(username)) throw new MailException("Cannot send emails due to missing email properties");
 
         java.util.Properties props = new java.util.Properties();
         props.setProperty("mail.smtp.host", host);

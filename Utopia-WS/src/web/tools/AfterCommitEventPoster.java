@@ -27,7 +27,7 @@
 
 package web.tools;
 
-import api.database.TransactionManager;
+import api.database.transactions.TransactionManager;
 import com.google.common.base.Supplier;
 import com.google.common.eventbus.EventBus;
 

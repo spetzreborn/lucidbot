@@ -28,9 +28,9 @@
 package internal.irc.delays;
 
 import api.runtime.ThreadingManager;
+import com.google.common.base.Charsets;
 
 import javax.inject.Inject;
-import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,7 +54,7 @@ class BufferDelayHandler implements DelayHandler {
 
     @Override
     public <E> E callWithDelay(final String line, final Callable<E> callable) throws Exception {
-        int bytes = line.getBytes(Charset.forName("UTF-8")).length;
+        int bytes = line.getBytes(Charsets.UTF_8).length;
         int secondsFromLength = bytes / SECOND_ADD_INTERVAL + 1;
         while (bufferSize.get() + secondsFromLength > MAX_BUFFER_SIZE) {
             Thread.sleep(DELAY);

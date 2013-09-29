@@ -177,10 +177,6 @@ public final class BotUser implements Comparable<BotUser>, HasNumericId {
         this.password = BCrypt.hashpw(checkNotNull(password), BCrypt.gensalt());
     }
 
-    public void setName(final String name) {
-        this.realName = name;
-    }
-
     /**
      * @param date the Date to format
      * @return a String with the specified Date formatted in the ISO date-time format in the user's timezone

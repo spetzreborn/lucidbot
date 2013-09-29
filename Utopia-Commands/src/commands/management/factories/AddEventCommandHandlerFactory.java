@@ -28,6 +28,7 @@
 package commands.management.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.management.handlers.AddEventCommandHandler;
@@ -43,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class AddEventCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "addevent");
+    private final Command handledCommand = CommandBuilder.forCommand("addevent").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddEventCommandHandler> handlerProvider;

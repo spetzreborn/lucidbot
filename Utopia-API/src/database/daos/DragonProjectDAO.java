@@ -28,7 +28,7 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.DragonProject;
 import database.models.DragonProjectType;
@@ -36,11 +36,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
 import static api.tools.collections.CollectionUtil.isEmpty;
 
+@ParametersAreNonnullByDefault
 public class DragonProjectDAO extends AbstractDAO<DragonProject> {
     @Inject
     public DragonProjectDAO(final Provider<Session> sessionProvider) {

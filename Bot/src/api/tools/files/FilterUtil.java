@@ -29,7 +29,6 @@ package api.tools.files;
 
 import api.filters.FilterEnabled;
 import api.tools.collections.ArrayUtil;
-import api.tools.collections.CollectionUtil;
 import api.tools.common.ReflectionUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -45,6 +44,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static api.tools.collections.CollectionUtil.isEmpty;
+
 @ParametersAreNonnullByDefault
 public class FilterUtil {
     private FilterUtil() {
@@ -58,7 +59,7 @@ public class FilterUtil {
      * @param filters    the filters to apply
      */
     public static void applyFilters(@Nullable final Collection<?> collection, @Nullable final Collection<Filter<?>> filters) {
-        if (CollectionUtil.isEmpty(collection) || CollectionUtil.isEmpty(filters)) return;
+        if (isEmpty(collection) || isEmpty(filters)) return;
         for (Filter<?> filter : filters) {
             filter.filter(collection);
         }
@@ -72,9 +73,8 @@ public class FilterUtil {
      * @param filters    the filters to apply
      * @param returnType the return type of the method containing the second set to filter against
      */
-    public static <E> void applyFilters(@Nullable final Collection<E> collection, @Nullable final Collection<Filter<?>> filters,
-                                        final Class<?> returnType) {
-        if (CollectionUtil.isEmpty(collection) || CollectionUtil.isEmpty(filters)) return;
+    public static <E> void applyFilters(@Nullable final Collection<E> collection, @Nullable final Collection<Filter<?>> filters, final Class<?> returnType) {
+        if (isEmpty(collection) || isEmpty(filters)) return;
 
         try {
             Class<?> colClass = collection.iterator().next().getClass();

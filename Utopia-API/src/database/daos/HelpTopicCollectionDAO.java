@@ -28,16 +28,17 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.HelpTopicCollection;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Collection;
 
-
+@ParametersAreNonnullByDefault
 public class HelpTopicCollectionDAO extends AbstractDAO<HelpTopicCollection> {
     @Inject
     public HelpTopicCollectionDAO(final Provider<Session> sessionProvider) {

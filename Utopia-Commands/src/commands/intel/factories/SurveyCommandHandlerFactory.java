@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class SurveyCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.INTEL, "survey");
+    private final Command handledCommand = CommandBuilder.forCommand("survey").ofType(CommandTypes.INTEL).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SurveyCommandHandler> handlerProvider;

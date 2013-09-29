@@ -28,15 +28,16 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.ForumThread;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
-
+@ParametersAreNonnullByDefault
 public class ForumThreadDAO extends AbstractDAO<ForumThread> {
     @Inject
     public ForumThreadDAO(final Provider<Session> sessionProvider) {
@@ -47,6 +48,7 @@ public class ForumThreadDAO extends AbstractDAO<ForumThread> {
     public ForumThread setLocked(long id, boolean locked) {
         ForumThread thread = get(Restrictions.idEq(id));
         if (thread == null) return null;
+
         thread.setLocked(locked);
         return thread;
     }
@@ -55,6 +57,7 @@ public class ForumThreadDAO extends AbstractDAO<ForumThread> {
     public ForumThread setSticky(long id, boolean sticky) {
         ForumThread thread = get(Restrictions.idEq(id));
         if (thread == null) return null;
+
         thread.setStickied(sticky);
         return thread;
     }

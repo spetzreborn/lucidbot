@@ -25,16 +25,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.transactions;
 
-import java.lang.annotation.*;
+import api.events.DelayedEventPoster;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
 /**
- * Marks a method as one that wants to participate in a transaction
+ * A non data returning task to execute within a transaction
  */
-public @interface Transactional {
-    boolean flushOnlyOnCommit() default false;
+public interface SimpleTransactionTask {
+    /**
+     * Runs the task
+     *
+     * @param delayedEventBus may be used to queue events to be posted to the event bus after the transaction is finished
+     */
+    void run(DelayedEventPoster delayedEventBus);
 }

@@ -25,51 +25,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.transactions;
 
-import api.database.models.BotInstanceSettings;
-import api.database.models.Channel;
-import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import api.events.DelayedEventPoster;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
-@Entity
-@Table(name = "botinstancesettings_channel")
-@NoArgsConstructor
-@EqualsAndHashCode(of = "pk")
-public class BotInstanceSettingsChannel {
-    @Id
-    private PK pk;
-
-    public BotInstanceSettingsChannel(final BotInstanceSettings settings, final Channel channel) {
-        this.pk = new PK(settings, channel);
-    }
-
-    public BotInstanceSettings getSettings() {
-        return pk.getSettings();
-    }
-
-    public Channel getChannel() {
-        return pk.getChannel();
-    }
-
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    @EqualsAndHashCode(of = {"settings", "channel"})
-    public static class PK implements Serializable {
-        @ManyToOne(optional = false)
-        @JoinColumn(name = "settings_id", nullable = false, updatable = false)
-        @OnDelete(action = OnDeleteAction.CASCADE)
-        private BotInstanceSettings settings;
-        @ManyToOne(optional = false)
-        @JoinColumn(name = "channel_id", nullable = false, updatable = false)
-        @OnDelete(action = OnDeleteAction.CASCADE)
-        private Channel channel;
-    }
+/**
+ * A task to run inside a database transaction
+ *
+ * @param <E> the return type
+ */
+public interface CallableTransactionTask<E> {
+    /**
+     * Produces some data inside a transaction
+     *
+     * @param delayedEventPoster used to queue events for the event bus that will be posted once the transaction has finished
+     * @return the produced data
+     * @throws Exception .
+     */
+    E call(DelayedEventPoster delayedEventPoster) throws Exception;
 }

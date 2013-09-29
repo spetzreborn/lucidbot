@@ -23,6 +23,7 @@ import javax.validation.executable.ExecutableValidator;
 
 public class ValidationModule extends AbstractModule {
 
+    @Override
     protected void configure() {
         MethodArgumentValidationInterceptor interceptor = new MethodArgumentValidationInterceptor();
         bindInterceptor(Matchers.annotatedWith(ValidationEnabled.class), Matchers.any(), interceptor);

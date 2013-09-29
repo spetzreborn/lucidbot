@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class CheckedInCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "checkedin");
+    private final Command handledCommand = CommandBuilder.forCommand("checkedin").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<CheckedInCommandHandler> handlerProvider;

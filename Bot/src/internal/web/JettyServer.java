@@ -47,6 +47,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -76,39 +77,49 @@ public final class JettyServer implements Runnable, RequiresShutdown {
     @Inject
     public void init(final Injector injector) {
         try {
-            FileUtil.BotFileVisitor fileVisitor = FileUtil.visitDirectory(Paths.get("webapps"), true, FileMatcher.getFileEndingMatcher(".war"));
-
-            for (Path path : fileVisitor.getFiles()) {
-                WebAppContext webapp = new WebAppContext();
-                webapp.addEventListener(new GuiceServletContextListener() {
-                    @Override
-                    protected Injector getInjector() {
-                        return injector;
-                    }
-                });
-                webapp.addFilter(GuiceFilter.class, "/*", null);
-                String fileName = path.getFileName().toString();
-                webapp.setContextPath('/' + fileName.substring(0, fileName.indexOf(".war")));
-                webapp.setWar(path.toAbsolutePath().toString());
-                webapp.setClassLoader(Thread.currentThread().getContextClassLoader());
-                handlers.add(webapp);
-            }
-
-            for (ServerContextHandler handler : injector.getInstance(Key.get(new TypeLiteral<Set<ServerContextHandler>>() {
-            }))) {
-                if (handler.isEnabled()) handlers.add(handler.getContextHandler());
-            }
-
-            ResourceHandler staticResourcesHandler = new ResourceHandler();
-            staticResourcesHandler.setDirectoriesListed(false);
-            staticResourcesHandler.setWelcomeFiles(new String[0]);
-            staticResourcesHandler.setResourceBase("./html");
-            ContextHandler staticContextHandler = new ContextHandler("/static");
-            staticContextHandler.setHandler(staticResourcesHandler);
-            handlers.add(staticContextHandler);
+            addPluginWebapps(injector);
+            addBuiltinHandlers(injector);
+            addStaticHtmlHandler();
         } catch (final Exception e) {
             JettyServer.log.error("Failed to load webapps", e);
         }
+    }
+
+    private void addPluginWebapps(final Injector injector) throws IOException {
+        FileUtil.BotFileVisitor fileVisitor = FileUtil.visitDirectory(Paths.get("webapps"), true, FileMatcher.getFileEndingMatcher(".war"));
+
+        for (Path path : fileVisitor.getFiles()) {
+            WebAppContext webapp = new WebAppContext();
+            webapp.addEventListener(new GuiceServletContextListener() {
+                @Override
+                protected Injector getInjector() {
+                    return injector;
+                }
+            });
+            webapp.addFilter(GuiceFilter.class, "/*", null);
+            String fileName = path.getFileName().toString();
+            webapp.setContextPath('/' + fileName.substring(0, fileName.indexOf(".war")));
+            webapp.setWar(path.toAbsolutePath().toString());
+            webapp.setClassLoader(Thread.currentThread().getContextClassLoader());
+            handlers.add(webapp);
+        }
+    }
+
+    private void addBuiltinHandlers(final Injector injector) {
+        for (ServerContextHandler handler : injector.getInstance(Key.get(new TypeLiteral<Set<ServerContextHandler>>() {
+        }))) {
+            if (handler.isEnabled()) handlers.add(handler.getContextHandler());
+        }
+    }
+
+    private void addStaticHtmlHandler() {
+        ResourceHandler staticResourcesHandler = new ResourceHandler();
+        staticResourcesHandler.setDirectoriesListed(false);
+        staticResourcesHandler.setWelcomeFiles(new String[0]);
+        staticResourcesHandler.setResourceBase("./html");
+        ContextHandler staticContextHandler = new ContextHandler("/static");
+        staticContextHandler.setHandler(staticResourcesHandler);
+        handlers.add(staticContextHandler);
     }
 
     @Override

@@ -76,8 +76,11 @@ final class IRCInputParser implements EventListener {
     private final AliasHandler aliasHandler;
 
     @Inject
-    IRCInputParser(final PropertiesCollection properties, final EventBus eventBus, final CommandCache commandCache,
-                   final ContextFactory contextFactory, final Provider<AliasDAO> aliasDAOProvider) {
+    IRCInputParser(final PropertiesCollection properties,
+                   final EventBus eventBus,
+                   final CommandCache commandCache,
+                   final ContextFactory contextFactory,
+                   final Provider<AliasDAO> aliasDAOProvider) {
         this.properties = properties;
         this.commandCache = commandCache;
         this.eventBus = eventBus;
@@ -118,6 +121,7 @@ final class IRCInputParser implements EventListener {
     private Object[] parse(final IRCMessageEvent event) {
         String[] inputs = transform(event.getMessage());
         Object[] out = new Object[inputs.length];
+
         for (int i = 0; i < out.length; i++) {
             String input = inputs[i];
 
@@ -130,6 +134,7 @@ final class IRCInputParser implements EventListener {
                 if (actualCommand != null) {
                     IRCContext context = contextFactory.newIRCContext(event, input, actualCommand, prefixOccurrences);
                     if (context == null) return null;
+
                     out[i] = new CommandCalledEvent(actualCommand, context);
                     continue;
                 }
@@ -174,7 +179,7 @@ final class IRCInputParser implements EventListener {
         if (possibleCommand.length() < prefixLength) return 0;
 
         int occurrences = 0;
-        for (int i = 0; i < possibleCommand.length(); i = i + prefixLength) {
+        for (int i = 0; i < possibleCommand.length(); i += prefixLength) {
             String substring = possibleCommand.substring(i, i + prefixLength);
             if (substring.equals(prefix)) ++occurrences;
             else break;
@@ -189,6 +194,7 @@ final class IRCInputParser implements EventListener {
 
     private static class AliasHandler {
         private final Provider<AliasDAO> aliasDAOProvider;
+
         private final Map<Pattern, String> patternMap = new HashMap<>();
         private final Map<Long, Pattern> aliasMap = new HashMap<>();
         private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -228,6 +234,7 @@ final class IRCInputParser implements EventListener {
         void registerUpdate(final long aliasId) {
             Alias alias = aliasDAOProvider.get().getAlias(aliasId);
             if (alias == null) return;
+
             lock.writeLock().lock();
             try {
                 removeAlias(aliasId);

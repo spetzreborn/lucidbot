@@ -45,6 +45,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static api.tools.text.StringUtil.isNullOrEmpty;
+import static com.google.common.base.Strings.nullToEmpty;
+
 public class SyntaxCommandHandler implements CommandHandler {
     private final CommandCache commandCache;
     private final CommandDefinitionDAO commandDefinitionDAO;
@@ -66,8 +69,8 @@ public class SyntaxCommandHandler implements CommandHandler {
 
         String syntax = commandPrefix + command.getName() + ' ';
         CommandDefinition commandDefinition = commandDefinitionDAO.getCommandDefinition(command.getName());
-        if (commandDefinition == null || StringUtil.isNullOrEmpty(commandDefinition.getSyntax())) {
-            if (StringUtil.isNullOrEmpty(command.getSyntax())) {
+        if (commandDefinition == null || isNullOrEmpty(commandDefinition.getSyntax())) {
+            if (isNullOrEmpty(command.getSyntax())) {
                 CommandHandlerFactory factory = commandCache.getFactoryForCommand(command);
                 List<String> syntaxVariants = new ArrayList<>();
                 for (CommandParser parser : factory.getParsers()) {
@@ -76,6 +79,6 @@ public class SyntaxCommandHandler implements CommandHandler {
                 syntax += StringUtil.merge(syntaxVariants, " | " + commandPrefix + command.getName() + ' ');
             } else syntax = command.getSyntax();
         } else syntax += commandDefinition.getSyntax();
-        return CommandResponse.resultResponse("syntax", syntax);
+        return CommandResponse.resultResponse("syntax", nullToEmpty(syntax));
     }
 }

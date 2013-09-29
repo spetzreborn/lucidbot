@@ -28,9 +28,10 @@
 package commands.intel.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.intel.handlers.SetKdCommentCommandHandler;
@@ -46,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class SetKdCommentCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.INTEL, "setkdcomment");
+    private final Command handledCommand = CommandBuilder.forCommand("setkdcomment").ofType(CommandTypes.INTEL).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetKdCommentCommandHandler> handlerProvider;

@@ -28,7 +28,7 @@
 package commands.user.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -49,7 +49,7 @@ import java.util.List;
 
 @Singleton
 public class SetAlarmCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "setalarm");
+    private final Command handledCommand = CommandBuilder.forCommand("setalarm").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetAlarmCommandHandler> handlerProvider;

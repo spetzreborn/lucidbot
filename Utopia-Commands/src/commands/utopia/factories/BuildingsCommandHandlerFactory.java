@@ -28,8 +28,9 @@
 package commands.utopia.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.utopia.handlers.BuildingsCommandHandler;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class BuildingsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedPublicCommand(CommandTypes.UTOPIA, "buildings");
+    private final Command handledCommand = CommandBuilder.forCommand("buildings").ofType(CommandTypes.UTOPIA).requiringAccessLevel(AccessLevel.PUBLIC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<BuildingsCommandHandler> handlerProvider;

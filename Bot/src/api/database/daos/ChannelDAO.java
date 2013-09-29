@@ -28,8 +28,8 @@
 package api.database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.Channel;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;

@@ -29,6 +29,10 @@ package filtering;
 
 import spi.filters.AbstractFilter;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public abstract class AbstractBooleanBasedFilter extends AbstractFilter<Boolean> {
     private final boolean bool;
 
@@ -38,7 +42,7 @@ public abstract class AbstractBooleanBasedFilter extends AbstractFilter<Boolean>
     }
 
     @Override
-    public boolean passesFilter(final Boolean value) {
+    public boolean passesFilter(@Nullable final Boolean value) {
         return value != null && value.equals(bool);
     }
 }

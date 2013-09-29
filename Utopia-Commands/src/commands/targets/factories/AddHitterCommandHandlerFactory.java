@@ -28,6 +28,7 @@
 package commands.targets.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -41,7 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AddHitterCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.TARGETS, "addhitter");
+    private final Command handledCommand = CommandBuilder.forCommand("addhitter").ofType(CommandTypes.TARGETS).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddHitterCommandHandler> handlerProvider;

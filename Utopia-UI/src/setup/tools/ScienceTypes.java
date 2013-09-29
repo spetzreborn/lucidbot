@@ -27,7 +27,7 @@
 
 package setup.tools;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -41,7 +41,7 @@ import spi.settings.EntitySetup;
 
 import javax.inject.Inject;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 public class ScienceTypes implements EntitySetup {
     public final ScienceType alchemy = new ScienceType("Alchemy", "Income", "", 1.4, Sets.<Bonus>newHashSet());

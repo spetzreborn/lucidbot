@@ -28,7 +28,7 @@
 package commands.team.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class AidCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "aid");
+    private final Command handledCommand = CommandBuilder.forCommand("aid").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AidCommandHandler> handlerProvider;

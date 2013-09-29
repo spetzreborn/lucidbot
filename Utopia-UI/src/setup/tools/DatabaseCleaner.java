@@ -28,9 +28,9 @@
 package setup.tools;
 
 import api.database.JDBCWorkExecutor;
-import api.database.SimpleTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import com.google.inject.Provider;
 import database.daos.IntelDAO;
@@ -43,7 +43,7 @@ import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.Date;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 public class DatabaseCleaner {

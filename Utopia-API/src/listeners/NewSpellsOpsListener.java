@@ -27,9 +27,9 @@
 
 package listeners;
 
-import api.database.CallableTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.CallableTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.communication.IRCAccess;
 import api.runtime.ThreadingManager;
@@ -50,7 +50,7 @@ import tools.time.UtopiaTimeFactory;
 import javax.inject.Inject;
 import java.util.Date;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 class NewSpellsOpsListener implements EventListener {

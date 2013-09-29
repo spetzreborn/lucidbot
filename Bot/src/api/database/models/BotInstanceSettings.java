@@ -28,7 +28,6 @@
 package api.database.models;
 
 import api.common.HasNumericId;
-import api.database.BotInstanceSettingsChannel;
 import lombok.AccessLevel;
 import lombok.*;
 
@@ -75,7 +74,7 @@ public final class BotInstanceSettings implements Comparable<BotInstanceSettings
         this.nick = checkNotNull(nick);
         this.password = checkNotNull(password);
         for (Channel channel : channels) {
-            this.channels.add(new BotInstanceSettingsChannel(this, channel));
+            this.channels.add(new BotInstanceSettingsChannel(this, checkNotNull(channel)));
         }
     }
 

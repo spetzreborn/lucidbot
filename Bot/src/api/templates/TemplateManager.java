@@ -29,7 +29,6 @@ package api.templates;
 
 import api.irc.communication.IRCOutput;
 import api.runtime.IRCContext;
-import freemarker.template.TemplateException;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -39,10 +38,12 @@ import java.util.Map;
  * A manager capable of applying templates
  */
 public interface TemplateManager {
+    static String TEMPLATE_FILE_EXTENSION = ".ftl";
+
     /**
      * Applies the specified template and produces output to send to IRC
      *
-     * @param data         the data produces by the command handlers
+     * @param data         the data for the template to use
      * @param templateName the name of the template
      * @param context      the irc context
      * @return a Collection of IRCOutputs to send to the server
@@ -55,8 +56,8 @@ public interface TemplateManager {
      * @param data         the data to use
      * @param templateName the name of the template file
      * @return a String with the text from the compiled template
-     * @throws IOException       .
-     * @throws TemplateException .
+     * @throws IOException                 .
+     * @throws TemplateProcessingException .
      */
     String processTemplate(Map<String, Object> data, String templateName) throws IOException, TemplateProcessingException;
 

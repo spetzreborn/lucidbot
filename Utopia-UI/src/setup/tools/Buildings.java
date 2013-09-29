@@ -27,7 +27,7 @@
 
 package setup.tools;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
@@ -41,7 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 public class Buildings implements EntitySetup {
     public final Building homes = new Building("Homes", "homes", "amount percent be", Lists.newArrayList(

@@ -28,16 +28,15 @@
 package internal.settings;
 
 import api.tools.time.DateFactory;
+import com.google.common.base.Charsets;
 import lombok.extern.log4j.Log4j;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -55,10 +54,10 @@ public final class Properties {
 
     private final Map<String, String> properties = new HashMap<>();
     private final ReadWriteLock propertiesLock = new ReentrantReadWriteLock(true);
-    private final AtomicReference<Path> file;
+    private final Path file;
 
     public Properties(final Path propertiesFile) {
-        file = new AtomicReference<>(propertiesFile);
+        file = propertiesFile;
     }
 
     /**
@@ -107,8 +106,9 @@ public final class Properties {
      * Loads the properties from file
      */
     public void loadFromFile() {
+        propertiesLock.readLock().lock();
         try {
-            for (String line : Files.readAllLines(file.get(), Charset.defaultCharset())) {
+            for (String line : Files.readAllLines(file, Charsets.UTF_8)) {
                 if (isNotNullOrEmpty(line) && !line.trim().startsWith("#")) {
                     String prop = line.trim();
                     Matcher matcher = KEY_VALUE_PATTERN.matcher(prop);
@@ -123,6 +123,8 @@ public final class Properties {
             }
         } catch (IOException e) {
             log.error("Could not read the properties files", e);
+        } finally {
+            propertiesLock.readLock().unlock();
         }
     }
 
@@ -132,7 +134,7 @@ public final class Properties {
     public void saveToFile() {
         propertiesLock.writeLock().lock();
         try {
-            List<String> fileContent = Files.readAllLines(file.get(), Charset.defaultCharset());
+            List<String> fileContent = Files.readAllLines(file, Charsets.UTF_8);
             List<String> props = new ArrayList<>(fileContent.size());
             for (String line : fileContent) {
                 if (isNotNullOrEmpty(line) && !line.trim().startsWith("#")) {
@@ -147,7 +149,7 @@ public final class Properties {
                     props.add(line);
                 }
             }
-            Files.write(file.get(), props, Charset.defaultCharset(), StandardOpenOption.WRITE);
+            Files.write(file, props, Charsets.UTF_8, StandardOpenOption.WRITE);
         } catch (Exception e) {
             Properties.log.error("Failed to save properties to file", e);
         } finally {
@@ -189,11 +191,11 @@ public final class Properties {
 
         Properties that = (Properties) o;
 
-        return file.get().equals(that.file.get());
+        return file.equals(that.file);
     }
 
     @Override
     public int hashCode() {
-        return file.get().hashCode();
+        return file.hashCode();
     }
 }

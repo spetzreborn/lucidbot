@@ -30,8 +30,11 @@ package filtering;
 import api.tools.time.DateUtil;
 import spi.filters.AbstractFilter;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Date;
 
+@ParametersAreNonnullByDefault
 public abstract class AbstractDateBasedFilter extends AbstractFilter<Date> {
     protected static Date getDateHoursFromNow(final double d) {
         return new Date(System.currentTimeMillis() + DateUtil.hoursToMillis(d));
@@ -44,14 +47,14 @@ public abstract class AbstractDateBasedFilter extends AbstractFilter<Date> {
     private final Date lowerBound;
     private final Date upperBound;
 
-    protected AbstractDateBasedFilter(final Date lowerBound, final Date upperBound) {
+    protected AbstractDateBasedFilter(@Nullable final Date lowerBound, @Nullable final Date upperBound) {
         super(Date.class);
         this.lowerBound = lowerBound == null ? null : new Date(lowerBound.getTime());
         this.upperBound = upperBound == null ? null : new Date(upperBound.getTime());
     }
 
     @Override
-    public boolean passesFilter(final Date value) {
+    public boolean passesFilter(@Nullable final Date value) {
         //If it's a range (both lower and upper bound available), check with possible equals
         if (lowerBound != null && upperBound != null) return value != null && value.compareTo(upperBound) <= 0 &&
                 value.compareTo(lowerBound) >= 0;

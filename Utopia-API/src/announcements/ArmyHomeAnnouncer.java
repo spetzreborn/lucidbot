@@ -38,13 +38,17 @@ import events.ArmyHomeEvent;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+@ParametersAreNonnullByDefault
 public class ArmyHomeAnnouncer extends AbstractAnnouncer implements EventListener {
     private final PropertiesCollection properties;
 
     @Inject
-    public ArmyHomeAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
+    public ArmyHomeAnnouncer(final TemplateManager templateManager,
+                             final IRCEntityManager ircEntityManager,
+                             final IRCAccess ircAccess,
                              final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.properties = properties;

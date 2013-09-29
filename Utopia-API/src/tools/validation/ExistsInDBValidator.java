@@ -1,7 +1,7 @@
 package tools.validation;
 
 import api.common.HasNumericId;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import org.hibernate.Session;
 

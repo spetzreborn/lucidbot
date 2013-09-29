@@ -27,7 +27,7 @@
 
 package database.updates.h2;
 
-import api.database.DatabaseUpdateAction;
+import api.database.updates.DatabaseUpdateAction;
 import api.tools.common.CleanupUtil;
 import com.google.common.collect.Lists;
 

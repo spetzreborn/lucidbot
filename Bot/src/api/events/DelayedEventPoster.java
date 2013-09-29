@@ -29,10 +29,17 @@ package api.events;
 
 import com.google.common.eventbus.EventBus;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Used to queue events that will be posted later (usually after a transaction has been finished)
+ */
+@ParametersAreNonnullByDefault
 public class DelayedEventPoster {
     private final EventBus eventBus;
     private final List<Object> waitList = new ArrayList<>();
@@ -43,12 +50,12 @@ public class DelayedEventPoster {
     }
 
     /**
-     * Enqueues an event to be posted when the currently running transaction is over
+     * Enqueues an event to be posted later
      *
      * @param event the event to post
      */
     public void enqueue(final Object event) {
-        waitList.add(event);
+        waitList.add(checkNotNull(event));
     }
 
     /**

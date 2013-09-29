@@ -22,8 +22,6 @@ Update Vaadin to 7.x or replace UI with GWT or something else
 GOOD TO HAVE:
 enable/disable different managers, like stopping the aidmanager from listening to aid sent events etc.
 Unfortunately, because your enemy expected defeat, they torched x acres and made them uninhabitable.
-Don't allow all access levels to be overwritten since they could cause some commands to stop working
-Barren Land and Unknown building types should be impossible to remove
 A better scheme for Private Messages, so that they don't get removed for the sender just because the recipient deletes etc.
 
 FUTURE:

@@ -120,8 +120,7 @@ public final class TimerManager {
     }
 
     private Runnable getProxiedRunnable(final Runnable runnable, final String id) {
-        return (Runnable) Proxy
-                .newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{Runnable.class}, new RunHandler(runnable, id, this));
+        return (Runnable) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{Runnable.class}, new RunHandler(runnable, id, this));
     }
 
     @ParametersAreNonnullByDefault

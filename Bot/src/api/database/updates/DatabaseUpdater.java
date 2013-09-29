@@ -25,14 +25,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.updates;
 
+/**
+ * A class responsible for updating the database from one version to another
+ */
 public interface DatabaseUpdater extends Comparable<DatabaseUpdater> {
+    /**
+     * The artifact for which this updater applies. Could for example be for a plugin.
+     *
+     * @return the name of the artifact
+     */
     String forArtifact();
 
+    /**
+     * @return the version to which this updater updates
+     */
     int updatesToVersion();
 
+    /**
+     * @return update actions to run
+     */
     Iterable<? extends DatabaseUpdateAction> getUpdateActions();
 
+    /**
+     * @return the type of database this updater supports
+     */
     Class<?> getDatabaseType();
 }

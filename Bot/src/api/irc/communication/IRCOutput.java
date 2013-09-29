@@ -29,29 +29,25 @@ package api.irc.communication;
 
 import api.irc.BotIRCInstance;
 import api.irc.entities.IRCEntity;
-import api.tools.collections.ListUtil;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 
 import static api.tools.text.StringUtil.slice;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A wrapper around irc messages with the same target/recipient meant to be sent by the same bot instance.
- * It's possible to observ this object and be notified when it's empty.
+ * It's possible to observe this object and be notified when it's empty.
  */
 @ParametersAreNonnullByDefault
 public final class IRCOutput extends Observable implements Comparable<IRCOutput> {
-    private final List<IRCMessage> outputs = new ArrayList<>();
-    private final Long created = System.currentTimeMillis();
+    private final Deque<IRCMessage> outputs = new LinkedList<>();
+    private final long created = System.currentTimeMillis();
 
     /**
      * The bot instance meant to handle this output
@@ -73,12 +69,12 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
     }
 
     public IRCOutput(@Nullable final BotIRCInstance handler, final IRCMessage output, @Nullable final IRCMessage... more) {
-        outputs.add(checkNotNull(output));
-        priority = output.getPriority();
-        requiresBlocking = output.isBlockingRequired();
-        if (more != null) Collections.addAll(outputs, more);
+        this.outputs.add(checkNotNull(output));
+        this.priority = output.getPriority();
+        this.requiresBlocking = output.isBlockingRequired();
+        if (more != null) Collections.addAll(this.outputs, more);
         this.handler = handler;
-        target = output.getTarget();
+        this.target = output.getTarget();
     }
 
     /**
@@ -109,7 +105,7 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
      */
     public String poll() {
         if (outputs.isEmpty()) return null;
-        String output = outputs.remove(0).getIrcCommand();
+        String output = outputs.removeFirst().getIrcCommand();
         if (outputs.isEmpty()) {
             notifyObservers();
         }
@@ -141,7 +137,7 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
     @Override
     public int compareTo(final IRCOutput o) {
         int test = Integer.compare(priority, o.priority);
-        return test != 0 ? test : created.compareTo(o.created);
+        return test != 0 ? test : Long.compare(created, o.created);
     }
 
     @Override
@@ -149,8 +145,7 @@ public final class IRCOutput extends Observable implements Comparable<IRCOutput>
         if (this == obj) return true;
         if (!(obj instanceof IRCOutput)) return false;
         IRCOutput other = (IRCOutput) obj;
-        return Objects.equal(this.handler, other.handler) &&
-                ListUtil.listContentsAreEqual(outputs, other.outputs) && compareTo(other) == 0;
+        return Objects.equal(this.handler, other.handler) && this.outputs.equals(other.outputs) && compareTo(other) == 0;
     }
 
     @Override

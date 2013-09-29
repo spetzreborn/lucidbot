@@ -28,8 +28,9 @@
 package commands.targets.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.targets.handlers.RemoveMaxGainCommandHandler;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveMaxGainCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.TARGETS, "removemaxgain");
+    private final Command handledCommand = CommandBuilder.forCommand("removemaxgain").ofType(CommandTypes.TARGETS).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveMaxGainCommandHandler> handlerProvider;

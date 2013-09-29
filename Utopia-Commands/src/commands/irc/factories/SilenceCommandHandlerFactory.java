@@ -28,6 +28,7 @@
 package commands.irc.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -43,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class SilenceCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.BOT, "silence");
+    private final Command handledCommand = CommandBuilder.forCommand("silence").ofType(CommandTypes.BOT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SilenceCommandHandler> handlerProvider;

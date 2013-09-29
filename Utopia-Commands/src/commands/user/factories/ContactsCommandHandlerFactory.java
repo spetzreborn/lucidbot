@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class ContactsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "contacts");
+    private final Command handledCommand = CommandBuilder.forCommand("contacts").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ContactsCommandHandler> handlerProvider;

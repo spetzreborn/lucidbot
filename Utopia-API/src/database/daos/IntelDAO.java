@@ -28,9 +28,9 @@
 package database.daos;
 
 import api.database.JDBCWorkExecutor;
-import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.events.DelayedEventPoster;
 import api.tools.common.CleanupUtil;
 import api.tools.database.DBUtil;
@@ -44,12 +44,14 @@ import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.jdbc.ReturningWork;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
 @Log4j
+@ParametersAreNonnullByDefault
 public class IntelDAO {
     public static final String ID = "id";
     private final Provider<Session> sessionProvider;

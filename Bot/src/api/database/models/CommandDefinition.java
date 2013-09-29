@@ -94,7 +94,7 @@ public final class CommandDefinition implements Comparable<CommandDefinition>, H
         this.name = checkNotNull(name);
         this.syntax = syntax;
         this.helpText = helpText;
-        this.commandType = commandType;
+        this.commandType = checkNotNull(commandType);
         this.templateFile = checkNotNull(templateFile);
         this.accessLevel = checkNotNull(accessLevel);
     }

@@ -28,7 +28,7 @@
 package commands.team.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.settings.PropertiesConfig;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class CheckInCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "checkin");
+    private final Command handledCommand = CommandBuilder.forCommand("checkin").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<CheckInCommandHandler> handlerProvider;

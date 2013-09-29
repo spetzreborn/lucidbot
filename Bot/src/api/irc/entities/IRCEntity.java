@@ -27,16 +27,13 @@
 
 package api.irc.entities;
 
+import api.common.HasName;
 import api.irc.communication.IRCMessageType;
 
 /**
  * Represents an addressable entity on IRC
  */
-public interface IRCEntity {
-    /**
-     * @return the name of the entity
-     */
-    String getName();
+public interface IRCEntity extends HasName {
 
     /**
      * @param type the type of IRC message

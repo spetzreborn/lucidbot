@@ -102,41 +102,31 @@ class AngelSoMParser implements IntelParser<SoM> {
     }
 
     private void compilePatterns() {
-        provinceNamePattern = Pattern
-                .compile("Military (?:Intel|Intelligence) on ([^(]+)(" + UtopiaValidationType.KDLOC.getPatternString() + ')');
+        provinceNamePattern = Pattern.compile("Military (?:Intel|Intelligence) on ([^(]+)(" + UtopiaValidationType.KDLOC.getPatternString() + ')');
         Pattern selfSomPattern = Pattern.compile("Military (?:Intel|Intelligence) Formatted Report");
-        persAndTitlePattern = Pattern.compile(
-                "Ruler Name: The (?:" + commonEntitiesAccess.getPersonalityGroup() + ") (" + commonEntitiesAccess.getHonorTitleGroup() +
-                        ')');
-        persAndTitlePatternAlt = Pattern.compile(
-                "Ruler Name: (" + commonEntitiesAccess.getHonorTitleGroup() + ") .*? the (?:" + commonEntitiesAccess.getPersonalityGroup() +
-                        ')');
+        persAndTitlePattern = Pattern.compile("Ruler Name: The (?:" + commonEntitiesAccess.getPersonalityGroup() + ") (" +
+                commonEntitiesAccess.getHonorTitleGroup() + ')');
+        persAndTitlePatternAlt = Pattern.compile("Ruler Name: (" + commonEntitiesAccess.getHonorTitleGroup() + ") .*? the (?:" +
+                commonEntitiesAccess.getPersonalityGroup() + ')');
         peasantTitlePattern = Pattern.compile("Ruler Name: ");
-        raceAndPersPattern = Pattern.compile("Personality & Race: The (" +
-                commonEntitiesAccess.getPersonalityGroup() + "), (" + commonEntitiesAccess.getRaceGroup() +
-                ')');
-        netDefensePattern = Pattern.compile("Net Defense at Home \\(from Utopia\\): (" +
-                ValidationType.INT.getPattern() + ')');
-        netOffensePattern = Pattern.compile("Net Offense at Home \\(from Utopia\\): (" +
-                ValidationType.INT.getPattern() + ')');
+        raceAndPersPattern = Pattern.compile("Personality & Race: The (" + commonEntitiesAccess.getPersonalityGroup() + "), (" +
+                commonEntitiesAccess.getRaceGroup() + ')');
+        netDefensePattern = Pattern.compile("Net Defense at Home \\(from Utopia\\): (" + ValidationType.INT.getPattern() + ')');
+        netOffensePattern = Pattern.compile("Net Offense at Home \\(from Utopia\\): (" + ValidationType.INT.getPattern() + ')');
         armyHomePattern = Pattern.compile("\\*\\* Standing Army \\(At Home\\) \\*\\*(.*?)(?=" + ARMY_SECTION_ENDINGS + ')');
-        armyOutPattern = Pattern
-                .compile("\\*\\* Army #([2-7]) \\(Back in (\\d{1,2}:\\d{1,2}) hours\\) \\*\\*(.*?)(?=" + ARMY_SECTION_ENDINGS + ')');
+        armyOutPattern = Pattern.compile("\\*\\* Army #([2-7]) \\(Back in (\\d{1,2}:\\d{1,2}) hours\\) \\*\\*(.*?)(?=" + ARMY_SECTION_ENDINGS + ')');
         armyTrainingPattern = Pattern.compile("\\*\\* Troops in Training \\*\\*(.*)");
         generalsPattern = Pattern.compile("Generals: (\\d)");
         soldiersPattern = Pattern.compile("Soldiers: (" + ValidationType.INT.getPattern() + ')');
-        offSpecsPattern = Pattern.compile("(?:" + commonEntitiesAccess.getOffSpecGroup() + "): (" +
-                ValidationType.INT.getPattern() + ')');
-        defSpecsPattern = Pattern.compile("(?:" + commonEntitiesAccess.getDefSpecGroup() + "): (" +
-                ValidationType.INT.getPattern() + ')');
-        elitesPattern = Pattern.compile("(?:" + commonEntitiesAccess.getEliteGroup() + "): (" +
-                ValidationType.INT.getPattern() + ')');
+        offSpecsPattern = Pattern.compile("(?:" + commonEntitiesAccess.getOffSpecGroup() + "): (" + ValidationType.INT.getPattern() + ')');
+        defSpecsPattern = Pattern.compile("(?:" + commonEntitiesAccess.getDefSpecGroup() + "): (" + ValidationType.INT.getPattern() + ')');
+        elitesPattern = Pattern.compile("(?:" + commonEntitiesAccess.getEliteGroup() + "): (" + ValidationType.INT.getPattern() + ')');
         warHorsesPattern = Pattern.compile("War Horses: (" + ValidationType.INT.getPattern() + ')');
         thievesPattern = Pattern.compile("Thieves: (" + ValidationType.INT.getPattern() + ')');
         landPattern = Pattern.compile("Captured Land: (" + ValidationType.INT.getPattern() + ") Acres");
 
-        identifierPattern = Pattern
-                .compile('(' + provinceNamePattern.pattern() + '|' + selfSomPattern.pattern() + ")\\s*(?:\\[http://www.utopiatemple.com Angel|\\[http://www.thedragonportal.eu Ultima)");
+        identifierPattern = Pattern.compile('(' + provinceNamePattern.pattern() + '|' +
+                selfSomPattern.pattern() + ")\\s*(?:\\[http://www.utopiatemple.com Angel|\\[http://www.thedragonportal.eu Ultima)");
     }
 
     @Subscribe
@@ -151,6 +141,31 @@ class AngelSoMParser implements IntelParser<SoM> {
 
     @Override
     public SoM parse(final String savedBy, final String text) throws Exception {
+        SoM som = getOrCreateSoM(savedBy, text);
+
+        parseHonorTitle(text, som);
+        parseRaceAndPersonality(text, som);
+        parseNetDefense(text, som);
+        parseNetOffense(text, som);
+
+        Set<Army> armies = new HashSet<>();
+        parseArmyHome(text, som, armies);
+        parseArmiesOut(text, som, armies);
+        parseTrainingArmy(text, som, armies);
+        removeExpiredArmies(som, armies);
+
+        parseExportLine(text, som);
+
+        som.setSavedBy(savedBy);
+        som.setLastUpdated(new Date());
+
+        armyDAOProvider.get().save(armies);
+        som.setArmiesOutWhenPosted(som.getArmiesOut().size());
+
+        return som;
+    }
+
+    private SoM getOrCreateSoM(final String savedBy, final String text) throws ParseException {
         SoM som = new SoM();
 
         Matcher matcher = provinceNamePattern.matcher(text);
@@ -169,8 +184,11 @@ class AngelSoMParser implements IntelParser<SoM> {
             if (province.getSom() != null) som = province.getSom();
             else som.setProvince(province);
         }
+        return som;
+    }
 
-        matcher = persAndTitlePattern.matcher(text);
+    private void parseHonorTitle(final String text, final SoM som) {
+        Matcher matcher = persAndTitlePattern.matcher(text);
         if (matcher.find()) {
             som.getProvince().setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(1)));
         } else {
@@ -181,35 +199,44 @@ class AngelSoMParser implements IntelParser<SoM> {
                 som.getProvince().setHonorTitle(commonEntitiesAccess.getLowestRankingHonorTitle());
             }
         }
+    }
 
+    private void parseRaceAndPersonality(final String text, final SoM som) {
+        Matcher matcher;
         matcher = raceAndPersPattern.matcher(text);
         if (matcher.find()) {
             som.getProvince().setPersonality(commonEntitiesAccess.getPersonality(matcher.group(1)));
             som.getProvince().setRace(commonEntitiesAccess.getRace(matcher.group(2)));
         }
+    }
 
-        matcher = netDefensePattern.matcher(text);
+    private void parseNetDefense(final String text, final SoM som) {
+        Matcher matcher = netDefensePattern.matcher(text);
         if (matcher.find()) {
             int netDef = NumberUtil.parseInt(matcher.group(1));
             som.setNetDefense(netDef);
         } else som.setNetDefense(null);
+    }
 
-        matcher = netOffensePattern.matcher(text);
+    private void parseNetOffense(final String text, final SoM som) {
+        Matcher matcher = netOffensePattern.matcher(text);
         if (matcher.find()) {
             int netOff = NumberUtil.parseInt(matcher.group(1));
             som.setNetOffense(netOff);
         } else som.setNetOffense(null);
+    }
 
-        Set<Army> armies = new HashSet<>();
-
-        matcher = armyHomePattern.matcher(text);
+    private void parseArmyHome(final String text, final SoM som, final Set<Army> armies) throws ParseException {
+        Matcher matcher = armyHomePattern.matcher(text);
         if (matcher.find()) {
             String armyText = matcher.group(1);
             Army army = parseArmy(armyText, SoMArmyUtil.getOrCreateHomeArmy(som, som.getProvince()));
             armies.add(army);
         } else throw new ParseException("SoM to be parsed does not contain an army home entry", 0);
+    }
 
-        matcher = armyOutPattern.matcher(text);
+    private void parseArmiesOut(final String text, final SoM som, final Set<Army> armies) {
+        Matcher matcher = armyOutPattern.matcher(text);
         while (matcher.find()) {
             int armyno = NumberUtil.parseInt(matcher.group(1));
             String time = matcher.group(2);
@@ -221,86 +248,110 @@ class AngelSoMParser implements IntelParser<SoM> {
             army.setReturningDate(new Date(returnTime));
             armies.add(army);
         }
+    }
 
-        matcher = armyTrainingPattern.matcher(text);
+    private void parseTrainingArmy(final String text, final SoM som, final Set<Army> armies) {
+        Matcher matcher = armyTrainingPattern.matcher(text);
         if (matcher.find()) {
             String armyText = matcher.group(1);
             Army army = parseArmy(armyText, SoMArmyUtil.getOrCreateTrainingArmy(som, som.getProvince()));
             armies.add(army);
         }
+    }
 
+    private static void removeExpiredArmies(final SoM som, final Set<Army> armies) {
         for (Iterator<Army> iter = som.getArmies().iterator(); iter.hasNext(); ) {
             Army entry = iter.next();
             if (!armies.contains(entry)) iter.remove();
         }
+    }
 
-        matcher = exportLinePattern.matcher(text);
+    private static void parseExportLine(final String text, final SoM som) {
+        Matcher matcher = exportLinePattern.matcher(text);
         if (matcher.find()) {
             som.setExportLine(matcher.group(1));
         } else som.setExportLine(null);
-        som.setSavedBy(savedBy);
-        som.setLastUpdated(new Date());
-
-        armyDAOProvider.get().save(armies);
-        som.setArmiesOutWhenPosted(som.getArmiesOut().size());
-
-        return som;
-    }
-
-    @Override
-    public String getIntelTypeHandled() {
-        return SoM.class.getSimpleName();
     }
 
     private Army parseArmy(final CharSequence text, final Army army) {
+        parseGenerals(text, army);
+        parseSoldiers(text, army);
+        parseOffSpecs(text, army);
+        parseDefSpecs(text, army);
+        parseElites(text, army);
+        parseWarHorses(text, army);
+        parseThieves(text, army);
+        parseLandGained(text, army);
+
+        return army;
+    }
+
+    private void parseGenerals(final CharSequence text, final Army army) {
         Matcher matcher = generalsPattern.matcher(text);
         if (matcher.find()) {
             int gens = NumberUtil.parseInt(matcher.group(1));
             army.setGenerals(gens);
         } else army.setGenerals(0);
+    }
 
-        matcher = soldiersPattern.matcher(text);
+    private void parseSoldiers(final CharSequence text, final Army army) {
+        Matcher matcher = soldiersPattern.matcher(text);
         if (matcher.find()) {
             int soldiers = NumberUtil.parseInt(matcher.group(1));
             army.setSoldiers(soldiers);
         } else army.setSoldiers(0);
+    }
 
-        matcher = offSpecsPattern.matcher(text);
+    private void parseOffSpecs(final CharSequence text, final Army army) {
+        Matcher matcher = offSpecsPattern.matcher(text);
         if (matcher.find()) {
             int os = NumberUtil.parseInt(matcher.group(1));
             army.setOffSpecs(os);
         } else army.setOffSpecs(0);
+    }
 
-        matcher = defSpecsPattern.matcher(text);
+    private void parseDefSpecs(final CharSequence text, final Army army) {
+        Matcher matcher = defSpecsPattern.matcher(text);
         if (matcher.find()) {
             int ds = NumberUtil.parseInt(matcher.group(1));
             army.setDefSpecs(ds);
         } else army.setDefSpecs(0);
+    }
 
-        matcher = elitesPattern.matcher(text);
+    private void parseElites(final CharSequence text, final Army army) {
+        Matcher matcher = elitesPattern.matcher(text);
         if (matcher.find()) {
             int elites = NumberUtil.parseInt(matcher.group(1));
             army.setElites(elites);
         } else army.setElites(0);
+    }
 
-        matcher = warHorsesPattern.matcher(text);
+    private void parseWarHorses(final CharSequence text, final Army army) {
+        Matcher matcher = warHorsesPattern.matcher(text);
         if (matcher.find()) {
             int horses = NumberUtil.parseInt(matcher.group(1));
             army.setWarHorses(horses);
         } else army.setWarHorses(0);
+    }
 
-        matcher = thievesPattern.matcher(text);
+    private void parseThieves(final CharSequence text, final Army army) {
+        Matcher matcher = thievesPattern.matcher(text);
         if (matcher.find()) {
             int thieves = NumberUtil.parseInt(matcher.group(1));
             army.setThieves(thieves);
         } else army.setThieves(0);
+    }
 
-        matcher = landPattern.matcher(text);
+    private void parseLandGained(final CharSequence text, final Army army) {
+        Matcher matcher = landPattern.matcher(text);
         if (matcher.find()) {
             int land = NumberUtil.parseInt(matcher.group(1));
             army.setLandGained(land);
         } else army.setLandGained(0);
+    }
 
-        return army;
+    @Override
+    public String getIntelTypeHandled() {
+        return SoM.class.getSimpleName();
     }
 }

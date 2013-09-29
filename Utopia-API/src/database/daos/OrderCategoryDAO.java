@@ -29,7 +29,7 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.DBException;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Order;
 import database.models.OrderCategory;
@@ -37,10 +37,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class OrderCategoryDAO extends AbstractDAO<OrderCategory> {
     @Inject
     public OrderCategoryDAO(final Provider<Session> sessionProvider) {

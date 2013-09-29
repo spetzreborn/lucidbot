@@ -27,7 +27,7 @@
 
 package setup.tools;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.ValidationType;
 import com.google.common.collect.Lists;
@@ -41,7 +41,7 @@ import tools.parsing.UtopiaValidationType;
 import javax.inject.Inject;
 import java.util.Collections;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 public class SpellTypes implements EntitySetup {
     private static final String RESULT = "(?<result>" + ValidationType.INT.getPattern() + ')';

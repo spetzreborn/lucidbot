@@ -28,6 +28,7 @@
 package commands.targets.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.targets.handlers.AddTargetCommandHandler;
@@ -43,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class AddTargetCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.TARGETS, "addtarget");
+    private final Command handledCommand = CommandBuilder.forCommand("addtarget").ofType(CommandTypes.TARGETS).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddTargetCommandHandler> handlerProvider;

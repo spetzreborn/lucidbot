@@ -28,7 +28,7 @@
 package commands.statistics.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import com.google.inject.Provider;
@@ -45,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class HofCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.STATS, "hof");
+    private final Command handledCommand = CommandBuilder.forCommand("hof").ofType(CommandTypes.STATS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<HofCommandHandler> handlerProvider;

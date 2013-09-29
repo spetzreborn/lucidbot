@@ -28,9 +28,10 @@
 package commands.team.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.team.handlers.RemoveNapCommandHandler;
@@ -46,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveNapCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "removenap");
+    private final Command handledCommand = CommandBuilder.forCommand("removenap").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveNapCommandHandler> handlerProvider;

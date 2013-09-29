@@ -37,6 +37,8 @@ import java.io.StringWriter;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static api.tools.text.StringUtil.limitedTrim;
+
 final class ColumnsDirective implements TemplateDirectiveModel {
     private static final Pattern NORMAL_TEXT_PATTERN = Pattern.compile(IRCFormatting.NORMAL);
 
@@ -78,13 +80,13 @@ final class ColumnsDirective implements TemplateDirectiveModel {
 
             StringWriter writer = new StringWriter();
             body.render(writer);
-            String allLines = StringUtil.limitedTrim(writer.toString());
+            String allLines = limitedTrim(writer.toString());
             if (underlined) allLines = NORMAL_TEXT_PATTERN.matcher(allLines).replaceAll(IRCFormatting.NORMAL + IRCFormatting.UNDERLINE);
             StringBuilder builder = new StringBuilder(500);
             if (underlined) builder.append(IRCFormatting.UNDERLINE);
             int counter = 1;
             for (String line : StringUtil.splitOnEndOfLine(allLines)) {
-                String trimmed = StringUtil.limitedTrim(line) + IRCFormatting.NORMAL;
+                String trimmed = limitedTrim(line) + IRCFormatting.NORMAL;
                 if (underlined) trimmed += IRCFormatting.UNDERLINE;
                 builder.append(separator);
                 builder.append(StringUtil.toFixLength(trimmed, colLengths[counter - 1], padding));

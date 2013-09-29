@@ -28,6 +28,7 @@
 package internal.templates;
 
 import api.templates.TemplateManager;
+import api.tools.text.StringUtil;
 import api.tools.time.DateFactory;
 import com.google.inject.AbstractModule;
 import freemarker.ext.beans.BeansWrapper;
@@ -74,8 +75,8 @@ public class TemplatingModule extends AbstractModule {
         try {
             BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
             TemplateHashModel staticModels = wrapper.getStaticModels();
-            TemplateHashModel stringUtil = (TemplateHashModel) staticModels.get("api.tools.text.StringUtil");
-            TemplateHashModel timeUtil = (TemplateHashModel) staticModels.get("internal.templates.TemplateTimeUtil");
+            TemplateHashModel stringUtil = (TemplateHashModel) staticModels.get(StringUtil.class.getName());
+            TemplateHashModel timeUtil = (TemplateHashModel) staticModels.get(TemplateTimeUtil.class.getName());
             configuration.setSharedVariable("stringUtil", stringUtil);
             configuration.setSharedVariable("timeUtil", timeUtil);
         } catch (TemplateModelException e) {

@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -49,11 +51,15 @@ import tools.UtopiaPropertiesConfig;
 import tools.communication.NotificationDeliverer;
 import tools.time.UtopiaTime;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.List;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class EventAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<EventDAO> eventDAOProvider;
     private final PropertiesCollection properties;
@@ -62,9 +68,13 @@ public class EventAnnouncer extends AbstractAnnouncer implements EventListener {
     private final BindingsManager bindingsManager;
 
     @Inject
-    public EventAnnouncer(final Provider<EventDAO> eventDAOProvider, final TemplateManager templateManager,
-                          final IRCEntityManager ircEntityManager, final IRCAccess ircAccess, final PropertiesCollection properties,
-                          final Provider<NotificationDAO> notificationDAOProvider, final Provider<NotificationDeliverer> delivererProvider,
+    public EventAnnouncer(final Provider<EventDAO> eventDAOProvider,
+                          final TemplateManager templateManager,
+                          final IRCEntityManager ircEntityManager,
+                          final IRCAccess ircAccess,
+                          final PropertiesCollection properties,
+                          final Provider<NotificationDAO> notificationDAOProvider,
+                          final Provider<NotificationDeliverer> delivererProvider,
                           final BindingsManager bindingsManager) {
         super(templateManager, ircEntityManager, ircAccess);
         this.eventDAOProvider = eventDAOProvider;
@@ -76,30 +86,35 @@ public class EventAnnouncer extends AbstractAnnouncer implements EventListener {
 
     @Subscribe
     public void onTick(final TickEvent event) {
-        try {
-            UtopiaTime nextTick = event.getUtoDate().increment(1);
-            List<Event> expiringEvents = eventDAOProvider.get().getExpiringEvents(nextTick.getDate());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    UtopiaTime nextTick = event.getUtoDate().increment(1);
+                    List<Event> expiringEvents = eventDAOProvider.get().getExpiringEvents(nextTick.getDate());
 
-            eventDAOProvider.get().delete(expiringEvents);
+                    eventDAOProvider.get().delete(expiringEvents);
 
-            if (isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("events", expiringEvents), "announcement-events");
-                announce(ChannelType.PRIVATE, output);
-            }
+                    if (isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("events", expiringEvents), "announcement-events");
+                        announce(ChannelType.PRIVATE, output);
+                    }
 
-            for (Event expiringEvent : expiringEvents) {
-                List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.EVENT);
+                    for (Event expiringEvent : expiringEvents) {
+                        List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.EVENT);
 
-                for (Iterator<Notification> iter = notifications.iterator(); iter.hasNext(); ) {
-                    if (!bindingsManager.matchesBindings(expiringEvent.getBindings(), iter.next().getUser())) iter.remove();
+                        for (Iterator<Notification> iter = notifications.iterator(); iter.hasNext(); ) {
+                            if (!bindingsManager.matchesBindings(expiringEvent.getBindings(), iter.next().getUser())) iter.remove();
+                        }
+
+                        delivererProvider.get().deliverNotifications(notifications, "Event time!",
+                                "An event was scheduled for this tick: " + expiringEvent.getDescription());
+                    }
+                } catch (HibernateException e) {
+                    EventAnnouncer.log.error("", e);
                 }
-
-                delivererProvider.get().deliverNotifications(notifications, "Event time!",
-                        "An event was scheduled for this tick: " + expiringEvent.getDescription());
             }
-        } catch (HibernateException e) {
-            EventAnnouncer.log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

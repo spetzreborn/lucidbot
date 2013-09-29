@@ -1,8 +1,8 @@
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.UserLoginEvent;
 import api.runtime.ThreadingManager;
@@ -21,7 +21,7 @@ import tools.communication.NotificationDeliverer;
 import javax.inject.Inject;
 import java.util.List;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 class UserLoginListener implements EventListener {

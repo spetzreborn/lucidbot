@@ -28,8 +28,9 @@
 package commands.time.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.time.handlers.GmtCommandHandler;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class GmtCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedPublicCommand(CommandTypes.TIME, "gmt");
+    private final Command handledCommand = CommandBuilder.forCommand("gmt").ofType(CommandTypes.TIME).requiringAccessLevel(AccessLevel.PUBLIC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<GmtCommandHandler> handlerProvider;

@@ -49,8 +49,7 @@ public abstract class AbstractFilter<T> implements Filter<T> {
     @Override
     public void filter(final Collection<?> collection) {
         for (Iterator<?> iter = collection.iterator(); iter.hasNext(); ) {
-            FilterUtil.FilterValue<T> filterResult = FilterUtil
-                    .getFilterEnabledMethodOrFieldValue(iter.next(), getFilterType(), clazz, getMethodParameters());
+            FilterUtil.FilterValue<T> filterResult = FilterUtil.getFilterEnabledMethodOrFieldValue(iter.next(), getFilterType(), clazz, getMethodParameters());
             if (filterResult.isFilterValueFound() && (filterResult.getValue() == null || !passesFilter(filterResult.getValue()))) {
                 iter.remove();
             }

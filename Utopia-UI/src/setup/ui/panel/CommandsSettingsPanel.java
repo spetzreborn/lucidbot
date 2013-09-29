@@ -29,12 +29,14 @@ package setup.ui.panel;
 
 import api.commands.Command;
 import api.commands.CommandCache;
-import api.database.SimpleTransactionTask;
 import api.database.daos.CommandDefinitionDAO;
 import api.database.models.AccessLevel;
 import api.database.models.CommandDefinition;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.tools.collections.ListUtil;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 import com.vaadin.data.Container;
@@ -45,13 +47,14 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.*;
 import setup.tools.VaadinUtil;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static setup.tools.VaadinUtil.validate;
 
 public class CommandsSettingsPanel extends VerticalLayout {
@@ -156,7 +159,7 @@ public class CommandsSettingsPanel extends VerticalLayout {
             setMargin(true);
             setWidth("100%");
 
-            Command command = commandMap.get(itemId);
+            final Command command = commandMap.get(itemId);
             boolean isNew = itemId == null || !commandDefinitionMap.containsKey(command);
 
             nameSelect = new Select("Command name", isNew ? ListUtil.getNames(getCommandsWithoutDefinition())
@@ -175,7 +178,14 @@ public class CommandsSettingsPanel extends VerticalLayout {
             typeField.addValidator(new StringLengthValidator("Command type is required", 1, 100, false));
             if (command != null) typeField.setValue(command.getCommandType());
 
-            accessSelect = new Select("Access level", ListUtil.getNames(Lists.newArrayList(AccessLevel.values())));
+            Collection<AccessLevel> accessLevels = Lists.newArrayList(AccessLevel.values());
+            if (!command.isDowngradableAccessLevel()) accessLevels = Collections2.filter(accessLevels, new Predicate<AccessLevel>() {
+                @Override
+                public boolean apply(@Nullable final AccessLevel input) {
+                    return input.compareTo(command.getRequiredAccessLevel()) >= 0;
+                }
+            });
+            accessSelect = new Select("Access level", ListUtil.getNames(accessLevels));
             accessSelect.setRequired(true);
             accessSelect.setNullSelectionAllowed(false);
             if (command != null) accessSelect.setValue(command.getRequiredAccessLevel().getName());
@@ -229,9 +239,10 @@ public class CommandsSettingsPanel extends VerticalLayout {
                             commandDefinition.setSyntax(syntax);
                             commandDefinition.setTemplateFile(templateFile);
                         }
-                        commandDefinitionDAOProvider.get().save(commandDefinition);
+                        CommandDefinitionDAO commandDefinitionDAO = commandDefinitionDAOProvider.get();
+                        commandDefinitionDAO.save(commandDefinition);
                         commandDefinitionMap.put(command, commandDefinition);
-                        commandDefinitionDAOProvider.get().loadDefinitionFromDB(command);
+                        commandDefinitionDAO.loadDefinitionFromDB(command);
 
                         Container container = commandTable.getContainerDataSource();
                         Item item = itemId == null ? getItemFromCommand(command, container) : container.getItem(itemId);

@@ -28,7 +28,7 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import api.settings.PropertiesCollection;
 import com.google.inject.Provider;
 import database.models.Kingdom;
@@ -36,11 +36,12 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
-
+@ParametersAreNonnullByDefault
 public class KingdomDAO extends AbstractDAO<Kingdom> {
     private final PropertiesCollection properties;
 

@@ -28,7 +28,7 @@
 package commands.province_resources;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.settings.PropertiesCollection;
 import api.tools.text.StringUtil;
 import commands.CommandTypes;
@@ -58,17 +58,15 @@ public class ResourcesFactoryGenerator implements DynamicCommandHandlerFactoryGe
         this.properties = properties;
 
         for (Building building : commonEntitiesAccess.getAllBuildings()) {
-            Command command = CommandFactory.newTypedCommand(CommandTypes.INTEL, building.getShortName());
-            command.setTemplateFile("provinceresources.ftl");
-            command.setHelpText("Displays " + building.getName() + " building percentages for provinces");
+            Command command = CommandBuilder.forCommand(building.getShortName()).ofType(CommandTypes.INTEL).usingTemplateFile("provinceresources.ftl").
+                    withHelpText("Displays " + building.getName() + " building percentages for provinces").build();
             handledCommands.put(command, ProvinceResourceType.BUILDING_PERCENTAGE);
         }
 
         for (ProvinceResourceType type : ProvinceResourceType.values()) {
             if (type.getCommand() != null) {
-                Command command = CommandFactory.newTypedCommand(CommandTypes.INTEL, type.getCommand());
-                command.setTemplateFile("provinceresources.ftl");
-                command.setHelpText("Displays " + StringUtil.prettifyEnumName(type) + " for provinces");
+                Command command = CommandBuilder.forCommand(type.getCommand()).ofType(CommandTypes.INTEL).usingTemplateFile("provinceresources.ftl").
+                        withHelpText("Displays " + StringUtil.prettifyEnumName(type) + " for provinces").build();
                 handledCommands.put(command, type);
             }
         }

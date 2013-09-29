@@ -27,9 +27,9 @@
 
 package internal.database.updates.mysql;
 
-import api.database.AbstractMySQLDatabaseUpdater;
-import api.database.DatabaseUpdateAction;
-import api.database.SimpleUpdateAction;
+import api.database.updates.AbstractMySQLDatabaseUpdater;
+import api.database.updates.DatabaseUpdateAction;
+import api.database.updates.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
 public class MySQLUpdateV9ToV10 extends AbstractMySQLDatabaseUpdater {

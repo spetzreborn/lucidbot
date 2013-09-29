@@ -29,8 +29,8 @@ package api.database.daos;
 
 import api.commands.Command;
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.CommandDefinition;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -99,8 +99,7 @@ public class CommandDefinitionDAO extends AbstractDAO<CommandDefinition> {
     @Transactional
     public CommandDefinition createFromCommand(final Command command) {
         CommandDefinition def = new CommandDefinition(command.getName(), command.getSyntax(), command.getHelpText(),
-                command.getCommandType(), command.getTemplateFile(),
-                command.getRequiredAccessLevel());
+                command.getCommandType(), command.getTemplateFile(), command.getRequiredAccessLevel());
         def = save(def);
         return def;
     }

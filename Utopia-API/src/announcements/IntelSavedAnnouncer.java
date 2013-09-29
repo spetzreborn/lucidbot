@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -44,17 +46,24 @@ import org.hibernate.HibernateException;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class IntelSavedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<IntelDAO> intelDAOProvider;
     private final Provider<KingdomDAO> kingdomDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public IntelSavedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                               final Provider<IntelDAO> intelDAOProvider, final Provider<KingdomDAO> kingdomDAOProvider,
+    public IntelSavedAnnouncer(final TemplateManager templateManager,
+                               final IRCEntityManager ircEntityManager,
+                               final IRCAccess ircAccess,
+                               final Provider<IntelDAO> intelDAOProvider,
+                               final Provider<KingdomDAO> kingdomDAOProvider,
                                final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.intelDAOProvider = intelDAOProvider;
@@ -64,68 +73,92 @@ public class IntelSavedAnnouncer extends AbstractAnnouncer implements EventListe
 
     @Subscribe
     public void onKingdomSaved(final KingdomSavedEvent event) {
-        try {
-            Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getId());
-            if (kingdom != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom),
-                        "announcement-kingdom-saved");
-                announce(ChannelType.PRIVATE, output);
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getId());
+                    if (kingdom != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom), "announcement-kingdom-saved");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    IntelSavedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            IntelSavedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     @Subscribe
     public void onSoMSaved(final SoMSavedEvent event) {
-        try {
-            SoM soM = intelDAOProvider.get().getSoM(event.getId());
-            if (soM != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("som", soM), "announcement-som-saved");
-                announce(ChannelType.PRIVATE, output);
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    SoM soM = intelDAOProvider.get().getSoM(event.getId());
+                    if (soM != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("som", soM), "announcement-som-saved");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    IntelSavedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            IntelSavedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     @Subscribe
     public void onSoSSaved(final SoSSavedEvent event) {
-        try {
-            SoS soS = intelDAOProvider.get().getSoS(event.getId());
-            if (soS != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("sos", soS), "announcement-sos-saved");
-                announce(ChannelType.PRIVATE, output);
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    SoS soS = intelDAOProvider.get().getSoS(event.getId());
+                    if (soS != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("sos", soS), "announcement-sos-saved");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    IntelSavedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            IntelSavedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     @Subscribe
     public void onSoTSaved(final SoTSavedEvent event) {
-        try {
-            SoT soT = intelDAOProvider.get().getSoT(event.getId());
-            if (soT != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("sot", soT), "announcement-sot-saved");
-                announce(ChannelType.PRIVATE, output);
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    SoT soT = intelDAOProvider.get().getSoT(event.getId());
+                    if (soT != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("sot", soT), "announcement-sot-saved");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    IntelSavedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            IntelSavedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     @Subscribe
     public void onSurveySaved(final SurveySavedEvent event) {
-        try {
-            Survey survey = intelDAOProvider.get().getSurvey(event.getId());
-            if (survey != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("survey", survey), "announcement-survey-saved");
-                announce(ChannelType.PRIVATE, output);
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Survey survey = intelDAOProvider.get().getSurvey(event.getId());
+                    if (survey != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("survey", survey), "announcement-survey-saved");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    IntelSavedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            IntelSavedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

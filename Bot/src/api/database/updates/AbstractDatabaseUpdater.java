@@ -25,22 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.updates;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-/**
- * An action to run while updating the database
- */
-public interface DatabaseUpdateAction {
-    /**
-     * Runs something using the supplied connection. The implementation should not commit or close the connection as that will
-     * be taken care of by the caller. It must close any resources it creates for itself however (such as Statement). Any exception
-     * that means the action was not run successfully should be propagated.
-     *
-     * @param connection the database connection to use
-     * @throws SQLException any severe exception that is thrown
-     */
-    void runDatabaseAction(Connection connection) throws SQLException;
+@SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
+public abstract class AbstractDatabaseUpdater implements DatabaseUpdater {
+    @Override
+    public int compareTo(final DatabaseUpdater o) {
+        return Integer.compare(updatesToVersion(), o.updatesToVersion());
+    }
 }

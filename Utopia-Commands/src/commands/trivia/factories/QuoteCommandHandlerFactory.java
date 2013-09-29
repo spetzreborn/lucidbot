@@ -28,7 +28,7 @@
 package commands.trivia.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class QuoteCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.MISC, "quote");
+    private final Command handledCommand = CommandBuilder.forCommand("quote").ofType(CommandTypes.MISC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<QuoteCommandHandler> handlerProvider;

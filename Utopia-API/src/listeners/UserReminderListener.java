@@ -1,7 +1,7 @@
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.NonCommandEvent;
 import api.irc.communication.IRCAccess;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static tools.UtopiaPropertiesConfig.REMINDER_INTERVAL;
 
 @Log4j

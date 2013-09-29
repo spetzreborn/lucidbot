@@ -27,9 +27,9 @@
 
 package internal.database.updates.h2;
 
-import api.database.AbstractH2DatabaseUpdater;
-import api.database.DatabaseUpdateAction;
-import api.database.SimpleUpdateAction;
+import api.database.updates.AbstractH2DatabaseUpdater;
+import api.database.updates.DatabaseUpdateAction;
+import api.database.updates.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
 public class H2UpdateV1ToV2 extends AbstractH2DatabaseUpdater {

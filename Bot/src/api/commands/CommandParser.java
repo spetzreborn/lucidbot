@@ -66,7 +66,7 @@ public final class CommandParser {
         this.params = checkNotNull(params);
         StringBuilder sb = new StringBuilder(150);
         for (final ParamParsingSpecification pair : params) {
-            sb = pair.getSpec().appendGroup(sb, pair.getRegex());
+            sb = pair.getSpec().appendGroup(sb, pair.getName(), pair.getRegex());
         }
         this.pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
     }
@@ -98,11 +98,14 @@ public final class CommandParser {
     @Nullable
     public Params parse(final CharSequence command) {
         if (params == null || params.length == 0) return new CommandParams(Collections.<String, String>emptyMap());
+
         Matcher matcher = pattern.matcher(checkNotNull(command));
         if (!matcher.matches() || matcher.groupCount() != params.length) return null;
+
         Map<String, String> parsedParams = new HashMap<>();
-        for (int i = 0; i < params.length; ++i) {
-            parsedParams.put(params[i].getName(), matcher.group(i + 1));
+        for (ParamParsingSpecification param : params) {
+            String paramName = param.getName();
+            parsedParams.put(paramName, matcher.group(paramName));
         }
         return new CommandParams(parsedParams);
     }

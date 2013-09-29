@@ -104,11 +104,6 @@ public final class IRCContext {
         this.receiver = checkNotNull(receiver);
     }
 
-    /**
-     * @return the BotUser representation of the user that sent the request
-     * @throws org.hibernate.HibernateException
-     *          .
-     */
     private BotUser fetchBotUser() {
         return user.getMainNick() == null ? null : userDAOProvider.get().getUser(user.getMainNick());
     }

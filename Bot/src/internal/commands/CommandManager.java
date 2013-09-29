@@ -28,9 +28,9 @@
 package internal.commands;
 
 import api.commands.*;
-import api.database.CallableTransactionTask;
 import api.database.models.AccessLevel;
 import api.database.models.ChannelType;
+import api.database.transactions.CallableTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.CommandCalledEvent;
 import api.events.bot.LockEvent;
@@ -64,7 +64,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static api.tools.text.StringUtil.lowerCase;
 
 /**
@@ -167,13 +167,40 @@ final class CommandManager implements EventListener {
                                                 final DelayedEventPoster delayedEventPoster) throws CommandHandlingException {
         String input = context.getInput().trim();
         Collection<Filter<?>> filters = new ArrayList<>();
+        input = extractFiltersFromInput(input, filters);
 
+        CommandResponse data = handleCommand(commandHandlerFactory, context, delayedEventPoster, input, filters);
+
+        if (data == null)
+            data = CommandResponse.errorResponse("Syntax error. Check " + commandPrefix + "syntax " + commandHandlerFactory.getHandledCommand().getName());
+
+        if (data.isEmpty())
+            return Collections.emptyList();
+        else if (data.isError()) {
+            IRCMessageType messageType = context.getInputType() == IRCMessageType.PRIVATE_MESSAGE ? context.getInputType() : IRCMessageType.NOTICE;
+            IRCOutput output = getDefaultOutputForContext(messageType, context.getUser(), data.getErrorMessage());
+            return Lists.newArrayList(output);
+        } else {
+            data.put("channel", context.getChannel() == null ? "" : context.getChannel().getName());
+            data.put("sender", context.getUser().getCurrentNick());
+            return templateManager.createOutputFromTemplate(data.asMap(), context.getCommand().getTemplateFile(), context);
+        }
+    }
+
+    private String extractFiltersFromInput(final String input, final Collection<Filter<?>> filters) {
         Matcher matcher = FilterParser.getInCommandFilterPattern().matcher(input);
         if (matcher.find()) {
-            filters = filterParser.parseFilters(matcher.group(1));
-            input = matcher.replaceFirst("").trim();
+            filters.addAll(filterParser.parseFilters(matcher.group(1)));
+            return matcher.replaceFirst("").trim();
         }
+        return input;
+    }
 
+    private static CommandResponse handleCommand(final CommandHandlerFactory commandHandlerFactory,
+                                                 final IRCContext context,
+                                                 final DelayedEventPoster delayedEventPoster,
+                                                 final String input,
+                                                 final Collection<Filter<?>> filters) throws CommandHandlingException {
         CommandResponse data = null;
         for (CommandParser parser : commandHandlerFactory.getParsers()) {
             if (parser.matches(input)) {
@@ -181,21 +208,7 @@ final class CommandManager implements EventListener {
                 break;
             }
         }
-        if (data == null) data = CommandResponse
-                .errorResponse("Syntax error. Check " + commandPrefix + "syntax " + commandHandlerFactory.getHandledCommand().getName());
-
-        if (data.isEmpty() && data.getErrorMessage() == null) return Collections.emptyList();
-
-        if (data.isError()) {
-            IRCOutput output = getDefaultOutputForContext(
-                    context.getInputType() == IRCMessageType.PRIVATE_MESSAGE ? context.getInputType() : IRCMessageType.NOTICE,
-                    context.getUser(), data.getErrorMessage());
-            return Lists.newArrayList(output);
-        }
-
-        data.put("channel", context.getChannel() == null ? "" : context.getChannel().getName());
-        data.put("sender", context.getUser().getCurrentNick());
-        return templateManager.createOutputFromTemplate(data.asMap(), context.getCommand().getTemplateFile(), context);
+        return data;
     }
 
     private IRCOutput getDefaultOutputForContext(final IRCMessageType messageType,

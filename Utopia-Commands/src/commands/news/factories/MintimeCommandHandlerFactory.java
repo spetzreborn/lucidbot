@@ -28,7 +28,7 @@
 package commands.news.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class MintimeCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.NEWS, "mintime");
+    private final Command handledCommand = CommandBuilder.forCommand("mintime").ofType(CommandTypes.NEWS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<MintimeCommandHandler> handlerProvider;

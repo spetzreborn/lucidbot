@@ -1,5 +1,6 @@
 package api.database;
 
+import api.database.transactions.Transactional;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.jdbc.ReturningWork;
@@ -8,6 +9,9 @@ import org.hibernate.jdbc.Work;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+/**
+ * A class that executes work with a jdbc connection
+ */
 public class JDBCWorkExecutor {
     private final Provider<Session> sessionProvider;
 

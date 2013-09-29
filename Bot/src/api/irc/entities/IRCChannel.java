@@ -129,7 +129,7 @@ public final class IRCChannel implements IRCEntity {
     }
 
     /**
-     * @return a Collection of the users currently in the channel
+     * @return a Collection of the users currently in the channel. Editing the returned collection will have no effect on this channel object
      */
     public Collection<IRCUser> getUsers() {
         return new HashSet<>(users.keySet());

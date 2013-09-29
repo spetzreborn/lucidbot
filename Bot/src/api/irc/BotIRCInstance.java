@@ -107,7 +107,7 @@ public final class BotIRCInstance implements RequiresShutdown {
                           final PropertiesCollection properties,
                           final DelayHandler delayHandler,
                           final ReconnectScheduler reconnectScheduler) {
-        this.delayHandler = delayHandler;
+        this.delayHandler = checkNotNull(delayHandler);
         this.reconnectScheduler = checkNotNull(reconnectScheduler);
         this.serverErrorCommunication = checkNotNull(serverErrorCommunication);
         this.serverCodedCommunication = checkNotNull(serverCodedCommunication);
@@ -162,7 +162,7 @@ public final class BotIRCInstance implements RequiresShutdown {
      * @param channel the channel
      * @return true if this bot instance is the "main" instance in the specified channel
      */
-    public boolean isMainInstancein(final String channel) {
+    public boolean isMainInstanceIn(final String channel) {
         return mainInstanceIn.contains(lowerCase(channel));
     }
 
@@ -202,7 +202,13 @@ public final class BotIRCInstance implements RequiresShutdown {
             while ((line = reader.readLine()) != null) {
                 int firstSpace = line.indexOf(' ');
                 int secondSpace = firstSpace > 0 && firstSpace < line.length() - 1 ? line.indexOf(' ', firstSpace + 1) : -1;
-                if (secondSpace != -1) {
+                if (secondSpace == -1) {
+                    Matcher matcher = PING_PATTERN.matcher(line);
+                    if (matcher.matches()) {
+                        logger.info(line);
+                        sendAndLogCommand(IrcCommands.PongCommand.format(matcher.group(1)));
+                    }
+                } else {
                     String codeString = line.substring(firstSpace + 1, secondSpace);
                     int code = ValidationType.INT.matches(codeString) ? Integer.parseInt(codeString) : -1;
 
@@ -219,12 +225,6 @@ public final class BotIRCInstance implements RequiresShutdown {
                         throw new IOException("Could not log into the IRC server: " + line);
                     } else {
                         handleLine(line);
-                    }
-                } else {
-                    Matcher matcher = PING_PATTERN.matcher(line);
-                    if (matcher.matches()) {
-                        logger.info(line);
-                        sendAndLogCommand(IrcCommands.PongCommand.format(matcher.group(1)));
                     }
                 }
             }

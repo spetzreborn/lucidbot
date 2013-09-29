@@ -69,8 +69,10 @@ class AngelKingdomParser implements IntelParser<Kingdom> {
     private Pattern titleProv;
 
     @Inject
-    AngelKingdomParser(final CommonEntitiesAccess commonEntitiesAccess, final Provider<KingdomDAO> kingdomDAOProvider,
-                       final Provider<ProvinceDAO> provinceDAOProvider, final EventBus eventBus) {
+    AngelKingdomParser(final CommonEntitiesAccess commonEntitiesAccess,
+                       final Provider<KingdomDAO> kingdomDAOProvider,
+                       final Provider<ProvinceDAO> provinceDAOProvider,
+                       final EventBus eventBus) {
         this.commonEntitiesAccess = commonEntitiesAccess;
         this.kingdomDAOProvider = kingdomDAOProvider;
         this.provinceDAOProvider = provinceDAOProvider;
@@ -103,26 +105,53 @@ class AngelKingdomParser implements IntelParser<Kingdom> {
 
     @Override
     public Kingdom parse(final String savedBy, final String text) throws ParseException {
-        Kingdom kingdom;
+        Kingdom kingdom = getOrCreateKingdom(text);
 
-        Matcher matcher = nameAndLocPattern.matcher(text);
-        if (matcher.find()) {
-            kingdom = kingdomDAOProvider.get().getOrCreateKingdom(matcher.group(2));
-            kingdom.setName(matcher.group(1));
-        } else throw new ParseException("KD to be parsed does not contain name and location", 0);
+        Map<String, Province> provs = mapExistingProvincesByName(kingdom);
 
+        int amountOfProvs = getExpectedAmountOfProvinces(text);
+
+        ProvinceDAO provinceDAO = provinceDAOProvider.get();
+        Set<Province> noLongerPresentProvinces = new HashSet<>(kingdom.getProvinces());
+
+        String remainingText = parseLandSection(text, kingdom, provs, noLongerPresentProvinces, provinceDAO);
+        remainingText = parseNetworthSection(provs, remainingText);
+        parseHonorRanksSection(provs, remainingText);
+
+        if (provs.size() < amountOfProvs)
+            throw new ParseException("Only found " + provs.size() + " provinces, although " + "there should have been " + amountOfProvs, 0);
+
+        provinceDAO.delete(noLongerPresentProvinces);
+
+        kingdom.setSavedBy(savedBy);
+        kingdom.setLastUpdated(new Date());
+        return kingdom;
+    }
+
+    private static Map<String, Province> mapExistingProvincesByName(final Kingdom kingdom) {
         Map<String, Province> provs = new HashMap<>();
         for (Province province : kingdom.getProvinces()) {
             provs.put(lowerCase(province.getName()), province);
         }
-        Set<Province> removedProvinces = new HashSet<>(kingdom.getProvinces());
+        return provs;
+    }
 
-        matcher = amountOfProvsPattern.matcher(text);
-        int amountOfProvs = matcher.find() ? NumberUtil.parseInt(matcher.group(1)) : 0;
+    private Kingdom getOrCreateKingdom(final String text) throws ParseException {
+        Matcher matcher = nameAndLocPattern.matcher(text);
+        if (matcher.find()) {
+            Kingdom kingdom = kingdomDAOProvider.get().getOrCreateKingdom(matcher.group(2));
+            kingdom.setName(matcher.group(1));
+            return kingdom;
+        } else throw new ParseException("KD to be parsed does not contain name and location", 0);
+    }
 
-        ProvinceDAO provinceDAO = provinceDAOProvider.get();
+    private String parseLandSection(final String text,
+                                    final Kingdom kingdom,
+                                    final Map<String, Province> provs,
+                                    final Set<Province> removedProvinces,
+                                    final ProvinceDAO provinceDAO) {
         String remainingText = text.substring(text.indexOf(LAND_MARKER));
-        matcher = landProv.matcher(remainingText);
+        Matcher matcher = landProv.matcher(remainingText);
         while (matcher.find()) {
             String name = matcher.group(1).trim();
             Province province = provs.get(lowerCase(name));
@@ -144,9 +173,12 @@ class AngelKingdomParser implements IntelParser<Kingdom> {
             province.setRace(race);
             province.setLand(NumberUtil.parseInt(matcher.group(3)));
         }
+        return remainingText;
+    }
 
+    private String parseNetworthSection(final Map<String, Province> provs, String remainingText) {
         remainingText = remainingText.substring(remainingText.indexOf(NETWORTH_MARKER));
-        matcher = nwProv.matcher(remainingText);
+        Matcher matcher = nwProv.matcher(remainingText);
         while (matcher.find()) {
             String name = matcher.group(1).trim();
             String lcName = lowerCase(name);
@@ -154,9 +186,12 @@ class AngelKingdomParser implements IntelParser<Kingdom> {
                 provs.get(lcName).setNetworth(NumberUtil.parseInt(matcher.group(3)));
             }
         }
+        return remainingText;
+    }
 
+    private void parseHonorRanksSection(final Map<String, Province> provs, String remainingText) {
         remainingText = remainingText.contains(RANKS_MARKER) ? remainingText.substring(remainingText.indexOf(RANKS_MARKER)) : "";
-        matcher = titleProv.matcher(remainingText);
+        Matcher matcher = titleProv.matcher(remainingText);
         while (matcher.find()) {
             String name = matcher.group(1).trim();
             String lcName = lowerCase(name);
@@ -164,16 +199,11 @@ class AngelKingdomParser implements IntelParser<Kingdom> {
                 provs.get(lcName).setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(3)));
             }
         }
+    }
 
-        if (provs.size() < amountOfProvs)
-            throw new ParseException("Only found " + provs.size() + " provinces, although " +
-                    "there should have been " + amountOfProvs, 0);
-
-        provinceDAO.delete(removedProvinces);
-
-        kingdom.setSavedBy(savedBy);
-        kingdom.setLastUpdated(new Date());
-        return kingdom;
+    private int getExpectedAmountOfProvinces(final String text) {
+        Matcher matcher = amountOfProvsPattern.matcher(text);
+        return matcher.find() ? NumberUtil.parseInt(matcher.group(1)) : 0;
     }
 
     @Override

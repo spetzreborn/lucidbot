@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AddNoteCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.COMMUNICATION, "addnote");
+    private final Command handledCommand = CommandBuilder.forCommand("addnote").ofType(CommandTypes.COMMUNICATION).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddNoteCommandHandler> handlerProvider;

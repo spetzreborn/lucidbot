@@ -63,17 +63,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class IRCEntityManager implements EventListener {
     private final Map<String, IRCUser> userMap = new HashMap<>();
     private final Map<String, IRCChannel> channelMap = new HashMap<>();
+    private final ConcurrentMap<IRCUser, UserAuthenticationRequestSource> statusRequestSource = new ConcurrentHashMap<>();
     private final ReadWriteLock mapsLock = new ReentrantReadWriteLock(true);
+
     private final Provider<BotUserDAO> botUserDAOProvider;
     private final Provider<ChannelDAO> channelDAOProvider;
     private final Authenticator authenticator;
     private final ThreadingManager threadingManager;
     private final EventBus eventBus;
-    private final ConcurrentMap<IRCUser, UserAuthenticationRequestSource> statusRequestSource = new ConcurrentHashMap<>();
 
     @Inject
-    public IRCEntityManager(final Authenticator authenticator, final Provider<ChannelDAO> channelDAOProvider,
-                            final Provider<BotUserDAO> botUserDAOProvider, final ThreadingManager threadingManager,
+    public IRCEntityManager(final Authenticator authenticator,
+                            final Provider<ChannelDAO> channelDAOProvider,
+                            final Provider<BotUserDAO> botUserDAOProvider,
+                            final ThreadingManager threadingManager,
                             final EventBus eventBus) {
         this.authenticator = checkNotNull(authenticator);
         this.channelDAOProvider = checkNotNull(channelDAOProvider);
@@ -88,6 +91,8 @@ public final class IRCEntityManager implements EventListener {
             @Override
             public void run() {
                 BotUser user = botUserDAOProvider.get().getUser(event.getUserId());
+                if (user == null) return;
+
                 String mainNick = user.getMainNick();
                 boolean isAdmin = event.isPromotion();
                 mapsLock.readLock().lock();
@@ -127,15 +132,9 @@ public final class IRCEntityManager implements EventListener {
                         String lowerCaseNick = lowerCase(event.getUser());
                         IRCUser user = userMap.get(lowerCaseNick);
                         IRCChannel ircChannel = channelMap.get(lowerCase(event.getChannel()));
-                        if (user == null) {
-                            user = new IRCUser(event.getUser());
-                            userMap.put(lowerCaseNick, user);
-                            ircChannel.addUser(user);
-                        } else if (!ircChannel.hasUser(user)) {
-                            ircChannel.addUser(user);
-                        }
+                        user = addUserToChannelIfAbsent(lowerCaseNick, user, ircChannel, event);
 
-                        if (!user.isAuthenticated() && !event.getUser().equals(event.getReceiver().getNick())) {
+                        if (isUnauthenticatedUser(user, event)) {
                             statusRequestSource.put(user, UserAuthenticationRequestSource.USER_JOIN);
                             authenticator.sendAuthenticationCheck(event.getUser());
                         }
@@ -150,6 +149,21 @@ public final class IRCEntityManager implements EventListener {
         threadingManager.execute(runnable);
     }
 
+    private IRCUser addUserToChannelIfAbsent(final String lowerCaseNick, IRCUser user, final IRCChannel ircChannel, final JoinEvent event) {
+        if (user == null) {
+            user = new IRCUser(event.getUser());
+            userMap.put(lowerCaseNick, user);
+            ircChannel.addUser(user);
+        } else if (!ircChannel.hasUser(user)) {
+            ircChannel.addUser(user);
+        }
+        return user;
+    }
+
+    private static boolean isUnauthenticatedUser(final IRCUser user, final JoinEvent event) {
+        return !user.isAuthenticated() && !event.getUser().equals(event.getReceiver().getNick());
+    }
+
     @Subscribe
     public void onKick(final KickEvent event) {
         Runnable runnable = new Runnable() {
@@ -157,7 +171,7 @@ public final class IRCEntityManager implements EventListener {
             public void run() {
                 if (event.getUser() == null)
                     removeBotFromChannels(event.getReceiver(), Arrays.asList(event.getChannel()));
-                removeUserFromChannel(event.getUser(), event.getChannel());
+                else removeUserFromChannel(event.getUser(), event.getChannel());
             }
         };
         threadingManager.execute(runnable);
@@ -192,7 +206,7 @@ public final class IRCEntityManager implements EventListener {
             public void run() {
                 if (event.getUser() == null)
                     removeBotFromChannels(event.getReceiver(), Arrays.asList(event.getChannel()));
-                removeUserFromChannel(event.getUser(), event.getChannel());
+                else removeUserFromChannel(event.getUser(), event.getChannel());
             }
         };
         threadingManager.execute(runnable);
@@ -203,15 +217,17 @@ public final class IRCEntityManager implements EventListener {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                mapsLock.readLock().lock();
-                try {
-                    IRCUser ircUser = userMap.remove(lowerCase(event.getUser()));
-                    for (IRCChannel channel : channelMap.values()) {
-                        channel.removeUser(ircUser);
+                if (event.getUser() != null) {
+                    mapsLock.readLock().lock();
+                    try {
+                        IRCUser ircUser = userMap.remove(lowerCase(event.getUser()));
+                        for (IRCChannel channel : channelMap.values()) {
+                            channel.removeUser(ircUser);
+                        }
+                        statusRequestSource.remove(ircUser);
+                    } finally {
+                        mapsLock.readLock().unlock();
                     }
-                    statusRequestSource.remove(ircUser);
-                } finally {
-                    mapsLock.readLock().unlock();
                 }
             }
         };
@@ -255,13 +271,12 @@ public final class IRCEntityManager implements EventListener {
                         ircChannel.addUser(user, entry.getValue());
                         if (!user.isAuthenticated()) toAuth.add(user.getCurrentNick());
                     }
-                    if (!toAuth.isEmpty()) {
-                        for (String nick : toAuth) {
-                            IRCUser user = userMap.get(lowerCase(nick));
-                            statusRequestSource.put(user, UserAuthenticationRequestSource.USER_LIST);
-                        }
-                        authenticator.sendAuthenticationCheck(toAuth);
+
+                    for (String nick : toAuth) {
+                        IRCUser user = userMap.get(lowerCase(nick));
+                        statusRequestSource.put(user, UserAuthenticationRequestSource.USER_LIST);
                     }
+                    authenticator.sendAuthenticationCheck(toAuth);
                 } finally {
                     mapsLock.writeLock().unlock();
                 }
@@ -272,7 +287,7 @@ public final class IRCEntityManager implements EventListener {
 
     @Subscribe
     public void onModeChange(final ModeEvent event) {
-        if (event.getReceiver().isMainInstancein(event.getChannel())) {
+        if (event.getReceiver().isMainInstanceIn(event.getChannel())) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {

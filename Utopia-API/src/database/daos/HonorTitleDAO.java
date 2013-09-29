@@ -29,8 +29,7 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.DBException;
-import api.database.Transactional;
-import api.tools.text.StringUtil;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Bonus;
 import database.models.HonorTitle;
@@ -39,11 +38,16 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static api.tools.text.StringUtil.isNotNullOrEmpty;
+import static api.tools.text.StringUtil.merge;
+
+@ParametersAreNonnullByDefault
 public class HonorTitleDAO extends AbstractDAO<HonorTitle> {
     @Inject
     public HonorTitleDAO(final Provider<Session> sessionProvider) {
@@ -56,9 +60,9 @@ public class HonorTitleDAO extends AbstractDAO<HonorTitle> {
         List<String> list = new ArrayList<>(titles.size() * 3);
         for (HonorTitle honorTitle : titles) {
             list.add(honorTitle.getName());
-            if (StringUtil.isNotNullOrEmpty(honorTitle.getAlias())) list.add(honorTitle.getAlias());
+            if (isNotNullOrEmpty(honorTitle.getAlias())) list.add(honorTitle.getAlias());
         }
-        return StringUtil.merge(list, '|');
+        return merge(list, '|');
     }
 
     @Transactional

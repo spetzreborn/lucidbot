@@ -28,7 +28,7 @@
 package commands.army.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveArmyCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.MILITARY, "removearmy");
+    private final Command handledCommand = CommandBuilder.forCommand("removearmy").ofType(CommandTypes.MILITARY).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveArmyCommandHandler> handlerProvider;

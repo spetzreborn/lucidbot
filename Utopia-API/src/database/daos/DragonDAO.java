@@ -29,7 +29,7 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.DBException;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import api.tools.text.StringUtil;
 import com.google.inject.Provider;
 import database.models.Bonus;
@@ -38,11 +38,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class DragonDAO extends AbstractDAO<Dragon> {
     @Inject
     public DragonDAO(final Provider<Session> sessionProvider) {

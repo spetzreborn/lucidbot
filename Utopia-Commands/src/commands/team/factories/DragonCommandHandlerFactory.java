@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class DragonCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "dragon");
+    private final Command handledCommand = CommandBuilder.forCommand("dragon").ofType(CommandTypes.KD_MANAGEMENT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<DragonCommandHandler> handlerProvider;

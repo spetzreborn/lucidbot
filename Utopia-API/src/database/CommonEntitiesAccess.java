@@ -38,6 +38,7 @@ import database.models.*;
 import events.CacheReloadEvent;
 import lombok.extern.log4j.Log4j;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
@@ -53,6 +54,7 @@ import static tools.UtopiaPropertiesConfig.CACHE_UPDATE_INTERVAL;
  */
 @Singleton
 @Log4j
+@ParametersAreNonnullByDefault
 public class CommonEntitiesAccess {
     private static final Pattern PIPE_PATTERN = Pattern.compile("\\|");
 

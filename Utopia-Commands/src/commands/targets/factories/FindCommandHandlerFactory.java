@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class FindCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TARGETS, "find");
+    private final Command handledCommand = CommandBuilder.forCommand("find").ofType(CommandTypes.TARGETS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<FindCommandHandler> handlerProvider;

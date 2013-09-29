@@ -29,8 +29,8 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.NestedCriterion;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Attack;
 import database.models.AttackType;
@@ -39,11 +39,12 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
-
+@ParametersAreNonnullByDefault
 public class AttackDAO extends AbstractDAO<Attack> {
     @Inject
     public AttackDAO(final Provider<Session> sessionProvider) {

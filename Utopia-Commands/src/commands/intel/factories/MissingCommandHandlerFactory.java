@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class MissingCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.INTEL, "missing");
+    private final Command handledCommand = CommandBuilder.forCommand("missing").ofType(CommandTypes.INTEL).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<MissingCommandHandler> handlerProvider;

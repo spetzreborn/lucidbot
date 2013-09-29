@@ -27,7 +27,7 @@
 
 package web.resources;
 
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import api.events.DelayedEventPoster;
 import api.tools.validation.ValidationEnabled;
 import com.google.common.base.Supplier;

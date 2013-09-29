@@ -83,7 +83,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target"))) {
+            if (instance.isMainInstanceIn(matcher.group("target"))) {
                 String sender = matcher.group("sender");
                 eventBus.post(new JoinEvent(instance, matcher.group("target"), sender.equals(instance.getNick()) ? null : sender));
             }
@@ -94,7 +94,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target"))) {
+            if (instance.isMainInstanceIn(matcher.group("target"))) {
                 eventBus.post(new KickEvent(instance, matcher.group("recipient"), matcher.group("sender"), matcher.group("target"),
                         matcher.group("message")));
             }
@@ -104,7 +104,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
+            if (instance.isMainInstanceIn(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
                 eventBus.post(new PartEvent(instance, matcher.group("sender"), matcher.group("target")));
             }
         }
@@ -113,7 +113,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
+            if (instance.isMainInstanceIn(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
                 eventBus.post(new QuitEvent(instance, matcher.group("sender"), matcher.group("message")));
             }
         }
@@ -134,7 +134,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
+            if (instance.isMainInstanceIn(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
                 String recipients = matcher.group("recipients");
                 eventBus.post(new ModeEvent(instance, matcher.group("target"),
                         isNullOrEmpty(recipients) ? new String[0] : splitOnSpace(recipients), matcher.group("modes")));
@@ -154,7 +154,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target"))) {
+            if (instance.isMainInstanceIn(matcher.group("target"))) {
                 eventBus.post(new TopicEvent(instance, matcher.group("target"), matcher.group("message")));
             }
         }
@@ -166,7 +166,7 @@ public enum ServerCommand {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
             super.fireEvent(eventBus, instance, matcher);
-            if (instance.isMainInstancein(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
+            if (instance.isMainInstanceIn(matcher.group("target")) && !instance.getNick().equals(matcher.group("sender"))) {
                 eventBus.post(new ActionEvent(instance, matcher.group("sender"), matcher.group("target"), matcher.group("message")));
             }
         }
@@ -175,7 +175,7 @@ public enum ServerCommand {
             ") :?(?<message>.+)") {
         @Override
         protected void fireEvent(final EventBus eventBus, final BotIRCInstance instance, final Matcher matcher) {
-            if (instance.isMainInstancein(matcher.group("target"))) {
+            if (instance.isMainInstanceIn(matcher.group("target"))) {
                 String channel = matcher.group("target");
                 String sender = matcher.group("sender");
                 String message = matcher.group("message");

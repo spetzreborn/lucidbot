@@ -28,8 +28,9 @@
 package commands.bot.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.bot.handlers.RegisterCommandHandler;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class RegisterCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedPublicCommand(CommandTypes.BOT, "register");
+    private final Command handledCommand = CommandBuilder.forCommand("register").ofType(CommandTypes.BOT).requiringAccessLevel(AccessLevel.PUBLIC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RegisterCommandHandler> handlerProvider;

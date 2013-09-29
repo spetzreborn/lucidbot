@@ -26,9 +26,9 @@
  */
 package tmp.server.intel;
 
-import api.database.CallableTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.CallableTransactionTask;
 import api.events.DelayedEventPoster;
 import database.daos.IntelDAO;
 import database.daos.NewsItemDAO;
@@ -47,7 +47,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 /**
  * A class that communicates with the forum agent site to save intel

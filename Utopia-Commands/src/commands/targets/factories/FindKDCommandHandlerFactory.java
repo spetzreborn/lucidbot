@@ -42,7 +42,7 @@ import java.util.List;
 
 @Singleton
 public class FindKDCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TARGETS, "findkd");
+    private final Command handledCommand = CommandBuilder.forCommand("findkd").ofType(CommandTypes.TARGETS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<FindKDCommandHandler> handlerProvider;

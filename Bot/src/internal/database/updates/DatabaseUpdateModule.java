@@ -27,7 +27,7 @@
 
 package internal.database.updates;
 
-import api.database.DatabaseUpdater;
+import api.database.updates.DatabaseUpdater;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import internal.database.updates.h2.H2UpdateV1ToV2;

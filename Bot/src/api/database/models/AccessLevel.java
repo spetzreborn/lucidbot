@@ -33,10 +33,12 @@ import api.irc.entities.IRCUser;
 import api.tools.text.StringUtil;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Describes a level of access
  */
+@ParametersAreNonnullByDefault
 public enum AccessLevel implements HasName {
     PUBLIC {
         @Override
@@ -66,7 +68,7 @@ public enum AccessLevel implements HasName {
 
         @Override
         public boolean allows(final BotUser user) {
-            return user.isAdmin();
+            return user != null && user.isAdmin();
         }
     };
     // note that the order of them is important. later in the list means higher access
@@ -76,6 +78,13 @@ public enum AccessLevel implements HasName {
         return StringUtil.prettifyEnumName(this);
     }
 
+    /**
+     * Attempts to resolve the access level with the specified name
+     *
+     * @param name the name of the access level
+     * @return the AccessLevel with the specified name
+     * @throws IllegalArgumentException if no match is found
+     */
     public static AccessLevel fromName(final String name) {
         for (AccessLevel level : values()) {
             if (level.getName().equalsIgnoreCase(name)) return level;
@@ -98,5 +107,5 @@ public enum AccessLevel implements HasName {
      * @param user the user
      * @return true if access is allowed for the user
      */
-    public abstract boolean allows(final BotUser user);
+    public abstract boolean allows(@Nullable final BotUser user);
 }

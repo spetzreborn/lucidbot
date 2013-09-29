@@ -29,8 +29,8 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.DBException;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.timers.TimerManager;
 import api.tools.files.FilterUtil;
 import api.tools.text.StringUtil;
@@ -45,12 +45,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import spi.filters.Filter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.*;
 
 import static api.tools.text.StringUtil.lowerCase;
 
-
+@ParametersAreNonnullByDefault
 public class ProvinceDAO extends AbstractDAO<Province> {
     private static final int MAX_BATCH = 40;
 

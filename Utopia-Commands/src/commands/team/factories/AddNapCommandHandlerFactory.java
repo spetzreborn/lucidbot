@@ -28,6 +28,7 @@
 package commands.team.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.team.handlers.AddNapCommandHandler;
@@ -43,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class AddNapCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "addnap");
+    private final Command handledCommand = CommandBuilder.forCommand("addnap").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddNapCommandHandler> handlerProvider;

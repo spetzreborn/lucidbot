@@ -27,7 +27,7 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.timers.Timer;
 import api.timers.TimerManager;
@@ -43,7 +43,7 @@ import spi.events.EventListener;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 class NewIntelArmiesListener implements EventListener {

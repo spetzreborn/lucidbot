@@ -28,6 +28,7 @@
 package commands.communication.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -42,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RemoveNotesCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.COMMUNICATION, "removenotes");
+    private final Command handledCommand = CommandBuilder.forCommand("removenotes").ofType(CommandTypes.COMMUNICATION).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveNotesCommandHandler> handlerProvider;

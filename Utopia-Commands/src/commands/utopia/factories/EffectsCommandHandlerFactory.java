@@ -28,6 +28,7 @@
 package commands.utopia.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -47,7 +48,7 @@ import java.util.List;
 
 @Singleton
 public class EffectsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedPublicCommand(CommandTypes.UTOPIA, "effects");
+    private final Command handledCommand = CommandBuilder.forCommand("effects").ofType(CommandTypes.UTOPIA).requiringAccessLevel(AccessLevel.PUBLIC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<EffectsCommandHandler> handlerProvider;

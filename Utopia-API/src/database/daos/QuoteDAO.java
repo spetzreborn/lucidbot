@@ -28,17 +28,18 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Quote;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.security.SecureRandom;
 import java.util.List;
 
-
+@ParametersAreNonnullByDefault
 public class QuoteDAO extends AbstractDAO<Quote> {
     @Inject
     public QuoteDAO(final Provider<Session> sessionProvider) {

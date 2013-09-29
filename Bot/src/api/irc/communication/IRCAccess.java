@@ -55,8 +55,8 @@ public final class IRCAccess {
 
     @Inject
     public IRCAccess(final OutputQueue outputQueue, final PropertiesCollection properties) {
-        this.properties = properties;
         this.outputQueue = checkNotNull(outputQueue);
+        this.properties = checkNotNull(properties);
     }
 
     public void enqueue(final IRCOutput output) {

@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class TopicCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.BOT, "topic");
+    private final Command handledCommand = CommandBuilder.forCommand("topic").ofType(CommandTypes.BOT).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<TopicCommandHandler> handlerProvider;

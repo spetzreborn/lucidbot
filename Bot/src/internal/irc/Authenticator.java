@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import static api.settings.PropertiesConfig.IRC_AUTH_REQUEST;
 import static api.settings.PropertiesConfig.IRC_AUTH_RESPONSE;
 import static api.tools.text.StringUtil.merge;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Log4j
 public class Authenticator implements EventListener {
@@ -65,9 +66,9 @@ public class Authenticator implements EventListener {
 
     @Inject
     public Authenticator(final PropertiesCollection properties, final IRCAccess access, final EventBus eventBus) {
-        this.properties = properties;
-        this.access = access;
-        this.eventBus = eventBus;
+        this.properties = checkNotNull(properties);
+        this.access = checkNotNull(access);
+        this.eventBus = checkNotNull(eventBus);
     }
 
     @Subscribe

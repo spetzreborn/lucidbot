@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -48,10 +50,14 @@ import tools.UtopiaPropertiesConfig;
 import tools.communication.NotificationDeliverer;
 import tools.time.UtopiaTime;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class WaveAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<EventDAO> eventDAOProvider;
     private final PropertiesCollection properties;
@@ -59,9 +65,13 @@ public class WaveAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<NotificationDeliverer> delivererProvider;
 
     @Inject
-    public WaveAnnouncer(final Provider<EventDAO> eventDAOProvider, final TemplateManager templateManager,
-                         final IRCEntityManager ircEntityManager, final IRCAccess ircAccess, final PropertiesCollection properties,
-                         final Provider<NotificationDAO> notificationDAOProvider, final Provider<NotificationDeliverer> delivererProvider) {
+    public WaveAnnouncer(final Provider<EventDAO> eventDAOProvider,
+                         final TemplateManager templateManager,
+                         final IRCEntityManager ircEntityManager,
+                         final IRCAccess ircAccess,
+                         final PropertiesCollection properties,
+                         final Provider<NotificationDAO> notificationDAOProvider,
+                         final Provider<NotificationDeliverer> delivererProvider) {
         super(templateManager, ircEntityManager, ircAccess);
         this.eventDAOProvider = eventDAOProvider;
         this.properties = properties;
@@ -71,23 +81,28 @@ public class WaveAnnouncer extends AbstractAnnouncer implements EventListener {
 
     @Subscribe
     public void onTick(final TickEvent event) {
-        try {
-            UtopiaTime nextTick = event.getUtoDate().increment(1);
-            Event wave = eventDAOProvider.get().getWave();
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    UtopiaTime nextTick = event.getUtoDate().increment(1);
+                    Event wave = eventDAOProvider.get().getWave();
 
-            if (wave == null || wave.getEventTime().getTime() >= nextTick.getTime()) return;
+                    if (wave == null || wave.getEventTime().getTime() >= nextTick.getTime()) return;
 
-            eventDAOProvider.get().delete(wave);
-            if (isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("wave", wave), "announcement-wave");
-                announce(ChannelType.PRIVATE, output);
+                    eventDAOProvider.get().delete(wave);
+                    if (isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("wave", wave), "announcement-wave");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+
+                    List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.WAVE);
+                    delivererProvider.get().deliverNotifications(notifications, "Wave time!", "Wave time!");
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
             }
-
-            List<Notification> notifications = notificationDAOProvider.get().getNotifications(NotificationType.WAVE);
-            delivererProvider.get().deliverNotifications(notifications, "Wave time!", "Wave time!");
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

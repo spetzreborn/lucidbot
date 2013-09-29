@@ -115,7 +115,10 @@ public class FileUtil {
                 files.add(file);
             } else {
                 for (FileMatcher matcher : matchers) {
-                    if (matcher.matches(file)) files.add(file);
+                    if (matcher.matches(file)) {
+                        files.add(file);
+                        break;
+                    }
                 }
             }
             return FileVisitResult.CONTINUE;

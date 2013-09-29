@@ -57,6 +57,7 @@ public final class ServerCommandCommunication {
     public boolean parseAndHandle(final BotIRCInstance instance, final String rawMessage) {
         ServerCommand serverCommand = null;
         Matcher matcher = null;
+
         for (ServerCommand value : ServerCommand.values()) {
             matcher = value.getPattern().matcher(rawMessage);
             if (matcher.matches()) {
@@ -65,6 +66,7 @@ public final class ServerCommandCommunication {
             }
         }
         if (serverCommand == null) return false;
+
         serverCommand.fireEvent(eventBus, instance, matcher);
         return true;
     }

@@ -28,7 +28,7 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Aid;
 import database.models.AidType;
@@ -36,10 +36,12 @@ import database.models.Province;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class AidDAO extends AbstractDAO<Aid> {
     @Inject
     public AidDAO(final Provider<Session> sessionProvider) {

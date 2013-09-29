@@ -1,7 +1,7 @@
 importPackage(Packages.api.commands);
 
 function handles() {
-    return CommandFactory.newSimpleCommand("js");
+    return CommandBuilder.forCommand("js").build();
 }
 
 function handleCommand(context, params, filters, delayedEventPoster) {

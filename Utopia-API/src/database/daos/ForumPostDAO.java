@@ -28,15 +28,16 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.ForumPost;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
-
+@ParametersAreNonnullByDefault
 public class ForumPostDAO extends AbstractDAO<ForumPost> {
     @Inject
     public ForumPostDAO(final Provider<Session> sessionProvider) {

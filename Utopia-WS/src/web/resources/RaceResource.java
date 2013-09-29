@@ -1,6 +1,6 @@
 package web.resources;
 
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import api.tools.validation.ValidationEnabled;
 import com.sun.jersey.api.JResponse;
 import database.daos.RaceDAO;

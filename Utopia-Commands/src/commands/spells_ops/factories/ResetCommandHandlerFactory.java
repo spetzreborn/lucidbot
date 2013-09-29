@@ -28,6 +28,7 @@
 package commands.spells_ops.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Provider;
@@ -47,7 +48,7 @@ import java.util.List;
 
 @Singleton
 public class ResetCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.SPELLS_AND_OPS, "reset");
+    private final Command handledCommand = CommandBuilder.forCommand("reset").ofType(CommandTypes.SPELLS_AND_OPS).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ResetCommandHandler> handlerProvider;

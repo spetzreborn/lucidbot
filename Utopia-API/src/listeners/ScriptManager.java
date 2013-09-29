@@ -135,9 +135,9 @@ public class ScriptManager implements DirectoryChangeEventObserver, EventListene
                     ScriptEventListener eventListener = fileNameToEventListenerMapping.remove(file);
                     if (eventListener != null) {
                         eventListenerToEventTypeMapping.remove(eventListener);
-                        identifyScript(file);
                     }
                 }
+                identifyScript(file);
             } else if (entry.getValue().equals(ENTRY_DELETE)) {
                 Command handledCommand = getCommandForFile(file);
                 if (handledCommand != null) {

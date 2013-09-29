@@ -33,14 +33,14 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 import static api.settings.PropertiesConfig.IRC_FIXED_DELAY;
+import static com.google.common.base.Objects.firstNonNull;
 
 class ConstantDelayHandler implements DelayHandler {
     private final long delay;
 
     @Inject
     ConstantDelayHandler(final PropertiesCollection properties) {
-        Long possibleDelay = properties.getLong(IRC_FIXED_DELAY);
-        this.delay = possibleDelay == null ? 1000 : possibleDelay;
+        this.delay = firstNonNull(properties.getLong(IRC_FIXED_DELAY), 1000L);
     }
 
     @Override
