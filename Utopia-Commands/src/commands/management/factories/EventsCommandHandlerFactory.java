@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class EventsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("events").ofType(CommandTypes.KD_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("events").ofType(CommandTypes.KD_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<EventsCommandHandler> handlerProvider;

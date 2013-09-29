@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveNotificationCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("removenotification").ofType(CommandTypes.USER).build();
+    private final Command handledCommand = CommandBuilder.forCommand("removenotification").ofType(CommandTypes.USER).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveNotificationCommandHandler> handlerProvider;

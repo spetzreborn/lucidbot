@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class ArmyCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("army").ofType(CommandTypes.MILITARY).build();
+    private final Command handledCommand = CommandBuilder.forCommand("army").ofType(CommandTypes.MILITARY).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ArmyCommandHandler> handlerProvider;

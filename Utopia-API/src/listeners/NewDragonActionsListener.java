@@ -78,6 +78,7 @@ class NewDragonActionsListener implements EventListener {
                     public void run(final DelayedEventPoster delayedEventPoster) {
                         try {
                             BotUser botUser = event.getContext().getBotUser();
+                            if (botUser == null) return;
                             botUser.getStats(); //make sure they get loaded (Hibernate was whining for some reason)
 
                             String reply = registerDragonAction(event.getProjectType(), botUser, event.getContribution());

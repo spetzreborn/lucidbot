@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class ReadCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("read").ofType(CommandTypes.COMMUNICATION).build();
+    private final Command handledCommand = CommandBuilder.forCommand("read").ofType(CommandTypes.COMMUNICATION).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ReadCommandHandler> handlerProvider;

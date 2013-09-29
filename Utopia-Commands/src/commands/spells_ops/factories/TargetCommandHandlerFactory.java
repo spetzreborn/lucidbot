@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class TargetCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("target").ofType(CommandTypes.SPELLS_AND_OPS).build();
+    private final Command handledCommand = CommandBuilder.forCommand("target").ofType(CommandTypes.SPELLS_AND_OPS).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<TargetCommandHandler> handlerProvider;

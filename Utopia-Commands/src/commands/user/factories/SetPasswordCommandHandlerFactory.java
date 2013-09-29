@@ -45,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class SetPasswordCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("setpassword").ofType(CommandTypes.KD_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("setpassword").ofType(CommandTypes.KD_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetPasswordCommandHandler> handlerProvider;

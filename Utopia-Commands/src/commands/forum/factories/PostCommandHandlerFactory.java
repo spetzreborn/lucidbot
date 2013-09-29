@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class PostCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("post").ofType(CommandTypes.COMMUNICATION).build();
+    private final Command handledCommand = CommandBuilder.forCommand("post").ofType(CommandTypes.COMMUNICATION).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<PostCommandHandler> handlerProvider;

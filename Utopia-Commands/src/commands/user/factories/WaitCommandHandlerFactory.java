@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class WaitCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("wait").ofType(CommandTypes.KD_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("wait").ofType(CommandTypes.KD_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<WaitCommandHandler> handlerProvider;

@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MessagesCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("messages").ofType(CommandTypes.COMMUNICATION).build();
+    private final Command handledCommand = CommandBuilder.forCommand("messages").ofType(CommandTypes.COMMUNICATION).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<MessagesCommandHandler> handlerProvider;

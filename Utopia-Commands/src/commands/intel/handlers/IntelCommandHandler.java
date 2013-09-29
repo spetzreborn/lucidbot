@@ -62,6 +62,7 @@ public class IntelCommandHandler implements CommandHandler {
                                          final DelayedEventPoster delayedEventPoster) throws CommandHandlingException {
         try {
             if (params.isEmpty()) {
+                if (context.getBotUser() == null) return CommandResponse.errorResponse("You're not registered");
                 Province province = provinceDAO.getProvinceForUser(context.getBotUser());
                 return province == null ? CommandResponse.errorResponse("No province is registered")
                         : CommandResponse.resultResponse("provinces", Lists.newArrayList(province));

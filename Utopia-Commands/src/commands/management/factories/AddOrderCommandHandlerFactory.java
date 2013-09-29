@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class AddOrderCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("addorder").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
+    private final Command handledCommand = CommandBuilder.forCommand("addorder").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddOrderCommandHandler> handlerProvider;

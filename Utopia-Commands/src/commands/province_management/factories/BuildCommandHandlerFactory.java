@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class BuildCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("build").ofType(CommandTypes.PROVINCE_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("build").ofType(CommandTypes.PROVINCE_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<BuildCommandHandler> handlerProvider;

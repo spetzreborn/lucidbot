@@ -71,6 +71,7 @@ public class InfoCommandHandler implements CommandHandler {
             Province province;
             if (params.isEmpty()) {
                 user = context.getBotUser();
+                if (user == null) return CommandResponse.errorResponse("You're not registered");
                 province = provinceDAO.getProvinceForUser(user);
             } else if (params.containsKey("kingdom")) {
                 province = provinceDAO.getClosestMatch(params.getParameter("userOrProv"));

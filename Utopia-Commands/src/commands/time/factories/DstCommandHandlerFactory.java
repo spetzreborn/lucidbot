@@ -45,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class DstCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("dst").ofType(CommandTypes.TIME).build();
+    private final Command handledCommand = CommandBuilder.forCommand("dst").ofType(CommandTypes.TIME).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<DstCommandHandler> handlerProvider;

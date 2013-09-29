@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class SetTimezoneCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("settimezone").ofType(CommandTypes.TIME).build();
+    private final Command handledCommand = CommandBuilder.forCommand("settimezone").ofType(CommandTypes.TIME).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetTimezoneCommandHandler> handlerProvider;

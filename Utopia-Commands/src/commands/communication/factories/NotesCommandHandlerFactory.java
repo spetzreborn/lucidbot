@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class NotesCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("notes").ofType(CommandTypes.COMMUNICATION).build();
+    private final Command handledCommand = CommandBuilder.forCommand("notes").ofType(CommandTypes.COMMUNICATION).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<NotesCommandHandler> handlerProvider;

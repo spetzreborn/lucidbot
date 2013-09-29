@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class UnlinkCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("unlink").ofType(CommandTypes.BOT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("unlink").ofType(CommandTypes.BOT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<UnlinkCommandHandler> handlerProvider;

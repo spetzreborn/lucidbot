@@ -60,6 +60,7 @@ public class CheckedInCommandHandler implements CommandHandler {
         try {
             Set<UserCheckIn> checkedIn = new TreeSet<>();
             if (params.isEmpty() && filters.isEmpty()) {
+                if (context.getBotUser() == null) return CommandResponse.errorResponse("You're not registered");
                 UserCheckIn checkIn = checkinDAO.getCheckinForUser(context.getBotUser());
                 if (checkIn == null) return CommandResponse.errorResponse("You have not checked in");
                 checkedIn.add(checkIn);

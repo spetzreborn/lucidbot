@@ -59,6 +59,7 @@ public class ProvinceCommandHandler implements CommandHandler {
                                          final DelayedEventPoster delayedEventPoster) throws CommandHandlingException {
         try {
             String userOrProv = params.getParameter("userOrProv");
+            if (userOrProv == null && context.getBotUser() == null) return CommandResponse.errorResponse("You're not registered");
             Province province = userOrProv == null ? provinceDAO.getProvinceForUser(context.getBotUser())
                     : bestMatchFinder.findBestMatchWithOwner(userOrProv);
             if (province == null) return CommandResponse.errorResponse("Found no matching user/province");

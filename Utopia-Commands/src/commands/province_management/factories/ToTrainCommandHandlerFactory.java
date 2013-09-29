@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class ToTrainCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("totrain").ofType(CommandTypes.PROVINCE_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("totrain").ofType(CommandTypes.PROVINCE_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ToTrainCommandHandler> handlerProvider;

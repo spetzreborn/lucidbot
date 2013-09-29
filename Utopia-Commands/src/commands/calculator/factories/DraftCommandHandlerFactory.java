@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class DraftCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("draft").ofType(CommandTypes.TOOLS).build();
+    private final Command handledCommand = CommandBuilder.forCommand("draft").ofType(CommandTypes.TOOLS).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<DraftCommandHandler> handlerProvider;

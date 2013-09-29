@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveUserCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("removeuser").ofType(CommandTypes.USER_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
+    private final Command handledCommand = CommandBuilder.forCommand("removeuser").ofType(CommandTypes.USER_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveUserCommandHandler> handlerProvider;

@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class SetGeneralsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("setgenerals").ofType(CommandTypes.PROVINCE_MANAGEMENT).build();
+    private final Command handledCommand = CommandBuilder.forCommand("setgenerals").ofType(CommandTypes.PROVINCE_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetGeneralsCommandHandler> handlerProvider;

@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class UnclaimCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandBuilder.forCommand("unclaim").ofType(CommandTypes.TARGETS).build();
+    private final Command handledCommand = CommandBuilder.forCommand("unclaim").ofType(CommandTypes.TARGETS).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<UnclaimCommandHandler> handlerProvider;

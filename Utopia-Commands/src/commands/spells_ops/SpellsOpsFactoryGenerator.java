@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static api.tools.text.StringUtil.lowerCase;
+
 @Singleton
 public class SpellsOpsFactoryGenerator implements DynamicCommandHandlerFactoryGenerator {
     private final List<Command> handledCommands = new ArrayList<>();
@@ -66,14 +68,14 @@ public class SpellsOpsFactoryGenerator implements DynamicCommandHandlerFactoryGe
         for (OpType opType : commonEntitiesAccess
                 .getOpTypesNotLike(SpellOpCharacter.OTHER, SpellOpCharacter.SELF_SPELLOP, SpellOpCharacter.INSTANT_SELF_SPELLOP)) {
             final String name = opType.getShortName() == null ? opType.getName() : opType.getShortName();
-            command = CommandBuilder.forCommand(name).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
-                    withHelpText("Used for adding " + opType.getName()).build();
+            command = CommandBuilder.forCommand(lowerCase(name)).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
+                    withHelpText("Used for adding " + opType.getName()).withNonDowngradableAccessLevel().build();
             handledCommands.add(command);
         }
         for (SpellType spellType : commonEntitiesAccess
                 .getSpellTypesNotLike(SpellOpCharacter.OTHER, SpellOpCharacter.SELF_SPELLOP, SpellOpCharacter.INSTANT_SELF_SPELLOP)) {
             final String name = spellType.getShortName() == null ? spellType.getName() : spellType.getShortName();
-            command = CommandBuilder.forCommand(name).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
+            command = CommandBuilder.forCommand(lowerCase(name)).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
                     withHelpText("Used for adding " + spellType.getName()).build();
             handledCommands.add(command);
         }

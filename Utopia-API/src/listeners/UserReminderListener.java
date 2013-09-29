@@ -77,6 +77,7 @@ public class UserReminderListener implements EventListener {
                 @Override
                 public void run(final DelayedEventPoster delayedEventBus) {
                     BotUser user = context.getBotUser();
+                    if (user == null) return;
                     UserActivities userActivities = userActivitiesDAO.getUserActivities(user);
 
                     List<UnseenInfo> infoList = recentActivitiesFinder.mapUnseenActivities(user, userActivities, activityTypes, false);
