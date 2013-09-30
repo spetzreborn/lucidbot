@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.templates.TemplateManager;
@@ -41,14 +43,20 @@ import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import spi.events.EventListener;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class SpellAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<SpellDAO> spellDAOProvider;
 
     @Inject
-    public SpellAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
+    public SpellAddedAnnouncer(final TemplateManager templateManager,
+                               final IRCEntityManager ircEntityManager,
+                               final IRCAccess ircAccess,
                                final Provider<SpellDAO> spellDAOProvider) {
         super(templateManager, ircEntityManager, ircAccess);
         this.spellDAOProvider = spellDAOProvider;
@@ -56,16 +64,20 @@ public class SpellAddedAnnouncer extends AbstractAnnouncer implements EventListe
 
     @Subscribe
     public void onDurationSpellAdded(final DurationSpellRegisteredEvent event) {
-        try {
-            DurationSpell durationSpell = spellDAOProvider.get().getDurationSpell(event.getDurationSpellId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    DurationSpell durationSpell = spellDAOProvider.get().getDurationSpell(event.getDurationSpellId());
 
-            if (durationSpell != null) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("spell", durationSpell),
-                        "announcement-duration-spell-cast");
-                announce(ChannelType.PRIVATE, output);
-            } else log.warn("Duration spell was not found in database when it was going to be announced");
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+                    if (durationSpell != null) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("spell", durationSpell), "announcement-duration-spell-cast");
+                        announce(ChannelType.PRIVATE, output);
+                    } else log.warn("Duration spell was not found in database when it was going to be announced");
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
+            }
+        });
     }
 }

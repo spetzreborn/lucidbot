@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -43,16 +45,23 @@ import org.hibernate.HibernateException;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class AidAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<AidDAO> aidDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public AidAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                             final Provider<AidDAO> aidDAOProvider, final PropertiesCollection properties) {
+    public AidAddedAnnouncer(final TemplateManager templateManager,
+                             final IRCEntityManager ircEntityManager,
+                             final IRCAccess ircAccess,
+                             final Provider<AidDAO> aidDAOProvider,
+                             final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.aidDAOProvider = aidDAOProvider;
         this.properties = properties;
@@ -60,16 +69,21 @@ public class AidAddedAnnouncer extends AbstractAnnouncer implements EventListene
 
     @Subscribe
     public void onAidAdded(final AidAddedEvent event) {
-        try {
-            Aid aid = aidDAOProvider.get().getAid(event.getAidId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Aid aid = aidDAOProvider.get().getAid(event.getAidId());
 
-            if (aid != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("aid", aid), "announcement-aid-added");
-                announce(ChannelType.PRIVATE, output);
+                    if (aid != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("aid", aid), "announcement-aid-added");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

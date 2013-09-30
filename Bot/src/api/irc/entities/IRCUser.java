@@ -107,15 +107,6 @@ public final class IRCUser implements IRCEntity, HasName {
         return mainNick.get();
     }
 
-    /**
-     * Sets the user's main nick
-     *
-     * @param mainNick the main nick to set
-     */
-    public void setMainNick(final String mainNick) {
-        this.mainNick.set(checkNotNull(mainNick));
-    }
-
     @Override
     public String getName() {
         return currentNick.get();

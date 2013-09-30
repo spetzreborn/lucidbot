@@ -29,8 +29,8 @@ package database.daos;
 
 import api.database.AbstractDAO;
 import api.database.NestedCriterion;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.settings.PropertiesCollection;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
@@ -44,6 +44,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -51,6 +52,7 @@ import static tools.UtopiaPropertiesConfig.INTRA_KD_LOC;
 import static tools.UtopiaPropertiesConfig.TIMERS_ANNOUNCE_ENEMY_ARMIES;
 
 @Log4j
+@ParametersAreNonnullByDefault
 public class ArmyDAO extends AbstractDAO<Army> {
     private final PropertiesCollection properties;
     private final KingdomDAO kingdomDAO;
@@ -114,18 +116,18 @@ public class ArmyDAO extends AbstractDAO<Army> {
             List<Army> armies = new ArrayList<>(100);
             Collection<Province> provsWithoutIRCArmies = new HashSet<>(kd.getProvinces());
 
-            List<Object> rs = Lists.newArrayList((Object) Restrictions.in("province", kd.getProvinces()),
+            List<Object> restrictionList = Lists.newArrayList((Object) Restrictions.in("province", kd.getProvinces()),
                     Restrictions.eq("type", Army.ArmyType.IRC_ARMY_OUT), Order.asc("returningDate"));
-            if (restrictions != null) Collections.addAll(rs, restrictions);
-            for (Army army : find(rs.toArray())) {
+            if (restrictions != null) Collections.addAll(restrictionList, restrictions);
+            for (Army army : find(restrictionList.toArray())) {
                 provsWithoutIRCArmies.remove(army.getProvince());
                 armies.add(army);
             }
             if (!provsWithoutIRCArmies.isEmpty()) {
-                rs = Lists.newArrayList((Object) Restrictions.in("province", provsWithoutIRCArmies),
+                restrictionList = Lists.newArrayList((Object) Restrictions.in("province", provsWithoutIRCArmies),
                         Restrictions.eq("type", Army.ArmyType.ARMY_OUT), Order.asc("returningDate"));
-                if (restrictions != null) Collections.addAll(rs, restrictions);
-                armies.addAll(find(rs.toArray()));
+                if (restrictions != null) Collections.addAll(restrictionList, restrictions);
+                armies.addAll(find(restrictionList.toArray()));
             }
             Collections.sort(armies);
             return armies;
@@ -217,8 +219,7 @@ public class ArmyDAO extends AbstractDAO<Army> {
         armies.addAll(find(Restrictions.eq("type", Army.ArmyType.IRC_ARMY_OUT)));
         if (includeEnemyArmies) {
             Kingdom kingdom = getKingdom(properties.get(INTRA_KD_LOC));
-            armies.addAll(find(Restrictions.eq("type", Army.ArmyType.ARMY_OUT),
-                    new NestedCriterion("province", new Object[]{Restrictions.ne("kingdom", kingdom)})));
+            armies.addAll(find(Restrictions.eq("type", Army.ArmyType.ARMY_OUT), new NestedCriterion("province", new Object[]{Restrictions.ne("kingdom", kingdom)})));
         }
         return armies;
     }

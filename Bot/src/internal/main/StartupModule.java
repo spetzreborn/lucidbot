@@ -66,8 +66,9 @@ public class StartupModule extends AbstractModule {
         ThreadingManager threadingManager = new ThreadingManager(10);
         bind(ThreadingManager.class).toInstance(threadingManager);
 
-        //Read all .properties files from the current folder and load them into Properties objects
         PropertyConfigurator.configureAndWatch("logging.properties");
+
+        //Read all .properties files from the current folder and load them into Properties objects
         List<Properties> propertiesList = new ArrayList<>();
         Map<String, String> defaultProperties = new HashMap<>();
         PropertiesConfig propertiesConfig = new PropertiesConfig();

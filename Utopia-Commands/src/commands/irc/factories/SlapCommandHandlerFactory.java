@@ -28,6 +28,7 @@
 package commands.irc.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -45,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class SlapCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.BOT, "slap");
+    private final Command handledCommand = CommandBuilder.forCommand("slap").ofType(CommandTypes.BOT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SlapCommandHandler> handlerProvider;
@@ -56,7 +57,7 @@ public class SlapCommandHandlerFactory implements CommandHandlerFactory {
 
         handledCommand.setHelpText("Used for making the bot highlight users based on different criteria");
 
-        ParamParsingSpecification armiesHome = new ParamParsingSpecification("armies_home", "armies home");
+        ParamParsingSpecification armiesHome = new ParamParsingSpecification("armiesHome", "armies home");
         ParamParsingSpecification admins = new ParamParsingSpecification("admins", "admins");
         ParamParsingSpecification all = new ParamParsingSpecification("all", "all|\\*");
         ParamParsingSpecification event = new ParamParsingSpecification("event", Event.EventType.getRegexGroup());

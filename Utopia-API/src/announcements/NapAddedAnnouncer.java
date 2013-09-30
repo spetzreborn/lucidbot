@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.templates.TemplateManager;
@@ -41,14 +43,20 @@ import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import spi.events.EventListener;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class NapAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<KingdomDAO> kingdomDAOProvider;
 
     @Inject
-    public NapAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
+    public NapAddedAnnouncer(final TemplateManager templateManager,
+                             final IRCEntityManager ircEntityManager,
+                             final IRCAccess ircAccess,
                              final Provider<KingdomDAO> kingdomDAOProvider) {
         super(templateManager, ircEntityManager, ircAccess);
         this.kingdomDAOProvider = kingdomDAOProvider;
@@ -56,16 +64,21 @@ public class NapAddedAnnouncer extends AbstractAnnouncer implements EventListene
 
     @Subscribe
     public void onNapAdded(final NapAddedEvent event) {
-        try {
-            Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getKingdomId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Kingdom kingdom = kingdomDAOProvider.get().getKingdom(event.getKingdomId());
 
-            if (kingdom != null) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom), "announcement-nap-added");
-                announce(ChannelType.PRIVATE, output);
-            } else NapAddedAnnouncer.log.warn("Kingdom with id: " + event.getKingdomId() +
-                    " was not in the database, so the NAP could not be announced");
-        } catch (HibernateException e) {
-            NapAddedAnnouncer.log.error("", e);
-        }
+                    if (kingdom != null) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("kingdom", kingdom), "announcement-nap-added");
+                        announce(ChannelType.PRIVATE, output);
+                    } else
+                        NapAddedAnnouncer.log.warn("Kingdom with id: " + event.getKingdomId() + " was not in the database, so the NAP could not be announced");
+                } catch (HibernateException e) {
+                    NapAddedAnnouncer.log.error("", e);
+                }
+            }
+        });
     }
 }

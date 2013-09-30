@@ -28,7 +28,7 @@
 package commands.time.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class TimeCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TIME, "time");
+    private final Command handledCommand = CommandBuilder.forCommand("time").ofType(CommandTypes.TIME).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<TimeCommandHandler> handlerProvider;

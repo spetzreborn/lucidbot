@@ -28,7 +28,7 @@
 package commands.targets.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class FarmsListCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TARGETS, "farmslist");
+    private final Command handledCommand = CommandBuilder.forCommand("farmslist").ofType(CommandTypes.TARGETS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<FarmsListCommandHandler> handlerProvider;

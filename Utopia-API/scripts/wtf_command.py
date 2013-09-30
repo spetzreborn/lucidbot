@@ -3,11 +3,11 @@ import jarray
 import re
 from api.runtime import ServiceLocator
 from api.database.daos import BotUserDAO
-from api.commands import CommandFactory, CommandResponse, CommandParser, ParamParsingSpecification
+from api.commands import CommandBuilder, CommandResponse, CommandParser, ParamParsingSpecification
 
 
 def handles():
-    return CommandFactory.newTypedCommand("lol-commands", "wtf") #first argument is the command type, the second is the name of the command
+    return CommandBuilder.forCommand("wtf").ofType("lol-commands").build()
 
 
 def getParsers():

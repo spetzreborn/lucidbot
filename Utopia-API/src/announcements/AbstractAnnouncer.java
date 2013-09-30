@@ -33,15 +33,17 @@ import api.irc.IRCFormatting;
 import api.irc.communication.IRCAccess;
 import api.irc.entities.IRCChannel;
 import api.templates.TemplateManager;
-import api.tools.text.StringUtil;
 import lombok.extern.log4j.Log4j;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.Map;
 
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
+import static api.tools.text.StringUtil.splitOnEndOfLine;
 
 @Log4j
+@ParametersAreNonnullByDefault
 public class AbstractAnnouncer {
     private final TemplateManager templateManager;
     private final IRCEntityManager ircEntityManager;
@@ -57,7 +59,7 @@ public class AbstractAnnouncer {
         try {
             templateData.putAll(IRCFormatting.getFormattingOptionsMap());
             String rawOutput = templateManager.processTemplate(templateData, templateName);
-            return StringUtil.splitOnEndOfLine(rawOutput);
+            return splitOnEndOfLine(rawOutput);
         } catch (IOException | TemplateManager.TemplateProcessingException e) {
             log.error("Could not process template for announcement", e);
         }
@@ -67,6 +69,7 @@ public class AbstractAnnouncer {
     //TODO FUTURE allow config of channel type
     protected void announce(final ChannelType channelType, final String... output) {
         if (output == null) return;
+
         for (IRCChannel channel : ircEntityManager.getChannels()) {
             if (channel.getType() == channelType) {
                 for (String line : output) {
@@ -78,6 +81,7 @@ public class AbstractAnnouncer {
 
     protected void announce(final String channel, final String... output) {
         if (output == null) return;
+
         IRCChannel ircChannel = ircEntityManager.getChannel(channel);
         if (ircChannel != null) {
             for (String line : output) {

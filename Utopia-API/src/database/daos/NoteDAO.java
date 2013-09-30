@@ -28,8 +28,8 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Note;
 import org.hibernate.Session;
@@ -37,12 +37,14 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import tools.BindingsManager;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class NoteDAO extends AbstractDAO<Note> {
     @Inject
     protected NoteDAO(final Provider<Session> sessionProvider) {

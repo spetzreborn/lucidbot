@@ -28,7 +28,7 @@
 package commands.bot.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -46,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class LinkCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.BOT, "link");
+    private final Command handledCommand = CommandBuilder.forCommand("link").ofType(CommandTypes.BOT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<LinkCommandHandler> handlerProvider;

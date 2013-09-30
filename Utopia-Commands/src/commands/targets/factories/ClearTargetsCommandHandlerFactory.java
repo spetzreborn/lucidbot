@@ -28,9 +28,10 @@
 package commands.targets.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.targets.handlers.ClearTargetsCommandHandler;
@@ -45,7 +46,7 @@ import java.util.List;
 
 @Singleton
 public class ClearTargetsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.TARGETS, "cleartargets");
+    private final Command handledCommand = CommandBuilder.forCommand("cleartargets").ofType(CommandTypes.TARGETS).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ClearTargetsCommandHandler> handlerProvider;

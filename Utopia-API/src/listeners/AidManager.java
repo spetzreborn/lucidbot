@@ -27,7 +27,7 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.StartupEvent;
 import api.irc.communication.IRCAccess;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 /**
  * Manages aid, meaning it takes care of loading timers for any aid requests with expiry dates on startup, and also

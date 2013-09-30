@@ -27,7 +27,6 @@
 
 package api.filters;
 
-import api.tools.text.StringUtil;
 import spi.filters.Filter;
 import spi.filters.FilterBuilder;
 
@@ -39,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static api.tools.text.StringUtil.splitOnComma;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -71,7 +71,8 @@ public final class FilterParser {
         String cleaned = checkNotNull(text);
         if (cleaned.startsWith("[")) cleaned = cleaned.substring(1);
         if (cleaned.endsWith("]")) cleaned = cleaned.substring(0, cleaned.length() - 1);
-        String[] split = StringUtil.splitOnComma(cleaned);
+
+        String[] split = splitOnComma(cleaned);
         List<Filter<?>> filters = new ArrayList<>(split.length);
         for (String s : split) {
             for (FilterBuilder builder : filterBuilders) {

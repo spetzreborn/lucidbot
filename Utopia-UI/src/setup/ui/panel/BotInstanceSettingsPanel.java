@@ -27,11 +27,11 @@
 
 package setup.ui.panel;
 
-import api.database.SimpleTransactionTask;
 import api.database.daos.BotInstanceSettingsDAO;
 import api.database.daos.ChannelDAO;
 import api.database.models.BotInstanceSettings;
 import api.database.models.Channel;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
@@ -47,7 +47,7 @@ import setup.tools.VaadinUtil;
 import javax.inject.Inject;
 import java.util.*;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static setup.tools.VaadinUtil.validate;
 
 public class BotInstanceSettingsPanel extends VerticalLayout {

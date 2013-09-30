@@ -28,7 +28,7 @@
 package commands.activity.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SeenCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.ACTIVITY, "seen");
+    private final Command handledCommand = CommandBuilder.forCommand("seen").ofType(CommandTypes.ACTIVITY).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SeenCommandHandler> handlerProvider;

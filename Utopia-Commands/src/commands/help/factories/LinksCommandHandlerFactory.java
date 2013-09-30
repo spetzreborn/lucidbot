@@ -28,7 +28,7 @@
 package commands.help.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class LinksCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.HELP, "links");
+    private final Command handledCommand = CommandBuilder.forCommand("links").ofType(CommandTypes.HELP).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<LinksCommandHandler> handlerProvider;

@@ -31,11 +31,13 @@ import api.database.models.AccessLevel;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * A factory class that creates {@link Command} objects
+ * A factory class that creates {@link Command} objects.
+ * <p/>
+ * DEPRECATED AS OF 3.4! Will be removed at some later stage.
+ * Prefer {@link CommandBuilder} instead.
  */
+@Deprecated
 @ParametersAreNonnullByDefault
 public class CommandFactory {
     private CommandFactory() {
@@ -48,8 +50,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newSimpleCommand(final String name) {
-        checkNotNull(name);
-        return new Command().setName(name).setTemplateFile(name + ".ftl");
+        return CommandBuilder.forCommand(name).build();
     }
 
     /**
@@ -59,7 +60,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newSimpleAdminCommand(final String name) {
-        return newSimpleCommand(name).setRequiredAccessLevel(AccessLevel.ADMIN);
+        return CommandBuilder.forCommand(name).requiringAccessLevel(AccessLevel.ADMIN).build();
     }
 
     /**
@@ -69,7 +70,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newSimplePublicCommand(final String name) {
-        return newSimpleCommand(name).setRequiredAccessLevel(AccessLevel.PUBLIC);
+        return CommandBuilder.forCommand(name).requiringAccessLevel(AccessLevel.PUBLIC).build();
     }
 
     /**
@@ -80,7 +81,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newTypedCommand(final String type, final String name) {
-        return newSimpleCommand(name).setCommandType(type);
+        return CommandBuilder.forCommand(name).ofType(type).build();
     }
 
     /**
@@ -91,7 +92,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newTypedAdminCommand(final String type, final String name) {
-        return newTypedCommand(type, name).setRequiredAccessLevel(AccessLevel.ADMIN);
+        return CommandBuilder.forCommand(name).ofType(type).requiringAccessLevel(AccessLevel.ADMIN).build();
     }
 
     /**
@@ -102,6 +103,7 @@ public class CommandFactory {
      * @return a new Command
      */
     public static Command newTypedPublicCommand(final String type, final String name) {
-        return newTypedCommand(type, name).setRequiredAccessLevel(AccessLevel.PUBLIC);
+        return CommandBuilder.forCommand(name).ofType(type).requiringAccessLevel(AccessLevel.PUBLIC).build();
     }
+
 }

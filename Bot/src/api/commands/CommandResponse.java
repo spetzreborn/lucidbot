@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -54,6 +55,7 @@ public class CommandResponse {
      */
     public static CommandResponse resultResponse(final Object... objects) {
         checkNotNull(objects);
+        checkArgument(objects.length % 2 == 0, "Number of parameters isn't an even value");
         return new CommandResponse(MapFactory.newMapWithNamedObjects(objects));
     }
 
@@ -99,7 +101,7 @@ public class CommandResponse {
     }
 
     public boolean isEmpty() {
-        return storage.isEmpty();
+        return storage.isEmpty() && !isError();
     }
 
     public boolean containsKey(final String key) {

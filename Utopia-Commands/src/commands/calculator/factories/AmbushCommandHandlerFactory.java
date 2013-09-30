@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class AmbushCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TOOLS, "ambush");
+    private final Command handledCommand = CommandBuilder.forCommand("ambush").ofType(CommandTypes.TOOLS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AmbushCommandHandler> handlerProvider;

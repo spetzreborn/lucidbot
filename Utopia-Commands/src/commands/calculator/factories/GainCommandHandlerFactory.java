@@ -28,6 +28,7 @@
 package commands.calculator.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class GainCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedPublicCommand(CommandTypes.TOOLS, "gain");
+    private final Command handledCommand = CommandBuilder.forCommand("gain").ofType(CommandTypes.TOOLS).requiringAccessLevel(AccessLevel.PUBLIC).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<GainCommandHandler> handlerProvider;

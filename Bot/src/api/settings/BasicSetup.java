@@ -30,7 +30,7 @@ package api.settings;
 import java.lang.annotation.*;
 
 /**
- * Marks that a module is part of the basic setup, meaning other modules depends on this module, but it has no dependencies on it's own
+ * Marks that a module is part of the basic setup, meaning other modules depends on this module, but it has no external dependencies of it's own
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

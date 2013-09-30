@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class SoSCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.INTEL, "sos");
+    private final Command handledCommand = CommandBuilder.forCommand("sos").ofType(CommandTypes.INTEL).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SoSCommandHandler> handlerProvider;

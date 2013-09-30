@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class WPACalcCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TOOLS, "wpacalc");
+    private final Command handledCommand = CommandBuilder.forCommand("wpacalc").ofType(CommandTypes.TOOLS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<WPACalcCommandHandler> handlerProvider;

@@ -27,8 +27,8 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.runtime.ThreadingManager;
 import com.google.common.eventbus.Subscribe;
@@ -45,7 +45,7 @@ import tools.communication.NotificationDeliverer;
 import javax.inject.Inject;
 import java.util.Collection;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 class ReturningArmiesListener implements EventListener {

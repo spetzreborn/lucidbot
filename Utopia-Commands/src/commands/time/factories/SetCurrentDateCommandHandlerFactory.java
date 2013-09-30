@@ -28,9 +28,10 @@
 package commands.time.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.time.handlers.SetCurrentDateCommandHandler;
@@ -46,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class SetCurrentDateCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.TIME, "setcurrentdate");
+    private final Command handledCommand = CommandBuilder.forCommand("setcurrentdate").ofType(CommandTypes.TIME).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetCurrentDateCommandHandler> handlerProvider;

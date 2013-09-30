@@ -27,9 +27,9 @@
 
 package web.resources;
 
-import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.timers.Timer;
 import api.timers.TimerManager;
 import com.google.common.base.Supplier;

@@ -27,7 +27,7 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.StartupEvent;
 import api.runtime.IRCContext;
@@ -49,7 +49,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.concurrent.TimeUnit;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static tools.UtopiaPropertiesConfig.TIMERS_ANNOUNCE_ENEMY_ARMIES;
 
 /**

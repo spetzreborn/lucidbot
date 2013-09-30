@@ -25,10 +25,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.models;
 
-import api.events.DelayedEventPoster;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-public interface CallableTransactionTask<E> {
-    E call(DelayedEventPoster delayedEventPoster) throws Exception;
+import javax.persistence.*;
+import java.io.Serializable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@Entity
+@Table(name = "botinstancesettings_channel")
+@NoArgsConstructor
+@EqualsAndHashCode(of = "pk")
+public class BotInstanceSettingsChannel {
+    @Id
+    private PK pk;
+
+    public BotInstanceSettingsChannel(final BotInstanceSettings settings, final Channel channel) {
+        this.pk = new PK(checkNotNull(settings), checkNotNull(channel));
+    }
+
+    public BotInstanceSettings getSettings() {
+        return pk.getSettings();
+    }
+
+    public Channel getChannel() {
+        return pk.getChannel();
+    }
+
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @EqualsAndHashCode(of = {"settings", "channel"})
+    public static class PK implements Serializable {
+        @ManyToOne(optional = false)
+        @JoinColumn(name = "settings_id", nullable = false, updatable = false)
+        @OnDelete(action = OnDeleteAction.CASCADE)
+        private BotInstanceSettings settings;
+        @ManyToOne(optional = false)
+        @JoinColumn(name = "channel_id", nullable = false, updatable = false)
+        @OnDelete(action = OnDeleteAction.CASCADE)
+        private Channel channel;
+    }
 }

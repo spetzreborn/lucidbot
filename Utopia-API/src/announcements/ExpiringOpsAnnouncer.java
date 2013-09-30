@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -44,17 +46,24 @@ import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 import tools.time.UtopiaTime;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class ExpiringOpsAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<OpDAO> opDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public ExpiringOpsAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                                final Provider<OpDAO> opDAOProvider, final PropertiesCollection properties) {
+    public ExpiringOpsAnnouncer(final TemplateManager templateManager,
+                                final IRCEntityManager ircEntityManager,
+                                final IRCAccess ircAccess,
+                                final Provider<OpDAO> opDAOProvider,
+                                final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.opDAOProvider = opDAOProvider;
         this.properties = properties;
@@ -62,17 +71,22 @@ public class ExpiringOpsAnnouncer extends AbstractAnnouncer implements EventList
 
     @Subscribe
     public void onTick(final TickEvent event) {
-        try {
-            UtopiaTime nextTick = event.getUtoDate().increment(1);
-            List<DurationOp> ops = opDAOProvider.get().deleteDurationOps(nextTick.getDate());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    UtopiaTime nextTick = event.getUtoDate().increment(1);
+                    List<DurationOp> ops = opDAOProvider.get().deleteDurationOps(nextTick.getDate());
 
-            if (isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("ops", ops), "announcement-expiring-ops");
-                announce(ChannelType.PRIVATE, output);
+                    if (isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("ops", ops), "announcement-expiring-ops");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

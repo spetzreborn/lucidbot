@@ -33,6 +33,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Entity
 @Table(name = "alias")
 @NoArgsConstructor
@@ -58,8 +60,8 @@ public final class Alias implements Comparable<Alias>, HasNumericId {
     private String description;
 
     public Alias(final String alias, final String transform, final String description) {
-        this.alias = alias;
-        this.transform = transform;
+        this.alias = checkNotNull(alias);
+        this.transform = checkNotNull(transform);
         this.description = description;
     }
 

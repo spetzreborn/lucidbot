@@ -25,12 +25,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.transactions;
 
-@SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
-public abstract class AbstractDatabaseUpdater implements DatabaseUpdater {
-    @Override
-    public int compareTo(final DatabaseUpdater o) {
-        return Integer.compare(updatesToVersion(), o.updatesToVersion());
-    }
+import java.lang.annotation.*;
+
+/**
+ * Marks a method as one that wants to participate in a transaction
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Transactional {
+    /**
+     * @return true if the session should only be flushed on commit
+     */
+    boolean flushOnlyOnCommit() default false;
 }

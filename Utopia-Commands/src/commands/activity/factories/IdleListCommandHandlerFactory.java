@@ -28,7 +28,7 @@
 package commands.activity.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class IdleListCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.ACTIVITY, "idlelist");
+    private final Command handledCommand = CommandBuilder.forCommand("idlelist").ofType(CommandTypes.ACTIVITY).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<IdleListCommandHandler> handlerProvider;

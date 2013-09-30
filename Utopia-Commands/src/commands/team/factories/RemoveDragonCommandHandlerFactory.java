@@ -28,9 +28,10 @@
 package commands.team.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RemoveDragonCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "removedragon");
+    private final Command handledCommand = CommandBuilder.forCommand("removedragon").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveDragonCommandHandler> handlerProvider;

@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -42,16 +44,23 @@ import lombok.extern.log4j.Log4j;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class ArmyAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<ArmyDAO> armyDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public ArmyAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                              final Provider<ArmyDAO> armyDAOProvider, final PropertiesCollection properties) {
+    public ArmyAddedAnnouncer(final TemplateManager templateManager,
+                              final IRCEntityManager ircEntityManager,
+                              final IRCAccess ircAccess,
+                              final Provider<ArmyDAO> armyDAOProvider,
+                              final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.armyDAOProvider = armyDAOProvider;
         this.properties = properties;
@@ -59,16 +68,21 @@ public class ArmyAddedAnnouncer extends AbstractAnnouncer implements EventListen
 
     @Subscribe
     public void onArmyAdded(final ArmyAddedEvent event) {
-        try {
-            Army army = armyDAOProvider.get().getArmy(event.getArmyId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Army army = armyDAOProvider.get().getArmy(event.getArmyId());
 
-            if (army != null && isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("army", army), "announcement-army-added");
-                announce(ChannelType.PRIVATE, output);
-            } else log.warn("Army with id: " + event.getArmyId() + " was not in the database, so it could not be announced");
-        } catch (Exception e) {
-            ArmyAddedAnnouncer.log.error("", e);
-        }
+                    if (army != null && isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("army", army), "announcement-army-added");
+                        announce(ChannelType.PRIVATE, output);
+                    } else log.warn("Army with id: " + event.getArmyId() + " was not in the database, so it could not be announced");
+                } catch (Exception e) {
+                    ArmyAddedAnnouncer.log.error("", e);
+                }
+            }
+        });
     }
 
     private boolean isEnabled() {

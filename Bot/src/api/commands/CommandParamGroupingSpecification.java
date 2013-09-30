@@ -39,8 +39,8 @@ public enum CommandParamGroupingSpecification {
      */
     OPTIONAL {
         @Override
-        public StringBuilder appendGroup(final StringBuilder builder, final String regex) {
-            return builder.append("(?:(").append(regex).append(')').append("(?:\\s+|$))").append('?');
+        public StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex) {
+            return builder.append("(?:(?<").append(paramName).append('>').append(regex).append(')').append("(?:\\s+|$))").append('?');
         }
 
         @Override
@@ -53,8 +53,8 @@ public enum CommandParamGroupingSpecification {
      */
     REPEAT {
         @Override
-        public StringBuilder appendGroup(final StringBuilder builder, final String regex) {
-            return builder.append("((?:(?:").append(regex).append(')').append("(?:\\s+|$))+").append(')');
+        public StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex) {
+            return builder.append("(?<").append(paramName).append(">(?:(?:").append(regex).append(')').append("(?:\\s+|$))+").append(')');
         }
 
         @Override
@@ -67,8 +67,8 @@ public enum CommandParamGroupingSpecification {
      */
     OPTIONAL_REPEAT {
         @Override
-        public StringBuilder appendGroup(final StringBuilder builder, final String regex) {
-            return builder.append("((?:(?:").append(regex).append(')').append("(?:\\s*|$))*").append(')');
+        public StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex) {
+            return builder.append("(?<").append(paramName).append(">(?:(?:").append(regex).append(')').append("(?:\\s*|$))*").append(')');
         }
 
         @Override
@@ -81,8 +81,8 @@ public enum CommandParamGroupingSpecification {
      */
     REGULAR {
         @Override
-        public StringBuilder appendGroup(final StringBuilder builder, final String regex) {
-            return builder.append('(').append(regex).append(')').append("(?:\\s+|$)");
+        public StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex) {
+            return builder.append("(?<").append(paramName).append('>').append(regex).append(')').append("(?:\\s+|$)");
         }
 
         @Override
@@ -101,7 +101,7 @@ public enum CommandParamGroupingSpecification {
      * @param regex   the regex to append
      * @return the same StringBuilder that was sent in, with the regex appended according to this spec
      */
-    public abstract StringBuilder appendGroup(final StringBuilder builder, final String regex);
+    public abstract StringBuilder appendGroup(final StringBuilder builder, final String paramName, final String regex);
 
     /**
      * Visualizes this spec, meaning it decorates the specified String to make it clear what that String

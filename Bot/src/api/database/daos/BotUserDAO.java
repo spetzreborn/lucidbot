@@ -28,9 +28,9 @@
 package api.database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.BotUser;
 import api.database.models.Nickname;
+import api.database.transactions.Transactional;
 import api.settings.PropertiesCollection;
 import com.google.inject.Provider;
 import org.hibernate.Session;

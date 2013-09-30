@@ -28,8 +28,9 @@
 package commands.management.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
+import api.database.models.AccessLevel;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.management.handlers.RemoveWaveCommandHandler;
@@ -44,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveWaveCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "removewave");
+    private final Command handledCommand = CommandBuilder.forCommand("removewave").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveWaveCommandHandler> handlerProvider;

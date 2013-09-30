@@ -27,8 +27,8 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.communication.IRCAccess;
 import api.runtime.ThreadingManager;
@@ -48,7 +48,7 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.Set;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static api.tools.text.StringUtil.prettifyEnumName;
 
 /**
@@ -78,6 +78,7 @@ class NewDragonActionsListener implements EventListener {
                     public void run(final DelayedEventPoster delayedEventPoster) {
                         try {
                             BotUser botUser = event.getContext().getBotUser();
+                            if (botUser == null) return;
                             botUser.getStats(); //make sure they get loaded (Hibernate was whining for some reason)
 
                             String reply = registerDragonAction(event.getProjectType(), botUser, event.getContribution());

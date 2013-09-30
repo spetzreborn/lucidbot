@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -40,15 +42,22 @@ import events.TickEvent;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
+@ParametersAreNonnullByDefault
 public class TickAnnouncer extends AbstractAnnouncer implements EventListener {
     private final PropertiesCollection properties;
     private final TickChannelMessageDAO channelMessageDAO;
 
     @Inject
-    public TickAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                         final PropertiesCollection properties, final TickChannelMessageDAO channelMessageDAO) {
+    public TickAnnouncer(final TemplateManager templateManager,
+                         final IRCEntityManager ircEntityManager,
+                         final IRCAccess ircAccess,
+                         final PropertiesCollection properties,
+                         final TickChannelMessageDAO channelMessageDAO) {
         super(templateManager, ircEntityManager, ircAccess);
         this.properties = properties;
         this.channelMessageDAO = channelMessageDAO;
@@ -56,14 +65,19 @@ public class TickAnnouncer extends AbstractAnnouncer implements EventListener {
 
     @Subscribe
     public void onTick(final TickEvent event) {
-        if (isEnabled()) {
-            String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("utodate", event.getUtoDate()), "announcement-tick");
-            announce(ChannelType.PRIVATE, output);
-            for (TickChannelMessage tickChannelMessage : channelMessageDAO.getAllTickChannelMessages()) {
-                String channelName = tickChannelMessage.getChannel().getName();
-                announce(channelName, tickChannelMessage.getMessage());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                if (isEnabled()) {
+                    String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("utodate", event.getUtoDate()), "announcement-tick");
+                    announce(ChannelType.PRIVATE, output);
+                    for (TickChannelMessage tickChannelMessage : channelMessageDAO.getAllTickChannelMessages()) {
+                        String channelName = tickChannelMessage.getChannel().getName();
+                        announce(channelName, tickChannelMessage.getMessage());
+                    }
+                }
             }
-        }
+        });
     }
 
     private boolean isEnabled() {

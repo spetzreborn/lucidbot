@@ -29,8 +29,8 @@ package api.database.daos;
 
 import api.commands.Command;
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.CommandDefinition;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -85,7 +85,8 @@ public class CommandDefinitionDAO extends AbstractDAO<CommandDefinition> {
             command.setCommandType(def.getCommandType());
             if (def.getHelpText() != null) command.setHelpText(def.getHelpText());
             if (def.getSyntax() != null) command.setSyntax(def.getSyntax());
-            if (def.getAccessLevel() != null) command.setRequiredAccessLevel(def.getAccessLevel());
+            if (def.getAccessLevel() != null && (command.isDowngradableAccessLevel() || def.getAccessLevel().compareTo(command.getOriginalRequiredAccessLevel()) >= 0))
+                command.setRequiredAccessLevel(def.getAccessLevel());
             if (def.getTemplateFile() != null) command.setTemplateFile(def.getTemplateFile());
         }
     }
@@ -99,8 +100,7 @@ public class CommandDefinitionDAO extends AbstractDAO<CommandDefinition> {
     @Transactional
     public CommandDefinition createFromCommand(final Command command) {
         CommandDefinition def = new CommandDefinition(command.getName(), command.getSyntax(), command.getHelpText(),
-                command.getCommandType(), command.getTemplateFile(),
-                command.getRequiredAccessLevel());
+                command.getCommandType(), command.getTemplateFile(), command.getRequiredAccessLevel());
         def = save(def);
         return def;
     }

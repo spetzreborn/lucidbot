@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.transactions;
 
 import api.tools.database.DBUtil;
 import lombok.extern.log4j.Log4j;

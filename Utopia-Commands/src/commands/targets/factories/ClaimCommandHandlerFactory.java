@@ -43,7 +43,7 @@ import java.util.List;
 
 @Singleton
 public class ClaimCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.TARGETS, "claim");
+    private final Command handledCommand = CommandBuilder.forCommand("claim").ofType(CommandTypes.TARGETS).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ClaimCommandHandler> handlerProvider;

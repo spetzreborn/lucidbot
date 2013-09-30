@@ -27,12 +27,12 @@
 
 package web.resources;
 
-import api.database.Transactional;
 import api.database.daos.BotUserDAO;
 import api.database.daos.NicknameDAO;
 import api.database.models.BotUser;
 import api.database.models.Nickname;
 import api.database.models.UserStatistic;
+import api.database.transactions.Transactional;
 import api.events.bot.UserRemovedEvent;
 import api.tools.validation.ValidationEnabled;
 import com.google.common.base.Supplier;

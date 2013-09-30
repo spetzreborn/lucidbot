@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -44,16 +46,23 @@ import org.hibernate.HibernateException;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class EventAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<EventDAO> eventDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public EventAddedAnnouncer(final Provider<EventDAO> eventDAOProvider, final TemplateManager templateManager,
-                               final IRCEntityManager ircEntityManager, final IRCAccess ircAccess, final PropertiesCollection properties) {
+    public EventAddedAnnouncer(final Provider<EventDAO> eventDAOProvider,
+                               final TemplateManager templateManager,
+                               final IRCEntityManager ircEntityManager,
+                               final IRCAccess ircAccess,
+                               final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.eventDAOProvider = eventDAOProvider;
         this.properties = properties;
@@ -61,16 +70,21 @@ public class EventAddedAnnouncer extends AbstractAnnouncer implements EventListe
 
     @Subscribe
     public void onEventAdded(final EventAddedEvent event) {
-        try {
-            Event newEvent = eventDAOProvider.get().getEvent(event.getEventId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Event newEvent = eventDAOProvider.get().getEvent(event.getEventId());
 
-            if (isEventsEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("event", newEvent), "announcement-event-added");
-                announce(ChannelType.PRIVATE, output);
+                    if (isEventsEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("event", newEvent), "announcement-event-added");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    EventAddedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            EventAddedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     private boolean isEventsEnabled() {
@@ -79,16 +93,21 @@ public class EventAddedAnnouncer extends AbstractAnnouncer implements EventListe
 
     @Subscribe
     public void onWaveAdded(final WaveAddedEvent event) {
-        try {
-            Event wave = eventDAOProvider.get().getEvent(event.getWaveId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    Event wave = eventDAOProvider.get().getEvent(event.getWaveId());
 
-            if (isWaveEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("wave", wave), "announcement-wave-added");
-                announce(ChannelType.PRIVATE, output);
+                    if (isWaveEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("wave", wave), "announcement-wave-added");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    EventAddedAnnouncer.log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            EventAddedAnnouncer.log.error("", e);
-        }
+        });
     }
 
     private boolean isWaveEnabled() {

@@ -1,8 +1,7 @@
-import api.commands.CommandFactory
 import api.commands.CommandResponse
 
 def handles() {
-    return CommandFactory.newSimpleCommand("groovy");
+    return CommandBuilder.forCommand("groovy").build();
 }
 
 def handleCommand(context, params, filters, delayedEventPoster) {

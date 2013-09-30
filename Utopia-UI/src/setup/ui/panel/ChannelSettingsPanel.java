@@ -27,10 +27,10 @@
 
 package setup.ui.panel;
 
-import api.database.SimpleTransactionTask;
 import api.database.daos.ChannelDAO;
 import api.database.models.Channel;
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.ValidationType;
 import api.tools.collections.ListUtil;
@@ -48,7 +48,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static setup.tools.VaadinUtil.validate;
 
 public class ChannelSettingsPanel extends VerticalLayout {

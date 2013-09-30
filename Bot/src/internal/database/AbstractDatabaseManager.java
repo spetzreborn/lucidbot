@@ -27,7 +27,11 @@
 
 package internal.database;
 
-import api.database.*;
+import api.database.DBException;
+import api.database.DatabaseManager;
+import api.database.DatabaseState;
+import api.database.updates.DatabaseUpdateAction;
+import api.database.updates.DatabaseUpdater;
 import api.tools.common.CleanupUtil;
 import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
@@ -78,11 +82,10 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
             DatabaseState databaseState = session.doReturningWork(new ReturningWork<DatabaseState>() {
                 @Override
                 public DatabaseState execute(final Connection connection) throws SQLException {
+                    if (databaseIsEmpty(connection)) {
+                        return DatabaseState.CONNECTED_UNINSTALLED_DB;
+                    }
                     try {
-                        if (databaseIsEmpty(connection)) {
-                            return DatabaseState.CONNECTED_UNINSTALLED_DB;
-                        }
-
                         //Transition period thing to make sure the new versions table is created
                         ensureVersionsTableExists(connection, 9);
 
@@ -110,7 +113,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         }
     }
 
-    private boolean databaseIsEmpty(final Connection connection) {
+    private static boolean databaseIsEmpty(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SHOW TABLES");
              ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
@@ -145,7 +148,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         }
     }
 
-    private int getDBVersion(final String artifact, final Connection connection) {
+    private static int getDBVersion(final String artifact, final Connection connection) {
         ResultSet resultSet = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT db_version FROM versions WHERE artifact = ?")) {
             preparedStatement.setString(1, artifact);
@@ -173,7 +176,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
                 }
             });
             session.getTransaction().commit();
-        } catch (HibernateException e) {
+        } catch (final Exception e) {
             session.getTransaction().rollback();
             throw new DBException(e);
         }
@@ -184,7 +187,6 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
 
     @Override
     public void updateSchema() {
-        //Do scripted updates
         Session session = getSession();
         session.beginTransaction();
 
@@ -211,7 +213,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
                         for (Map.Entry<String, Integer> entry : latestArtifactVersions.entrySet()) {
                             updateDBVersion(entry.getKey(), entry.getValue(), connection);
                         }
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException("Failed to run database updates", e);
                     }
                 }
@@ -227,7 +229,7 @@ abstract class AbstractDatabaseManager implements DatabaseManager {
         schemaUpdate.execute(true, true);
     }
 
-    private void updateDBVersion(final String artifact, final long version, final Connection connection) {
+    private static void updateDBVersion(final String artifact, final long version, final Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement("UPDATE versions SET db_version = ? WHERE artifact = ?")) {
             statement.setLong(1, version);
             statement.setString(2, artifact);

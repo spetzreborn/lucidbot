@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.updates;
 
 import api.tools.common.CleanupUtil;
 
@@ -35,6 +35,9 @@ import java.sql.SQLException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A simple database update action. Simply runs a sql clause from the specified string
+ */
 public class SimpleUpdateAction implements DatabaseUpdateAction {
     private final String sql;
 
@@ -44,8 +47,12 @@ public class SimpleUpdateAction implements DatabaseUpdateAction {
 
     @Override
     public void runDatabaseAction(final Connection connection) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.execute();
-        CleanupUtil.closeSilently(statement);
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.execute();
+        } finally {
+            CleanupUtil.closeSilently(statement);
+        }
     }
 }

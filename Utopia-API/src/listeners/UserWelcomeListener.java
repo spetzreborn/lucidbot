@@ -27,9 +27,9 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.daos.BotUserDAO;
 import api.database.models.BotUser;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.UserLoginEvent;
 import api.events.irc.PrivateMessageEvent;
@@ -50,7 +50,7 @@ import spi.events.EventListener;
 import javax.inject.Inject;
 import java.util.List;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
 
 @Log4j

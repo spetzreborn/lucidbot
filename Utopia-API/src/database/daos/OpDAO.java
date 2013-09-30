@@ -28,8 +28,8 @@
 package database.daos;
 
 import api.database.NestedCriterion;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.tools.database.DBUtil;
 import api.tools.text.StringUtil;
 import com.google.inject.Provider;
@@ -39,6 +39,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +48,7 @@ import java.util.List;
 
 import static api.tools.collections.ArrayUtil.isEmpty;
 
-
+@ParametersAreNonnullByDefault
 public class OpDAO {
     private final Provider<Session> sessionProvider;
 

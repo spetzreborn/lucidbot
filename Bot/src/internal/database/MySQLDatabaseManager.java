@@ -27,13 +27,16 @@
 
 package internal.database;
 
-import api.database.DatabaseUpdater;
 import api.database.MySQL;
+import api.database.updates.DatabaseUpdater;
 import api.settings.PropertiesCollection;
+import com.google.common.base.Charsets;
+import com.mysql.jdbc.Driver;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -56,7 +59,7 @@ final class MySQLDatabaseManager extends AbstractDatabaseManager {
         String dbPassword = properties.get(DB_PASSWORD);
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName(Driver.class.getName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Couldn't find database drivers");
         }
@@ -64,15 +67,15 @@ final class MySQLDatabaseManager extends AbstractDatabaseManager {
         configuration.setProperty("hibernate.current_session_context_class", "thread");
         configuration.setProperty("hibernate.flushMode", "COMMIT");
         configuration.setProperty("hibernate.jdbc_batch_size", String.valueOf(15));
-        configuration.setProperty("hibernate.connection.provider_class", "org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider");
+        configuration.setProperty("hibernate.connection.provider_class", C3P0ConnectionProvider.class.getName());
         configuration.setProperty("hibernate.c3p0.timeout", String.valueOf(60));
         configuration.setProperty("hibernate.connection.username", dbUsername);
         configuration.setProperty("hibernate.connection.password", dbPassword);
         configuration.setProperty("hibernate.connection.useUnicode", "true");
-        configuration.setProperty("hibernate.connection.characterEncoding", "UTF-8");
-        configuration.setProperty("hibernate.connection.charSet", "UTF-8");
-        configuration.setProperty("hibernate.dialect", "internal.database.Mysql5CustomDialect");
-        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        configuration.setProperty("hibernate.connection.characterEncoding", Charsets.UTF_8.name());
+        configuration.setProperty("hibernate.connection.charSet", Charsets.UTF_8.name());
+        configuration.setProperty("hibernate.dialect", Mysql5CustomDialect.class.getName());
+        configuration.setProperty("hibernate.connection.driver_class", Driver.class.getName());
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://" + dbHost + '/' + dbName + "?createDatabaseIfNotExist=true&transformedBitIsBoolean=true");
 
         ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();

@@ -29,9 +29,9 @@ package api.commands;
 
 import api.common.HasName;
 import api.database.models.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A class that represents a command that the bot supports
  */
-@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "name")
 @ToString
 @Getter
@@ -62,7 +62,7 @@ public final class Command implements HasName, Comparable<Command> {
      */
     private String helpText = "";
     /**
-     * The type of command this is. Useful for grouping commands together
+     * The type of command this is. Useful for grouping commands together. Defaults to 'unspecified'
      */
     private String commandType = "unspecified";
     /**
@@ -70,28 +70,20 @@ public final class Command implements HasName, Comparable<Command> {
      */
     private AccessLevel requiredAccessLevel = AccessLevel.USER;
     /**
+     * The original access level required to use this command
+     */
+    private AccessLevel originalRequiredAccessLevel = AccessLevel.USER;
+    /**
+     * Whether the required access level may be relaxed from the default. Defaults to true but should be set to false if a command won't work with a lower access level
+     * than what is initially specified. For example, some commands may stop working if the user isn't admin, and so the bot user shouldn't be able
+     * to lower the access level for that command to anything below admin.
+     */
+    private boolean downgradableAccessLevel = true;
+    /**
      * The filename of the file containing the template that specifies how to output the result of this command.
      * Defaults to the command name with the .ftl file extension.
      */
     private String templateFile;
-
-    public Command(final String name,
-                   @Nullable final String syntax,
-                   @Nullable final String helpText,
-                   @Nullable final String commandType,
-                   final AccessLevel requiredAccessLevel) {
-        this.name = checkNotNull(name);
-        this.syntax = syntax;
-        this.helpText = helpText;
-        this.commandType = commandType == null ? null : lowerCase(commandType);
-        this.requiredAccessLevel = checkNotNull(requiredAccessLevel);
-        this.templateFile = lowerCase(name);
-    }
-
-    public Command setName(final String name) {
-        this.name = checkNotNull(name);
-        return this;
-    }
 
     public Command setSyntax(@Nullable final String syntax) {
         this.syntax = syntax;

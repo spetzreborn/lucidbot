@@ -29,18 +29,15 @@ package api.tools.text;
 
 import java.util.regex.Pattern;
 
-public class RegexUtil {
-    public static final Pattern NEW_LINE_PATTERN = Pattern.compile("(?:\r)?\n");
-    public static final Pattern TAB_PATTERN = Pattern.compile("\t");
-    public static final Pattern SPACE_PATTERN = Pattern.compile(" ");
-    public static final Pattern COLON_PATTERN = Pattern.compile(":");
-    public static final Pattern COMMA_PATTERN = Pattern.compile(",");
-    public static final Pattern PERIOD_PATTERN = Pattern.compile("\\.");
-    public static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
-    public static final Pattern TAB_OR_MULTIPLE_SPACES_PATTERN = Pattern.compile("[\t ]{2,}");
-    public static final Pattern NON_NUMBER_PATTERN = Pattern.compile("[^0-9]");
-    public static final Pattern PIPE_PATTERN = Pattern.compile("[|]");
-
-    private RegexUtil() {
-    }
+public interface RegexUtil {
+    static final Pattern NEW_LINE_PATTERN = Pattern.compile("(?:\r)?\n");
+    static final Pattern TAB_PATTERN = Pattern.compile("\t");
+    static final Pattern SPACE_PATTERN = Pattern.compile(" ");
+    static final Pattern COLON_PATTERN = Pattern.compile(":");
+    static final Pattern COMMA_PATTERN = Pattern.compile(",");
+    static final Pattern PERIOD_PATTERN = Pattern.compile("\\.");
+    static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
+    static final Pattern TAB_OR_MULTIPLE_SPACES_PATTERN = Pattern.compile("[\t ]{2,}");
+    static final Pattern NON_NUMBER_PATTERN = Pattern.compile("[^0-9]");
+    static final Pattern PIPE_PATTERN = Pattern.compile("[|]");
 }

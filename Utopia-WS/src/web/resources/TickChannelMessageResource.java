@@ -1,8 +1,8 @@
 package web.resources;
 
-import api.database.Transactional;
 import api.database.daos.ChannelDAO;
 import api.database.models.Channel;
+import api.database.transactions.Transactional;
 import api.tools.validation.ValidationEnabled;
 import com.google.inject.Provider;
 import com.sun.jersey.api.JResponse;

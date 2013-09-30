@@ -162,6 +162,41 @@ class AngelSoTParser implements IntelParser<SoT> {
 
     @Override
     public SoT parse(final String savedBy, final String text) throws Exception {
+        SoT sot = getOrCreateSoT(text);
+        if (sot == null) return null;
+
+        parseHonorTitle(text, sot);
+        parseRaceAndPersonality(text, sot);
+        parseLand(text, sot);
+        parseMoney(text, sot);
+        parseFood(text, sot);
+        parseRunes(text, sot);
+        parsePeasantsAndBE(text, sot);
+        parseTradeBalance(text, sot);
+        parseNetworth(text, sot);
+        parseSoldiers(text, sot);
+        parseOffSpecs(text, sot);
+        parseDefSpecs(text, sot);
+        parseElites(text, sot);
+        parseWarHorses(text, sot);
+        parsePrisoners(text, sot);
+        parseModOffense(text, sot);
+        parseModDefense(text, sot);
+        parseThieves(text, sot);
+        parseWizards(text, sot);
+
+        parsePlague(text, sot);
+        parseOverpopulation(text, sot);
+        parseHit(text, sot);
+        parseDragon(text, sot);
+        parseExportLine(text, sot);
+
+        sot.setSavedBy(savedBy);
+
+        return sot;
+    }
+
+    private SoT getOrCreateSoT(final String text) throws ParseException {
         SoT sot = new SoT();
         sot.setAngelIntel(true);
         Province province;
@@ -193,50 +228,65 @@ class AngelSoTParser implements IntelParser<SoT> {
             sot.setProvince(province);
             province.setLastUpdated(now);
         }
+        return sot;
+    }
 
-        matcher = persAndTitlePattern.matcher(text);
+    private void parseHonorTitle(final String text, final SoT sot) {
+        Matcher matcher = persAndTitlePattern.matcher(text);
         if (matcher.find()) {
-            province.setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(1)));
+            sot.getProvince().setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(1)));
         } else {
             matcher = persAndTitlePatternAlt.matcher(text);
             if (matcher.find()) {
-                province.setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(1)));
+                sot.getProvince().setHonorTitle(commonEntitiesAccess.getHonorTitle(matcher.group(1)));
             } else if (peasantTitlePattern.matcher(text).find()) {
-                province.setHonorTitle(commonEntitiesAccess.getLowestRankingHonorTitle());
+                sot.getProvince().setHonorTitle(commonEntitiesAccess.getLowestRankingHonorTitle());
             }
         }
+    }
 
-        matcher = raceAndPersPattern.matcher(text);
+    private void parseRaceAndPersonality(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = raceAndPersPattern.matcher(text);
         if (matcher.find()) {
-            province.setPersonality(commonEntitiesAccess.getPersonality(matcher.group(1)));
-            province.setRace(commonEntitiesAccess.getRace(matcher.group(2)));
+            sot.getProvince().setPersonality(commonEntitiesAccess.getPersonality(matcher.group(1)));
+            sot.getProvince().setRace(commonEntitiesAccess.getRace(matcher.group(2)));
         } else throw new ParseException("SoT to be parsed does not contain a race and personality", 0);
+    }
 
-        matcher = landPattern.matcher(text);
+    private void parseLand(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = landPattern.matcher(text);
         if (matcher.find()) {
             String land = matcher.group(1).trim();
-            province.setLand(NumberUtil.parseInt(land));
+            sot.getProvince().setLand(NumberUtil.parseInt(land));
         } else throw new ParseException("SoT to be parsed does not contain land", 0);
+    }
 
-        matcher = moneyPattern.matcher(text);
+    private void parseMoney(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = moneyPattern.matcher(text);
         if (matcher.find()) {
             String money = matcher.group(1).trim();
             sot.setMoney(NumberUtil.parseInt(money));
         } else throw new ParseException("SoT to be parsed does not contain gcs", 0);
+    }
 
-        matcher = foodPattern.matcher(text);
+    private void parseFood(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = foodPattern.matcher(text);
         if (matcher.find()) {
             String food = matcher.group(1).trim();
             sot.setFood(NumberUtil.parseInt(food));
         } else throw new ParseException("SoT to be parsed does not contain bushels", 0);
+    }
 
-        matcher = runesPattern.matcher(text);
+    private void parseRunes(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = runesPattern.matcher(text);
         if (matcher.find()) {
             String runes = matcher.group(1).trim();
             sot.setRunes(NumberUtil.parseInt(runes));
         } else throw new ParseException("SoT to be parsed does not contain runes", 0);
+    }
 
-        matcher = peasantsAndBEPattern.matcher(text);
+    private void parsePeasantsAndBE(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = peasantsAndBEPattern.matcher(text);
         if (matcher.find()) {
             String peasants = matcher.group(1);
             String be = matcher.group(2);
@@ -244,113 +294,144 @@ class AngelSoTParser implements IntelParser<SoT> {
             sot.setPeasants(NumberUtil.parseInt(peasants));
             sot.setBuildingEfficiency(NumberUtil.parseInt(be));
         } else throw new ParseException("SoT to be parsed does not contain peasants/BE", 0);
+    }
 
-        matcher = tradeBalancePattern.matcher(text);
+    private void parseTradeBalance(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = tradeBalancePattern.matcher(text);
         if (matcher.find()) {
             String tb = matcher.group(1).trim();
             sot.setTradeBalance(NumberUtil.parseInt(tb));
         } else throw new ParseException("SoT to be parsed does not contain trade balance", 0);
+    }
 
-        matcher = nwPattern.matcher(text);
+    private void parseNetworth(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = nwPattern.matcher(text);
         if (matcher.find()) {
             String nw = matcher.group(1).trim();
-            province.setNetworth(NumberUtil.parseInt(nw));
+            sot.getProvince().setNetworth(NumberUtil.parseInt(nw));
         } else throw new ParseException("SoT to be parsed does not contain networth", 0);
+    }
 
-        matcher = soldiersPattern.matcher(text);
+    private void parseSoldiers(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = soldiersPattern.matcher(text);
         if (matcher.find()) {
             String solds = matcher.group(1).trim();
             sot.setSoldiers(NumberUtil.parseInt(solds));
         } else throw new ParseException("SoT to be parsed does not contain soldiers", 0);
+    }
 
-        matcher = offSpecsPattern.matcher(text);
+    private void parseOffSpecs(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = offSpecsPattern.matcher(text);
         if (matcher.find()) {
             String os = matcher.group(1).trim();
             sot.setOffSpecs(NumberUtil.parseInt(os));
         } else throw new ParseException("SoT to be parsed does not contain off specs", 0);
+    }
 
-        matcher = defSpecsPattern.matcher(text);
+    private void parseDefSpecs(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = defSpecsPattern.matcher(text);
         if (matcher.find()) {
             String ds = matcher.group(1).trim();
             sot.setDefSpecs(NumberUtil.parseInt(ds));
         } else throw new ParseException("SoT to be parsed does not contain def specs", 0);
+    }
 
-        matcher = elitesPattern.matcher(text);
+    private void parseElites(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = elitesPattern.matcher(text);
         if (matcher.find()) {
             String elites = matcher.group(1).trim();
             sot.setElites(NumberUtil.parseInt(elites));
         } else throw new ParseException("SoT to be parsed does not contain elites", 0);
+    }
 
-        matcher = warHorsesPattern.matcher(text);
+    private void parseWarHorses(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = warHorsesPattern.matcher(text);
         if (matcher.find()) {
             String horses = matcher.group(1).trim();
             sot.setWarHorses(NumberUtil.parseInt(horses));
         } else throw new ParseException("SoT to be parsed does not contain war horses", 0);
+    }
 
-        matcher = prisonersPattern.matcher(text);
+    private void parsePrisoners(final String text, final SoT sot) {
+        Matcher matcher = prisonersPattern.matcher(text);
         if (matcher.find()) {
             String prisoners = matcher.group(1).trim();
             sot.setPrisoners(NumberUtil.parseInt(prisoners));
         } else sot.setPrisoners(0);
+    }
 
-        matcher = modOffensePattern.matcher(text);
+    private void parseModOffense(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = modOffensePattern.matcher(text);
         if (matcher.find()) {
             String mo = matcher.group(1).trim();
             sot.setModOffense(NumberUtil.parseInt(mo));
         } else throw new ParseException("SoT to be parsed does not contain mod off", 0);
+    }
 
-        matcher = modDefensePattern.matcher(text);
+    private void parseModDefense(final String text, final SoT sot) throws ParseException {
+        Matcher matcher = modDefensePattern.matcher(text);
         if (matcher.find()) {
             String md = matcher.group(1).trim();
             sot.setModDefense(NumberUtil.parseInt(md));
         } else throw new ParseException("SoT to be parsed does not contain mod defense", 0);
+    }
 
-        matcher = thievesPattern.matcher(text);
+    private void parseThieves(final String text, final SoT sot) {
+        Matcher matcher = thievesPattern.matcher(text);
         if (matcher.find()) {
             String thieves = matcher.group(1).trim();
-            province.setThieves(NumberUtil.parseInt(thieves));
-            province.setStealth(Integer.parseInt(matcher.group(2)));
-            province.setThievesLastUpdated(new Date());
+            sot.getProvince().setThieves(NumberUtil.parseInt(thieves));
+            sot.getProvince().setStealth(Integer.parseInt(matcher.group(2)));
+            sot.getProvince().setThievesLastUpdated(new Date());
         }
+    }
 
-        matcher = wizardsPattern.matcher(text);
+    private void parseWizards(final String text, final SoT sot) {
+        Matcher matcher = wizardsPattern.matcher(text);
         if (matcher.find()) {
             String wizards = matcher.group(1).trim();
-            province.setWizards(NumberUtil.parseInt(wizards));
-            province.setMana(Integer.parseInt(matcher.group(2)));
-            province.setWizardsLastUpdated(new Date());
+            sot.getProvince().setWizards(NumberUtil.parseInt(wizards));
+            sot.getProvince().setMana(Integer.parseInt(matcher.group(2)));
+            sot.getProvince().setWizardsLastUpdated(new Date());
         }
+    }
 
-        matcher = plaguePattern.matcher(text);
+    private void parsePlague(final String text, final SoT sot) {
+        Matcher matcher = plaguePattern.matcher(text);
         sot.setPlagued(matcher.find());
+    }
 
-        matcher = overpopPattern.matcher(text);
+    private void parseOverpopulation(final String text, final SoT sot) {
+        Matcher matcher = overpopPattern.matcher(text);
         sot.setOverpopulated(matcher.find());
+    }
 
-        matcher = hitPattern.matcher(text);
+    private void parseHit(final String text, final SoT sot) {
+        Matcher matcher = hitPattern.matcher(text);
         if (matcher.find()) {
             String hit = matcher.group(1);
             sot.setHitStatus(hit);
         } else sot.setHitStatus("");
+    }
 
+    private void parseDragon(final String text, final SoT sot) {
+        Matcher matcher;
         if (!sot.getRace().isDragonImmune() && !sot.getPersonality().isDragonImmune()) {
             matcher = dragonPattern.matcher(text);
             if (matcher.find()) {
                 Dragon dragon = dragonDAOProvider.get().getDragon(matcher.group("dragon"));
-                province.getKingdom().setDragon(dragon);
+                sot.getProvince().getKingdom().setDragon(dragon);
             } else {
-                province.getKingdom().setDragon(null);
+                sot.getProvince().getKingdom().setDragon(null);
             }
         }
+    }
 
-        matcher = exportLinePattern.matcher(text);
+    private static void parseExportLine(final String text, final SoT sot) {
+        Matcher matcher = exportLinePattern.matcher(text);
         if (matcher.find()) {
             sot.setExportLine(matcher.group(1).trim());
         } else sot.setExportLine(null);
-
-        sot.setSavedBy(savedBy);
-
-        return sot;
     }
 
     @Override

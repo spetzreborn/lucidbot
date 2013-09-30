@@ -58,9 +58,11 @@ public final class ServerCodedCommunication {
     public boolean parseAndHandle(final BotIRCInstance instance, final String rawMessage) {
         Matcher matcher = pattern.matcher(rawMessage);
         if (!matcher.matches()) return false;
+
         int code = Integer.parseInt(matcher.group(1));
         ServerCode type = ServerCode.getFromCode(code);
         if (type == null) return false;
+
         type.fireEvent(eventBus, instance, matcher.group(2));
         return true;
     }

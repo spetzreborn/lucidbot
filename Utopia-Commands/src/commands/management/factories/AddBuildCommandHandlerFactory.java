@@ -28,6 +28,7 @@
 package commands.management.factories;
 
 import api.commands.*;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -47,7 +48,7 @@ import java.util.List;
 
 @Singleton
 public class AddBuildCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.KD_MANAGEMENT, "addbuild");
+    private final Command handledCommand = CommandBuilder.forCommand("addbuild").ofType(CommandTypes.KD_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<AddBuildCommandHandler> handlerProvider;

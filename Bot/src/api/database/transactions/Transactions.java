@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package api.database;
+package api.database.transactions;
 
 import api.events.DelayedEventPoster;
 import com.google.inject.Provider;
@@ -65,7 +65,7 @@ public class Transactions {
         DelayedEventPoster delayedEventBus = delayedEventPosterProvider.get();
         try {
             task.run(delayedEventBus);
-        } catch (final RuntimeException e) {
+        } catch (final Exception e) {
             transactionManager.setEncounteredException(true);
             throw e;
         } finally {

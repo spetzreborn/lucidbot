@@ -44,18 +44,17 @@ import java.io.StringWriter;
 import java.util.*;
 
 import static api.tools.text.StringUtil.isNotNullOrEmpty;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Log4j
 final class TemplateManagerImpl implements TemplateManager {
-    private static final String FILE_ENDING = ".ftl";
-
     private final Configuration cfg;
     private final IRCMessageFactory ircMessageFactory;
 
     @Inject
     TemplateManagerImpl(final Configuration cfg, final IRCMessageFactory ircMessageFactory) {
-        this.cfg = cfg;
-        this.ircMessageFactory = ircMessageFactory;
+        this.cfg = checkNotNull(cfg);
+        this.ircMessageFactory = checkNotNull(ircMessageFactory);
     }
 
     @Override
@@ -89,13 +88,13 @@ final class TemplateManagerImpl implements TemplateManager {
     }
 
     private static String resolveAlternativeTemplateName(final String originalName, final int templateVersion) {
-        int fileEndingIndex = originalName.lastIndexOf(FILE_ENDING);
-        return fileEndingIndex == -1 ? originalName + templateVersion : originalName.substring(0, fileEndingIndex) + templateVersion + FILE_ENDING;
+        int fileEndingIndex = originalName.lastIndexOf(TEMPLATE_FILE_EXTENSION);
+        return fileEndingIndex == -1 ? originalName + templateVersion : originalName.substring(0, fileEndingIndex) + templateVersion + TEMPLATE_FILE_EXTENSION;
     }
 
     @Override
     public String processTemplate(final Map<String, Object> data, final String templateName) throws IOException, TemplateProcessingException {
-        Template template = cfg.getTemplate(templateName.endsWith(FILE_ENDING) ? templateName : templateName + FILE_ENDING);
+        Template template = cfg.getTemplate(templateName.endsWith(TEMPLATE_FILE_EXTENSION) ? templateName : templateName + TEMPLATE_FILE_EXTENSION);
         StringWriter writer = new StringWriter();
 
         data.putAll(IRCFormatting.getFormattingOptionsMap());
@@ -116,8 +115,7 @@ final class TemplateManagerImpl implements TemplateManager {
                 if (groupingMap.containsKey(compoundKey)) {
                     groupingMap.get(compoundKey).addOutput(message);
                 } else {
-                    IRCOutput ircOutput =
-                            message.isHandlingReceiverUsed() ? new IRCOutput(context.getReceiver(), message) : new IRCOutput(message);
+                    IRCOutput ircOutput = message.isHandlingReceiverUsed() ? new IRCOutput(context.getReceiver(), message) : new IRCOutput(message);
                     groupingMap.put(compoundKey, ircOutput);
                 }
             }

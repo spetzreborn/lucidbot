@@ -28,7 +28,7 @@
 package commands.communication.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.irc.ValidationType;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MailCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.COMMUNICATION, "mail");
+    private final Command handledCommand = CommandBuilder.forCommand("mail").ofType(CommandTypes.COMMUNICATION).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<MailCommandHandler> handlerProvider;

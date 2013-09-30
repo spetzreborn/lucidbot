@@ -27,8 +27,14 @@
 
 package internal.database;
 
-import api.database.*;
+import api.database.DatabaseManager;
+import api.database.H2;
+import api.database.HibernateMapped;
+import api.database.MySQL;
 import api.database.models.*;
+import api.database.transactions.TransactionManager;
+import api.database.transactions.Transactional;
+import api.database.transactions.Transactions;
 import api.settings.PropertiesCollection;
 import api.settings.PropertiesConfig;
 import com.google.inject.*;

@@ -27,7 +27,7 @@
 
 package database.updates;
 
-import api.database.DatabaseUpdater;
+import api.database.updates.DatabaseUpdater;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import database.updates.h2.*;

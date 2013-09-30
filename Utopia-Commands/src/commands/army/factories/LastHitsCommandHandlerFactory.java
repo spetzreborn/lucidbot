@@ -44,7 +44,7 @@ import java.util.List;
 
 @Singleton
 public class LastHitsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.MILITARY, "lasthits");
+    private final Command handledCommand = CommandBuilder.forCommand("lasthits").ofType(CommandTypes.MILITARY).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<LastHitsCommandHandler> handlerProvider;

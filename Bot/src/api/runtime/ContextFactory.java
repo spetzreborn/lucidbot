@@ -66,6 +66,7 @@ public final class ContextFactory {
         IRCChannel channel = event.getChannel() == null ? null : entityManager.getChannel(event.getChannel());
         IRCUser user = entityManager.getUser(event.getSender());
         if (user == null) return null;
+
         String input = command == null ? parsedInput : getInputWithoutCommand(checkNotNull(parsedInput));
         return new IRCContext(userDAOProvider, channel, user, command, commandPrefixesUsed, input, event.getMessageType(), event.getReceiver());
     }

@@ -28,7 +28,7 @@
 package commands.forum.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import api.database.models.AccessLevel;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class CreateSectionCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.COMMUNICATION, "createsection");
+    private final Command handledCommand = CommandBuilder.forCommand("createsection").ofType(CommandTypes.COMMUNICATION).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<CreateSectionCommandHandler> handlerProvider;

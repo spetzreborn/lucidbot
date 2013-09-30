@@ -1,7 +1,7 @@
 package database.updates.mysql;
 
-import api.database.DatabaseUpdateAction;
-import api.database.SimpleUpdateAction;
+import api.database.updates.DatabaseUpdateAction;
+import api.database.updates.SimpleUpdateAction;
 import com.google.common.collect.Lists;
 
 public class MySQLUpdateV7ToV8 extends ApiMySQLDatabaseUpdater {

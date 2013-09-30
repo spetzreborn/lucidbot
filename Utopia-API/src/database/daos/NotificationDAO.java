@@ -28,8 +28,8 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Notification;
 import database.models.NotificationMethod;
@@ -37,11 +37,12 @@ import database.models.NotificationType;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
-
+@ParametersAreNonnullByDefault
 public class NotificationDAO extends AbstractDAO<Notification> {
     @Inject
     public NotificationDAO(final Provider<Session> sessionProvider) {

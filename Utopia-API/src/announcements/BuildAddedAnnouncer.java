@@ -27,8 +27,8 @@
 
 package announcements;
 
-import api.database.SimpleTransactionTask;
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
@@ -45,18 +45,23 @@ import org.hibernate.HibernateException;
 import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
+@ParametersAreNonnullByDefault
 public class BuildAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<BuildDAO> buildDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public BuildAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
-                               final Provider<BuildDAO> buildDAOProvider, final PropertiesCollection properties) {
+    public BuildAddedAnnouncer(final TemplateManager templateManager,
+                               final IRCEntityManager ircEntityManager,
+                               final IRCAccess ircAccess,
+                               final Provider<BuildDAO> buildDAOProvider,
+                               final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.buildDAOProvider = buildDAOProvider;
         this.properties = properties;
@@ -71,8 +76,7 @@ public class BuildAddedAnnouncer extends AbstractAnnouncer implements EventListe
                     Build build = buildDAOProvider.get().getBuild(event.getBuildId());
 
                     if (build != null && isEnabled()) {
-                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("build", build),
-                                "announcement-build-added");
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("build", build), "announcement-build-added");
                         announce(ChannelType.PRIVATE, output);
                     }
                 } catch (HibernateException e) {

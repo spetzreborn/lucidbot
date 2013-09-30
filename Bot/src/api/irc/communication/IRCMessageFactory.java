@@ -44,8 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static api.settings.PropertiesConfig.IRC_DEFAULT_PRIORITY;
-import static api.tools.text.StringUtil.isNotNullOrEmpty;
-import static api.tools.text.StringUtil.isNullOrEmpty;
+import static api.tools.text.StringUtil.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -120,18 +119,24 @@ public final class IRCMessageFactory {
      * Parses text and creates IRCMessage instances from what it finds. Mainly supposed to be used to parse from templates
      * <p/>
      * Accepted syntax:
-     * MESSAGE(#somechannel, 3){send this to irc}
-     * ACTION(#somechannel){says weeeeeeeeeeeeeeeee}
-     * MESSAGE(#somechannel){some message to send goes here}
-     * MESSAGE(someuser){this is the same as using PRIVATE_MESSAGE}
-     * NOTICE(#someotherchannel, 42, true){send this to irc too}
-     * PRIVATE_MESSAGE(someusersnick){
+     * <ul>
+     * <li>MESSAGE(#somechannel, 3){send this to irc}</li>
+     * <li>ACTION(#somechannel){says weeeeeeeeeeeeeeeee}</li>
+     * <li>MESSAGE(#somechannel){some message to send goes here}</li>
+     * <li>MESSAGE(someuser){this is the same as using PRIVATE_MESSAGE}</li>
+     * <li>NOTICE(#someotherchannel, 42, true){send this to irc too}</li>
+     * <li>PRIVATE_MESSAGE(someusersnick){
      * send this to irc too
      * and this, with line breaks retained (i.e. it becomes two messages)
-     * }
+     * }</li>
+     * </ul>
      * <p/>
-     * The parameters within () are target (channel or nick, required), priority (1-100, optional) & return (true if
-     * the bot instance that got the message should also return it, false otherwise, optional).
+     * The parameters within () are:
+     * <ol>
+     * <li>target (channel or nick, required)</li>
+     * <li>priority (1-100, optional)</li>
+     * <li>return (true if the bot instance that got the message should also return it, false otherwise, optional)</li>
+     * </ol>
      *
      * @param rawMessage the message to parseAndCreateNewMessages
      * @return a list of all IRCMessages that could be parsed from the specified string
@@ -139,37 +144,48 @@ public final class IRCMessageFactory {
      */
     public List<IRCMessage> parseAndCreateNewMessages(final String rawMessage, final IRCContext context) {
         Matcher matcher = MESSAGE_PATTERN.matcher(checkNotNull(rawMessage));
+
         List<IRCMessage> out = new ArrayList<>();
         while (matcher.find()) {
-            int priority =
-                    isNullOrEmpty(matcher.group("priority")) ? defaultPriority : Integer.parseInt(matcher.group("priority"));
-            out.addAll(newIRCMessages(matcher.group("type"), matcher.group("target"), context, priority,
-                    isNotNullOrEmpty(matcher.group("return")), matcher.group("message")));
+            int priority = isNullOrEmpty(matcher.group("priority")) ? defaultPriority : Integer.parseInt(matcher.group("priority"));
+            List<IRCMessage> parsedMessages = newIRCMessages(matcher.group("type"), matcher.group("target"), context, priority,
+                    isNotNullOrEmpty(matcher.group("return")), matcher.group("message"));
+            out.addAll(parsedMessages);
         }
+
         if (out.isEmpty()) throw new IllegalArgumentException("String cannot be parsed: " + rawMessage);
-        return out;
+        else return out;
     }
 
-    private List<IRCMessage> newIRCMessages(final String type, final String target, final IRCContext context, final Integer priority,
-                                            final boolean useReceivingHandler, final String message) {
-        String[] split = StringUtil.splitOnEndOfLine(message);
+    private List<IRCMessage> newIRCMessages(final String type,
+                                            final String target,
+                                            final IRCContext context,
+                                            final Integer priority,
+                                            final boolean useReceivingHandler,
+                                            final String message) {
+        String[] split = splitOnEndOfLine(message);
         List<IRCMessage> out = new ArrayList<>(split.length);
         for (String line : split) {
             SmartMessageType smartMessageType = SmartMessageType.fromName(type);
-            IRCMessageType messageType =
-                    smartMessageType == null ? IRCMessageType.fromName(type) : smartMessageType.inferMessageType(context);
+            IRCMessageType messageType = smartMessageType == null ? IRCMessageType.fromName(type) : smartMessageType.inferMessageType(context);
+
             if (isNullOrEmpty(target)) {
-                IRCEntity actualTarget =
-                        messageType == IRCMessageType.MESSAGE || messageType == IRCMessageType.ACTION ? context.getChannel()
-                                : context.getUser();
-                out.add(newIRCMessage(messageType, actualTarget, priority, useReceivingHandler, StringUtil.limitedTrim(line)));
-            } else out.add(newIRCMessage(messageType, target, priority, useReceivingHandler, StringUtil.limitedTrim(line)));
+                IRCEntity actualTarget = isMessageOrAction(messageType) ? context.getChannel() : context.getUser();
+                out.add(newIRCMessage(messageType, actualTarget, priority, useReceivingHandler, limitedTrim(line)));
+            } else out.add(newIRCMessage(messageType, target, priority, useReceivingHandler, limitedTrim(line)));
         }
         return out;
     }
 
-    private IRCMessage newIRCMessage(final IRCMessageType type, final String target, final Integer priority,
-                                     final boolean useReceivingHandler, final String message) {
+    private static boolean isMessageOrAction(final IRCMessageType messageType) {
+        return messageType == IRCMessageType.MESSAGE || messageType == IRCMessageType.ACTION;
+    }
+
+    private IRCMessage newIRCMessage(final IRCMessageType type,
+                                     final String target,
+                                     final Integer priority,
+                                     final boolean useReceivingHandler,
+                                     final String message) {
         IRCEntity messageTarget =
                 ValidationType.CHANNEL.matches(target) ? ircEntityManager.getChannel(target) : ircEntityManager.getUser(target);
         return new IRCMessage(type, messageTarget, priority == null ? defaultPriority : priority, message, useReceivingHandler);
@@ -185,8 +201,11 @@ public final class IRCMessageFactory {
      * @param message             the message to send
      * @return a new IRCMessage
      */
-    public IRCMessage newIRCMessage(final IRCMessageType type, final IRCEntity target, @Nullable final Integer priority,
-                                    final boolean useReceivingHandler, final String message) {
+    public IRCMessage newIRCMessage(final IRCMessageType type,
+                                    final IRCEntity target,
+                                    @Nullable final Integer priority,
+                                    final boolean useReceivingHandler,
+                                    final String message) {
         return new IRCMessage(type, target, priority == null ? defaultPriority : priority, message, useReceivingHandler);
     }
 }

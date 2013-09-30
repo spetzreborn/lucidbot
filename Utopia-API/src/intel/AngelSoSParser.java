@@ -68,8 +68,10 @@ class AngelSoSParser implements IntelParser<SoS> {
     private Pattern identifierPattern;
 
     @Inject
-    AngelSoSParser(final CommonEntitiesAccess commonEntitiesAccess, final Provider<ProvinceDAO> provinceDAOProvider,
-                   final EventBus eventBus, final Provider<BotUserDAO> botUserDAOProvider) {
+    AngelSoSParser(final CommonEntitiesAccess commonEntitiesAccess,
+                   final Provider<ProvinceDAO> provinceDAOProvider,
+                   final EventBus eventBus,
+                   final Provider<BotUserDAO> botUserDAOProvider) {
         this.commonEntitiesAccess = commonEntitiesAccess;
         this.provinceDAOProvider = provinceDAOProvider;
         this.botUserDAOProvider = botUserDAOProvider;
@@ -79,8 +81,7 @@ class AngelSoSParser implements IntelParser<SoS> {
     }
 
     private void compilePatterns() {
-        provinceNamePattern = Pattern
-                .compile("Science (?:Intelligence|Intel) on ([^(]+)(" + UtopiaValidationType.KDLOC.getPatternString() + ')');
+        provinceNamePattern = Pattern.compile("Science (?:Intelligence|Intel) on ([^(]+)(" + UtopiaValidationType.KDLOC.getPatternString() + ')');
         Pattern selfSosPattern = Pattern.compile("Science (?:Intelligence|Intel) Formatted Report");
         sciencePercentPattern = Pattern.compile("([0-9.]+)% (" + this.commonEntitiesAccess.getScienceTypeGroup() + ')' +
                 "\\s*\\((" + ValidationType.INT.getPattern() + ") books");
@@ -104,6 +105,27 @@ class AngelSoSParser implements IntelParser<SoS> {
 
     @Override
     public SoS parse(final String savedBy, final String text) throws Exception {
+        SoS sos = getOrCreateSoS(savedBy, text);
+
+        Map<String, ScienceType> sciences = mapScienceTypesToNames();
+
+        Set<SoSEntry> entries = new HashSet<>();
+        parseEffects(text, sos, sciences, entries);
+        parseInProgress(text, sos, sciences, entries);
+        removeNonPresentEntries(sos, entries);
+
+        parseLand(text, sos);
+
+        parseExportLine(text, sos);
+
+        sos.setSavedBy(savedBy);
+        sos.setLastUpdated(new Date());
+        sos.calcTotalBooks();
+
+        return sos;
+    }
+
+    private SoS getOrCreateSoS(final String savedBy, final String text) throws ParseException {
         SoS sos = new SoS();
 
         Matcher matcher = provinceNamePattern.matcher(text);
@@ -122,49 +144,56 @@ class AngelSoSParser implements IntelParser<SoS> {
             if (province.getSos() != null) sos = province.getSos();
             else sos.setProvince(province);
         }
+        return sos;
+    }
 
+    private Map<String, ScienceType> mapScienceTypesToNames() {
         Map<String, ScienceType> sciences = new HashMap<>();
         for (ScienceType type : commonEntitiesAccess.getAllScienceTypes()) {
             sciences.put(type.getName(), type);
             sciences.put(type.getAngelName(), type);
         }
+        return sciences;
+    }
 
-        Set<SoSEntry> entries = new HashSet<>();
-
-        matcher = sciencePercentPattern.matcher(text);
+    private void parseEffects(final String text, final SoS sos, final Map<String, ScienceType> sciences, final Set<SoSEntry> entries) {
+        Matcher matcher = sciencePercentPattern.matcher(text);
         while (matcher.find()) {
             entries.add(registerEntry(sos, SoSEntry.SoSEntryType.BOOKS, sciences.get(matcher.group(2)),
                     NumberUtil.parseDouble(matcher.group(3))));
             entries.add(registerEntry(sos, SoSEntry.SoSEntryType.EFFECT, sciences.get(matcher.group(2)),
                     NumberUtil.parseDouble(matcher.group(1))));
         }
+    }
 
-        matcher = scienceInProgressPattern.matcher(text);
+    private void parseInProgress(final String text, final SoS sos, final Map<String, ScienceType> sciences, final Set<SoSEntry> entries) {
+        Matcher matcher = scienceInProgressPattern.matcher(text);
         while (matcher.find()) {
             entries.add(registerEntry(sos, SoSEntry.SoSEntryType.BOOKS_IN_PROGRESS, sciences.get(matcher.group(1)),
                     NumberUtil.parseDouble(matcher.group(2))));
         }
+    }
 
+    private static void removeNonPresentEntries(final SoS sos, final Set<SoSEntry> entries) {
         for (Iterator<SoSEntry> iter = sos.getSciences().iterator(); iter.hasNext(); ) {
             SoSEntry entry = iter.next();
             if (!entries.contains(entry)) iter.remove();
         }
+    }
 
-        matcher = landPattern.matcher(text);
+    private void parseLand(final String text, final SoS sos) {
+        Matcher matcher = landPattern.matcher(text);
         if (matcher.find()) {
             String land = matcher.group(1).replace(",", "").trim();
             sos.getProvince().setLand(NumberUtil.parseInt(land));
         }
+    }
 
-        matcher = exportLinePattern.matcher(text);
+    private static void parseExportLine(final String text, final SoS sos) {
+        Matcher matcher = exportLinePattern.matcher(text);
         if (matcher.find()) {
             sos.setExportLine(matcher.group(1));
         } else sos.setExportLine(null);
-        sos.setSavedBy(savedBy);
-        sos.setLastUpdated(new Date());
-        sos.calcTotalBooks();
-
-        return sos;
     }
 
     @Override

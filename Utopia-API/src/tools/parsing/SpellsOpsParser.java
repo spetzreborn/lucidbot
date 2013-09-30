@@ -83,7 +83,7 @@ public class SpellsOpsParser implements EventListener {
     @Subscribe
     public void onNonCommandEvent(final NonCommandEvent event) {
         IRCContext context = event.getContext();
-        if (!AccessLevel.USER.allows(context.getUser(), context.getChannel())) return;
+        if (context.getBotUser() == null || !AccessLevel.USER.allows(context.getUser(), context.getChannel())) return;
 
         threadingManager.execute(new Runnable() {
             @Override

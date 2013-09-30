@@ -43,7 +43,7 @@ public class ReflectionUtil {
     }
 
     /**
-     * Invokes a method or sets a field value
+     * Invokes a method or sets a field value. For method names it automatically appends "set" if it isn't already specified.
      *
      * @param obj       the object to do the invoking/setting on
      * @param valueName the name of the value (corresponds to the method or field name)
@@ -53,9 +53,9 @@ public class ReflectionUtil {
      */
     public static <E> boolean setMethodOrFieldValue(final Object obj, final String valueName, final Class<E> valueType, final E value) {
         try {
-            boolean set = setMethodValue(obj, valueName.startsWith("set") ? valueName : "set" + capitalizeFirstLetters(valueName, false),
-                    valueType, value);
-            return set || setFieldValue(obj, valueName, value);
+            boolean set = setMethodValue(obj, valueName.startsWith("set") ? valueName : "set" + capitalizeFirstLetters(valueName, false), valueType, value);
+            if (!set) set = setFieldValue(obj, valueName, value);
+            return set;
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new IllegalArgumentException("Could not set value for that object-valueName-value combination", e);
         }
@@ -65,7 +65,7 @@ public class ReflectionUtil {
      * Invokes a method
      *
      * @param obj       the object to do the invoking on
-     * @param valueName the name of the value (corresponds to the method name)
+     * @param valueName the name of the value (corresponds to the exact method name)
      * @param valueType the type of the value
      * @param value     the actual value
      * @param <E>       .
@@ -112,7 +112,7 @@ public class ReflectionUtil {
      */
     public static Method getMethodWithReturnType(final Class<?> subject, final Class<?> returnType) {
         for (Method method : subject.getDeclaredMethods()) {
-            if (method.getReturnType() == returnType) {
+            if (method.getReturnType().equals(returnType)) {
                 method.setAccessible(true);
                 return method;
             }
@@ -134,7 +134,7 @@ public class ReflectionUtil {
         try {
             Method method = object.getClass().getDeclaredMethod(methodName);
             method.setAccessible(true);
-            if (method.getReturnType() == returnType) {
+            if (method.getReturnType().equals(returnType)) {
                 Object result = method.invoke(object);
                 return result == null ? null : returnType.cast(result);
             }

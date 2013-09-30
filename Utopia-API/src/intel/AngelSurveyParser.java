@@ -105,6 +105,24 @@ class AngelSurveyParser implements IntelParser<Survey> {
 
     @Override
     public Survey parse(final String savedBy, final String text) throws Exception {
+        Survey survey = getOrCreateSurvey(savedBy, text);
+
+        Map<String, Building> buildingsMap = MapFactory.newNameToObjectMapping(commonEntitiesAccess.getAllBuildings());
+
+        Set<SurveyEntry> registeredEntries = new HashSet<>();
+        parseBuilt(text, survey, buildingsMap, registeredEntries);
+        parseInProgress(text, survey, buildingsMap, registeredEntries);
+        handleLandAndRates(text, survey, buildingsMap, registeredEntries);
+
+        parseExportLine(text, survey);
+
+        survey.setSavedBy(savedBy);
+        survey.setLastUpdated(new Date());
+
+        return survey;
+    }
+
+    private Survey getOrCreateSurvey(final String savedBy, final String text) throws ParseException {
         Survey survey = new Survey();
 
         Matcher matcher = provinceNamePattern.matcher(text);
@@ -123,25 +141,31 @@ class AngelSurveyParser implements IntelParser<Survey> {
             if (province.getSurvey() != null) survey = province.getSurvey();
             else survey.setProvince(province);
         }
+        return survey;
+    }
 
-        Map<String, Building> buildingsMap = MapFactory.newNameToObjectMapping(commonEntitiesAccess.getAllBuildings());
-
-        Set<SurveyEntry> registeredEntries = new HashSet<>();
-
-        matcher = buildingsPattern.matcher(text);
+    private void parseBuilt(final String text, final Survey survey, final Map<String, Building> buildingsMap, final Set<SurveyEntry> registeredEntries) {
+        Matcher matcher = buildingsPattern.matcher(text);
         while (matcher.find()) {
             Building building = buildingsMap.get(matcher.group(1));
             int amount = NumberUtil.parseInt(matcher.group(2));
             registeredEntries.add(registerEntry(survey, building, SurveyEntry.SurveyEntryType.BUILT, amount));
         }
+    }
 
-        matcher = buildingsInProgressPattern.matcher(text);
+    private void parseInProgress(final String text, final Survey survey, final Map<String, Building> buildingsMap, final Set<SurveyEntry> registeredEntries) {
+        Matcher matcher = buildingsInProgressPattern.matcher(text);
         while (matcher.find()) {
             Building building = buildingsMap.get(matcher.group(1));
             int amount = NumberUtil.parseInt(matcher.group(3));
             registeredEntries.add(registerEntry(survey, building, SurveyEntry.SurveyEntryType.IN_PROGRESS, amount));
         }
+    }
 
+    private void handleLandAndRates(final String text,
+                                    final Survey survey,
+                                    final Map<String, Building> buildingsMap,
+                                    final Set<SurveyEntry> registeredEntries) {
         Building unknownBuilding = buildingsMap.get("Unknown");
         Building barrenLands = buildingsMap.get("Barren Land");
         for (Iterator<SurveyEntry> iter = survey.getBuildings().iterator(); iter.hasNext(); ) {
@@ -150,7 +174,7 @@ class AngelSurveyParser implements IntelParser<Survey> {
                     !registeredEntries.contains(entry)) iter.remove();
         }
 
-        matcher = totalLandPattern.matcher(text);
+        Matcher matcher = totalLandPattern.matcher(text);
         boolean landPatternFound = matcher.find();
         int known = 0;
         for (SurveyEntry entry : survey.getBuildings()) {
@@ -170,15 +194,13 @@ class AngelSurveyParser implements IntelParser<Survey> {
         if (totalLand - known > 0) {
             registerEntry(survey, unknownBuilding, SurveyEntry.SurveyEntryType.IN_PROGRESS, totalLand - known);
         } else removeEntryWithBuilding(survey, unknownBuilding);
+    }
 
-        matcher = exportLinePattern.matcher(text);
+    private static void parseExportLine(final String text, final Survey survey) {
+        Matcher matcher = exportLinePattern.matcher(text);
         if (matcher.find()) {
             survey.setExportLine(matcher.group(1));
         } else survey.setExportLine(null);
-        survey.setSavedBy(savedBy);
-        survey.setLastUpdated(new Date());
-
-        return survey;
     }
 
     @Override

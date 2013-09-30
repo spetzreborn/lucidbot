@@ -28,17 +28,20 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
-import api.tools.text.StringUtil;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Building;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static api.tools.text.StringUtil.merge;
+
+@ParametersAreNonnullByDefault
 public class BuildingDAO extends AbstractDAO<Building> {
     @Inject
     public BuildingDAO(final Provider<Session> sessionProvider) {
@@ -53,7 +56,7 @@ public class BuildingDAO extends AbstractDAO<Building> {
             names.add(building.getName());
             names.add(building.getShortName());
         }
-        return StringUtil.merge(names, '|');
+        return merge(names, '|');
     }
 
     @Transactional

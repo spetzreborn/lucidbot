@@ -91,11 +91,12 @@ public enum IRCMessageType implements HasName {
 
     /**
      * @param nameOrShortName the name or short name of the message type sought (not case sensitive)
-     * @return the IRCMessageType that has the name or short name specified, or null if no match is found
+     * @return the IRCMessageType that has the name or short name specified
+     * @throws IllegalArgumentException if no match is found
      */
     public static IRCMessageType fromName(final String nameOrShortName) {
         for (IRCMessageType type : values()) {
-            if (type.name().equalsIgnoreCase(nameOrShortName) || type.shortName.equalsIgnoreCase(nameOrShortName)) return type;
+            if (type.getName().equalsIgnoreCase(nameOrShortName) || type.shortName.equalsIgnoreCase(nameOrShortName)) return type;
         }
         throw new IllegalArgumentException("Unknown message type: " + nameOrShortName);
     }

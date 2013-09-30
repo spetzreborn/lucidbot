@@ -28,7 +28,7 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
+import api.database.transactions.Transactional;
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 import database.models.NewsItem;
@@ -38,12 +38,14 @@ import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Restrictions;
 import tools.parsing.NonAttackNewsTypes;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.*;
 
 import static api.tools.collections.CollectionUtil.isNotEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 
+@ParametersAreNonnullByDefault
 public class NewsItemDAO extends AbstractDAO<NewsItem> {
     @Inject
     public NewsItemDAO(final Provider<Session> sessionProvider) {

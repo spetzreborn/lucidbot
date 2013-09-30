@@ -40,6 +40,7 @@ import java.lang.reflect.Method;
 public class AbstractIntelHandler {
     protected CommandResponse getIntelSource(final String searchTerm, final Class<?> intelType, final BotUser user,
                                              final IntelManager intelManager) throws CommandHandlingException {
+        if (searchTerm.isEmpty() && user == null) return CommandResponse.errorResponse("You're not registered");
         try {
             Province province =
                     searchTerm.isEmpty() ? intelManager.getBestMatch(user.getMainNick()) : intelManager.getBestMatch(searchTerm);

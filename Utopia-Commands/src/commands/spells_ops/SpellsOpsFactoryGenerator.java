@@ -28,7 +28,7 @@
 package commands.spells_ops;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import com.google.inject.Provider;
 import commands.CommandTypes;
 import commands.spells_ops.factories.SpellsOpsCommandHandlerFactory;
@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static api.tools.text.StringUtil.lowerCase;
+
 @Singleton
 public class SpellsOpsFactoryGenerator implements DynamicCommandHandlerFactoryGenerator {
     private final List<Command> handledCommands = new ArrayList<>();
@@ -65,18 +67,16 @@ public class SpellsOpsFactoryGenerator implements DynamicCommandHandlerFactoryGe
         Command command;
         for (OpType opType : commonEntitiesAccess
                 .getOpTypesNotLike(SpellOpCharacter.OTHER, SpellOpCharacter.SELF_SPELLOP, SpellOpCharacter.INSTANT_SELF_SPELLOP)) {
-            command = CommandFactory
-                    .newTypedCommand(CommandTypes.SPELLS_AND_OPS, opType.getShortName() == null ? opType.getName() : opType.getShortName());
-            command.setTemplateFile("spellsops.ftl");
-            command.setHelpText("Used for adding " + opType.getName());
+            final String name = opType.getShortName() == null ? opType.getName() : opType.getShortName();
+            command = CommandBuilder.forCommand(lowerCase(name)).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
+                    withHelpText("Used for adding " + opType.getName()).withNonDowngradableAccessLevel().build();
             handledCommands.add(command);
         }
         for (SpellType spellType : commonEntitiesAccess
                 .getSpellTypesNotLike(SpellOpCharacter.OTHER, SpellOpCharacter.SELF_SPELLOP, SpellOpCharacter.INSTANT_SELF_SPELLOP)) {
-            command = CommandFactory.newTypedCommand(CommandTypes.SPELLS_AND_OPS,
-                    spellType.getShortName() == null ? spellType.getName() : spellType.getShortName());
-            command.setTemplateFile("spellsops.ftl");
-            command.setHelpText("Used for adding " + spellType.getName());
+            final String name = spellType.getShortName() == null ? spellType.getName() : spellType.getShortName();
+            command = CommandBuilder.forCommand(lowerCase(name)).ofType(CommandTypes.SPELLS_AND_OPS).usingTemplateFile("spellsops.ftl").
+                    withHelpText("Used for adding " + spellType.getName()).build();
             handledCommands.add(command);
         }
     }

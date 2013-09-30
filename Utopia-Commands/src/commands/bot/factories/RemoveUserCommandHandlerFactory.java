@@ -28,9 +28,10 @@
 package commands.bot.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -46,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveUserCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.USER_MANAGEMENT, "removeuser");
+    private final Command handledCommand = CommandBuilder.forCommand("removeuser").ofType(CommandTypes.USER_MANAGEMENT).requiringAccessLevel(AccessLevel.ADMIN).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveUserCommandHandler> handlerProvider;

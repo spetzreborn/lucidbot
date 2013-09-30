@@ -1,7 +1,7 @@
 require 'java'
 
 def handles()
-  Java::api.commands.CommandFactory.newSimpleCommand "jruby"
+  Java::api.commands.CommandBuilder.forCommand("jruby").build()
 end
 
 def handleCommand(context, params, filters, delayedEventPoster)

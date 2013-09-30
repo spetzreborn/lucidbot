@@ -30,8 +30,6 @@ package api.database.models;
 import api.common.HasName;
 import api.tools.text.StringUtil;
 
-import javax.annotation.Nullable;
-
 public enum ChannelType implements HasName {
     PUBLIC, ADMIN, PRIVATE;
 
@@ -40,11 +38,17 @@ public enum ChannelType implements HasName {
         return StringUtil.prettifyEnumName(this);
     }
 
-    @Nullable
+    /**
+     * Attempts to resolve a channel type from the specified name
+     *
+     * @param name the name to match on
+     * @return the matching channel type
+     * @throws IllegalArgumentException if no match is found
+     */
     public static ChannelType fromName(final String name) {
         for (ChannelType channelType : values()) {
             if (channelType.getName().equals(name)) return channelType;
         }
-        return null;
+        throw new IllegalArgumentException("No such channel type: " + name);
     }
 }

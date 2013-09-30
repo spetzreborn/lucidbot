@@ -28,7 +28,7 @@
 package commands.user.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import com.google.inject.Provider;
@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class RemoveNotificationCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.USER, "removenotification");
+    private final Command handledCommand = CommandBuilder.forCommand("removenotification").ofType(CommandTypes.USER).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveNotificationCommandHandler> handlerProvider;

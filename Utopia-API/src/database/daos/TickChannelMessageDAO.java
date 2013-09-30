@@ -28,16 +28,18 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.Channel;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.TickChannelMessage;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.Collection;
 
+@ParametersAreNonnullByDefault
 public class TickChannelMessageDAO extends AbstractDAO<TickChannelMessage> {
     @Inject
     public TickChannelMessageDAO(final Provider<Session> sessionProvider) {

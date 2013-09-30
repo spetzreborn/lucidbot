@@ -47,7 +47,7 @@ import java.util.List;
 
 @Singleton
 public class ResultsCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.SPELLS_AND_OPS, "results");
+    private final Command handledCommand = CommandBuilder.forCommand("results").ofType(CommandTypes.SPELLS_AND_OPS).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<ResultsCommandHandler> handlerProvider;

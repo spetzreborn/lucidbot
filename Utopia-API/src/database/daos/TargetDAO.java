@@ -28,8 +28,8 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Province;
 import database.models.Target;
@@ -38,11 +38,13 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import tools.BindingsManager;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.*;
 
 import static api.tools.time.DateUtil.isAfter;
 
+@ParametersAreNonnullByDefault
 public class TargetDAO extends AbstractDAO<Target> {
     @Inject
     public TargetDAO(final Provider<Session> sessionProvider) {

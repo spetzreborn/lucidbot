@@ -28,9 +28,10 @@
 package commands.help.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
+import api.database.models.AccessLevel;
 import api.irc.ValidationType;
 import com.google.inject.Provider;
 import commands.CommandTypes;
@@ -44,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RemoveLinkCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedAdminCommand(CommandTypes.HELP, "removelink");
+    private final Command handledCommand = CommandBuilder.forCommand("removelink").ofType(CommandTypes.HELP).requiringAccessLevel(AccessLevel.ADMIN).build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<RemoveLinkCommandHandler> handlerProvider;

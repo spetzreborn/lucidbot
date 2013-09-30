@@ -28,7 +28,7 @@
 package commands.user.factories;
 
 import api.commands.Command;
-import api.commands.CommandFactory;
+import api.commands.CommandBuilder;
 import api.commands.CommandParser;
 import api.commands.ParamParsingSpecification;
 import com.google.inject.Provider;
@@ -45,7 +45,7 @@ import java.util.List;
 
 @Singleton
 public class SetStatusCommandHandlerFactory implements CommandHandlerFactory {
-    private final Command handledCommand = CommandFactory.newTypedCommand(CommandTypes.KD_MANAGEMENT, "setstatus");
+    private final Command handledCommand = CommandBuilder.forCommand("setstatus").ofType(CommandTypes.KD_MANAGEMENT).withNonDowngradableAccessLevel().build();
     private final List<CommandParser> parsers = new ArrayList<>();
 
     private final Provider<SetStatusCommandHandler> handlerProvider;

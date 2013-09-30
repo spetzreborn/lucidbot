@@ -27,13 +27,17 @@
 
 package internal.database;
 
-import api.database.DatabaseUpdater;
 import api.database.H2;
+import api.database.updates.DatabaseUpdater;
 import api.settings.PropertiesCollection;
+import com.google.common.base.Charsets;
+import org.h2.Driver;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.dialect.H2Dialect;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -55,22 +59,22 @@ final class H2DatabaseManager extends AbstractDatabaseManager {
         String dbPassword = properties.get(DB_PASSWORD);
 
         try {
-            Class.forName("org.h2.Driver");
+            Class.forName(Driver.class.getName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Couldn't find database drivers");
         }
         configuration.setProperty("hibernate.current_session_context_class", "thread");
         configuration.setProperty("hibernate.flushMode", "COMMIT");
         configuration.setProperty("hibernate.jdbc_batch_size", String.valueOf(15));
-        configuration.setProperty("hibernate.connection.provider_class", "org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider");
+        configuration.setProperty("hibernate.connection.provider_class", C3P0ConnectionProvider.class.getName());
         configuration.setProperty("hibernate.c3p0.timeout", String.valueOf(60));
         configuration.setProperty("hibernate.connection.username", dbUsername);
         configuration.setProperty("hibernate.connection.password", dbPassword);
         configuration.setProperty("hibernate.connection.useUnicode", "true");
-        configuration.setProperty("hibernate.connection.characterEncoding", "UTF-8");
-        configuration.setProperty("hibernate.connection.charSet", "UTF-8");
-        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
+        configuration.setProperty("hibernate.connection.characterEncoding", Charsets.UTF_8.name());
+        configuration.setProperty("hibernate.connection.charSet", Charsets.UTF_8.name());
+        configuration.setProperty("hibernate.dialect", H2Dialect.class.getName());
+        configuration.setProperty("hibernate.connection.driver_class", Driver.class.getName());
         configuration.setProperty("hibernate.connection.url", "jdbc:h2:data/" + dbName + ";MVCC=TRUE");
 
         ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();

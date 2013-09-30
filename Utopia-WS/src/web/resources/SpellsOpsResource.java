@@ -1,7 +1,7 @@
 package web.resources;
 
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import api.tools.validation.ValidationEnabled;
 import database.daos.ProvinceDAO;
 import database.models.Province;
@@ -53,13 +53,17 @@ public class SpellsOpsResource {
                                           "redundant and should be left out. In other cases it should be specified unless you want whatever target the user " +
                                           "currently has set for spells and ops to be used instead")
                                   @QueryParam("targetName")
-                                  final String targetName) {
+                                  final String targetName,
+                                  @Documentation("The location of the kingdom, specified on the form xx:xx (requires encoding because of the colon). " +
+                                          "If this parameter is included, the bot will create the target province specified by targetName if it is missing")
+                                  @QueryParam("targetKingdom")
+                                  final String targetKingdom) {
         return String.valueOf(singleSpellOp ?
-                spellsOpsParser.parseSingle(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName)) :
-                spellsOpsParser.parseMultiple(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName)));
+                spellsOpsParser.parseSingle(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName, targetKingdom)) :
+                spellsOpsParser.parseMultiple(context.getBotUser(), spellsAndOps, createTargetLocatorFactory(targetName, targetKingdom)));
     }
 
-    private TargetLocatorFactory createTargetLocatorFactory(final String targetName) {
+    private TargetLocatorFactory createTargetLocatorFactory(final String targetName, final String kingdomLoc) {
         return new TargetLocatorFactory() {
             @Override
             public TargetLocator createLocator(final SpellOpCharacter spellOpCharacter) {
@@ -68,7 +72,7 @@ public class SpellsOpsResource {
                         @Nullable
                         @Override
                         public Province locateTarget(final BotUser user, final Matcher matchedRegex) {
-                            return provinceDAO.getProvince(targetName);
+                            return kingdomLoc == null ? provinceDAO.getProvince(targetName) : provinceDAO.getOrCreateProvince(targetName, '(' + kingdomLoc + ')');
                         }
                     };
                 } else

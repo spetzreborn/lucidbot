@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.settings.PropertiesCollection;
@@ -44,17 +46,23 @@ import spi.events.EventListener;
 import tools.UtopiaPropertiesConfig;
 import tools.time.UtopiaTime;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class ReturningArmiesAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<ArmyDAO> armyDAOProvider;
     private final PropertiesCollection properties;
 
     @Inject
-    public ReturningArmiesAnnouncer(final Provider<ArmyDAO> armyDAOProvider, final TemplateManager templateManager,
-                                    final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
+    public ReturningArmiesAnnouncer(final Provider<ArmyDAO> armyDAOProvider,
+                                    final TemplateManager templateManager,
+                                    final IRCEntityManager ircEntityManager,
+                                    final IRCAccess ircAccess,
                                     final PropertiesCollection properties) {
         super(templateManager, ircEntityManager, ircAccess);
         this.armyDAOProvider = armyDAOProvider;
@@ -63,20 +71,25 @@ public class ReturningArmiesAnnouncer extends AbstractAnnouncer implements Event
 
     @Subscribe
     public void onTick(final TickEvent event) {
-        try {
-            UtopiaTime nextTick = event.getUtoDate().increment(1);
-            List<Army> armies = armyDAOProvider.get().getReturningArmies(nextTick.getDate());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    UtopiaTime nextTick = event.getUtoDate().increment(1);
+                    List<Army> armies = armyDAOProvider.get().getReturningArmies(nextTick.getDate());
 
-            if (armies.isEmpty()) return;
+                    if (armies.isEmpty()) return;
 
-            if (isEnabled()) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("armies", armies),
-                        "announcement-returning-armies");
-                announce(ChannelType.PRIVATE, output);
+                    if (isEnabled()) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("armies", armies),
+                                "announcement-returning-armies");
+                        announce(ChannelType.PRIVATE, output);
+                    }
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
             }
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+        });
     }
 
     private boolean isEnabled() {

@@ -28,17 +28,18 @@
 package database.daos;
 
 import api.database.AbstractDAO;
-import api.database.Transactional;
 import api.database.models.BotUser;
+import api.database.transactions.Transactional;
 import com.google.inject.Provider;
 import database.models.Alarm;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.util.List;
 
-
+@ParametersAreNonnullByDefault
 public class AlarmDAO extends AbstractDAO<Alarm> {
     @Inject
     public AlarmDAO(final Provider<Session> sessionProvider) {

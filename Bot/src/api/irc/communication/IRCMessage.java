@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ParametersAreNonnullByDefault
 public final class IRCMessage {
     /**
-     * The priority of this message
+     * The priority of this message. Lower means more urgent
      */
     private final int priority;
     /**

@@ -27,8 +27,8 @@
 
 package listeners;
 
-import api.database.SimpleTransactionTask;
 import api.database.models.AccessLevel;
+import api.database.transactions.SimpleTransactionTask;
 import api.events.DelayedEventPoster;
 import api.events.bot.NonCommandEvent;
 import api.irc.ValidationType;
@@ -50,7 +50,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static api.database.Transactions.inTransaction;
+import static api.database.transactions.Transactions.inTransaction;
 
 @Log4j
 class InfiltrationListener implements EventListener {

@@ -33,10 +33,11 @@ import com.google.common.eventbus.EventBus;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static api.tools.common.CleanupUtil.closeSilently;
 
 @ParametersAreNonnullByDefault
 public final class InputThread extends Thread {
@@ -77,16 +78,10 @@ public final class InputThread extends Thread {
         }
 
         if (die.get()) {
-            close(reader);
+            closeSilently(reader);
         } else {
             eventBus.post(new DisconnectEvent(bot));
         }
     }
 
-    private static void close(final Closeable closeable) {
-        try {
-            if (closeable != null) closeable.close();
-        } catch (IOException ignore) {
-        }
-    }
 }

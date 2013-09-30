@@ -28,6 +28,8 @@
 package announcements;
 
 import api.database.models.ChannelType;
+import api.database.transactions.SimpleTransactionTask;
+import api.events.DelayedEventPoster;
 import api.irc.IRCEntityManager;
 import api.irc.communication.IRCAccess;
 import api.templates.TemplateManager;
@@ -41,14 +43,20 @@ import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import spi.events.EventListener;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 
+import static api.database.transactions.Transactions.inTransaction;
+
 @Log4j
+@ParametersAreNonnullByDefault
 public class OpAddedAnnouncer extends AbstractAnnouncer implements EventListener {
     private final Provider<OpDAO> opDAOProvider;
 
     @Inject
-    public OpAddedAnnouncer(final TemplateManager templateManager, final IRCEntityManager ircEntityManager, final IRCAccess ircAccess,
+    public OpAddedAnnouncer(final TemplateManager templateManager,
+                            final IRCEntityManager ircEntityManager,
+                            final IRCAccess ircAccess,
                             final Provider<OpDAO> opDAOProvider) {
         super(templateManager, ircEntityManager, ircAccess);
         this.opDAOProvider = opDAOProvider;
@@ -56,16 +64,20 @@ public class OpAddedAnnouncer extends AbstractAnnouncer implements EventListener
 
     @Subscribe
     public void onDurationSpellAdded(final DurationOpRegisteredEvent event) {
-        try {
-            DurationOp durationOp = opDAOProvider.get().getDurationOp(event.getDurationOpId());
+        inTransaction(new SimpleTransactionTask() {
+            @Override
+            public void run(final DelayedEventPoster delayedEventBus) {
+                try {
+                    DurationOp durationOp = opDAOProvider.get().getDurationOp(event.getDurationOpId());
 
-            if (durationOp != null) {
-                String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("op", durationOp),
-                        "announcement-duration-op-committed");
-                announce(ChannelType.PRIVATE, output);
-            } else OpAddedAnnouncer.log.warn("Duration op was not found in database when it was going to be announced");
-        } catch (HibernateException e) {
-            log.error("", e);
-        }
+                    if (durationOp != null) {
+                        String[] output = compileTemplateOutput(MapFactory.newMapWithNamedObjects("op", durationOp), "announcement-duration-op-committed");
+                        announce(ChannelType.PRIVATE, output);
+                    } else OpAddedAnnouncer.log.warn("Duration op was not found in database when it was going to be announced");
+                } catch (HibernateException e) {
+                    log.error("", e);
+                }
+            }
+        });
     }
 }
